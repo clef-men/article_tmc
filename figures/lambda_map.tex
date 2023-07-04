@@ -1,0 +1,17 @@
+\begin{figure}[tp]
+\begin{tabular}{c}
+\begin{Lambd}
+map |-> rec arg =
+  let fn = arg.(1) in
+  let xs = arg.(2) in
+  match xs with
+  | [] ==> 
+      []
+  | x :: xs ==>
+      let y = fn x in
+      y :: (@map (fn, xs))
+\end{Lambd}
+\end{tabular}
+\caption{\lambd|map| in direct style (\LambdaLang)}
+\label{fig:lambda_map}
+\end{figure}

@@ -1,0 +1,24 @@
+\begin{figure}[tp]
+    \[
+        p_s \tmc p_t
+        \coloneqq
+        \exists \xi \ldotp
+        \bigwedge \left[ \begin{array}{l}
+                \dom{\xi} \subseteq \dom{p_s}
+            \\
+                \dom{p_t} = \dom{p_s} \cup \codom{\xi}
+            \\
+                \forall f, d_s \ldotp
+                p_s [f] = d_s \implies
+                \exists d_t \ldotp
+                p_t [f] = d_t \wedge d_s \tmcDir{\xi} d_t
+            \\
+                \forall f, f_\mathit{dps}, d_s \ldotp
+                p_s [f] = d_s \wedge \xi [f] = f_{\mathit{dps}} \implies
+                \exists d_t \ldotp
+                p_t [f_\mathit{dps}] = d_t \wedge d_s \tmcDps{\xi} d_t
+        \end{array} \right.
+    \]
+    \caption{TMC transformation}
+    \label{fig:tmc}
+\end{figure}

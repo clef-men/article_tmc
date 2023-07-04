@@ -1,0 +1,43 @@
+\begin{figure}[tp]
+    \begin{align*}
+            \Chi_\mathrm{dir} (\Psi, e_s, e_t)
+            &\coloneqq
+            \begin{array}{l}
+                    \exists f, v_s, v_t \ldotp
+                \\
+                    f \in \dom{p_s} \iSep
+                    e_s = \lambdCall{\lambdFunc{f}}{v_s} \iSep
+                    e_t = \lambdCall{\lambdFunc{f}}{v_t} \iSep
+                    v_s \iSimilar v_t \iSep {}
+                \\
+                    \forall v_s', v_t' \ldotp
+                    v_s' \iSimilar v_t' \iSepImp
+                    \Psi (v_s', v_t')
+            \end{array}
+        \\
+            \Chi_\mathrm{DPS} (\Psi, e_s, e_t)
+            &\coloneqq
+            \begin{array}{l}
+                    \exists f, f_\mathit{dps}, v_s, \loc, i, v_t \ldotp
+                \\
+                    f \in \dom{p_s} \iSep
+                    \xi [f] = f_\mathit{dps} \iSep
+                    e_s = \lambdCall{\lambdFunc{f}}{v_s} \iSep
+                    e_t = \lambdCall{\lambdFunc{f_\mathit{dps}}}{\lambdPair{\lambdPair{\loc}{i}}{v_t}} \iSep
+                    v_s \iSimilar v_t \iSep {}
+                \\
+                    (\loc + i) \mapsto \lambdHole \iSep {}
+                \\
+                    \forall v_s', v_t' \ldotp
+                    (\loc + i) \mapsto v_t' \iSep
+                    v_s' \iSimilar v_t' \iSepImp
+                    \Psi (v_s', \lambdUnit)
+            \end{array}
+        \\
+            \Chi_\mathrm{TMC}
+            &\coloneqq
+            \Chi_\mathrm{dir} \sqcup \Chi_\mathrm{DPS}
+    \end{align*}
+    \caption{TMC protocol}
+    \label{fig:protocol}
+\end{figure}

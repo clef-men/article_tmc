@@ -1,0 +1,30 @@
+\begin{figure}[tp]
+\begin{OCaml}
+(* [dst] points to a partially initialized list cell. *)
+let rec map_dps dst f xs =
+  match xs with
+  | [] ->
+      (* Write our result, the empty list, to [dst]. *)
+      set_field dst 1 []
+  | x :: xs ->
+      let y = f x in
+      (* Allocate a new partially initialized list cell. *)
+      let dst' = y :: [] in
+      (* Write our result, [dst'], to [dst]. *)
+      set_field dst 1 dst' ;
+      (* Continue with [dst'] as new destination. *)
+      map_dps dst' f xs
+
+let map f xs =
+  match xs with
+  | [] ->
+      []
+  | x :: xs ->
+      let y = f x in
+      let dst = y :: [] in
+      map_dps dst f xs ;
+      dst
+\end{OCaml}
+\caption{\ocaml|map| in destination-passing style (\OCamlLang)}
+\label{fig:map_dps}
+\end{figure}

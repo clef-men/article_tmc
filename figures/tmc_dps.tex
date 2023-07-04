@@ -1,0 +1,131 @@
+\begin{figure}[tp]
+    \begin{mathparpagebreakable}
+        \inferrule*
+            {}{
+                \boxed{- \tmcDps{\xi} - : \nterm{Expr} \times \nterm{Expr} \times \nterm{Expr} \rightarrow \nterm{Expr} \rightarrow \Prop}
+            }
+        \and
+        \inferrule*
+            {}{
+                \boxed{- \tmcDps{\xi} - : \nterm{Def} \rightarrow \nterm{Def} \rightarrow \Prop}
+            }
+        \\
+        \inferrule*[lab=DPSBase]
+            {
+                e_s \tmcDir{\xi} e_t
+            }{
+                \left(
+                    \mathit{dst},
+                    \mathit{idx},
+                    e_s
+                \right)
+                \tmcDps{\xi}
+                \lambdStore{\mathit{dst}}{i}{e_t}
+            }
+        \and
+        \inferrule*[lab=DPSLet]
+            {
+                e_{s1} \tmcDir{\xi} e_{t1}
+            \and
+                (\mathit{dst}, \mathit{idx}, e_{s2}) \tmcDps{\xi} e_{t2}
+            }{
+                \left(
+                    \mathit{dst},
+                    \mathit{idx},
+                    \lambdLet{x}{e_{s1}}{e_{s2}}
+                \right)
+                \tmcDps{\xi}
+                \lambdLet{x}{e_{t1}}{e_{t2}}
+            }
+        \and
+        \inferrule*[lab=DPSCall]
+            {
+                f \in \dom{\xi}
+            \and
+                e_s \tmcDir{\xi} e_t
+            }{
+                \left(
+                    \mathit{dst},
+                    \mathit{idx},
+                    \lambdCall{\lambdFunc{f}}{e_s}
+                \right)
+                \tmcDps{\xi}
+                \lambdCall{\lambdFunc{\xi [f]}}{e_t}
+            }
+        \and
+        \inferrule*[lab=DPSIf]
+            {
+                e_{s0} \tmcDir{\xi} e_{t0}
+            \and
+                (\mathit{dst}, \mathit{idx}, e_{s1}) \tmcDps{\xi} e_{s2}
+            \and
+                (\mathit{dst}, \mathit{idx}, e_{s2}) \tmcDps{\xi} e_{t2}
+            }{
+                \left(
+                    \mathit{dst},
+                    \mathit{idx},
+                    \lambdIf{e_{s0}}{e_{s1}}{e_{s2}}
+                \right)
+                \tmcDps{\xi}
+                \lambdIf{e_{t0}}{e_{t1}}{e_{t2}}
+            }
+        \\
+        \inferrule*[lab=DPSConstr1]
+            {
+                e_{s1} \tmcDir{\xi} e_{t1}
+            \and
+                (\mathit{dst}, \lambdTwo, e_{s2}) \tmcDir{\xi} e_{t2}
+            }{
+                \left(
+                    \mathit{dst},
+                    \mathit{idx},
+                    \lambdConstr{c}{e_{s1}}{e_{s2}}
+                \right)
+                \tmcDps{\xi}
+                \begin{array}{l}
+                    \lambdLet{\mathit{dst'}}{\lambdConstr{c}{e_{t1}}{\lambdHole}}{\\
+                    \lambdSeq{\lambdStore{\mathit{dst}}{\mathit{idx}}{\mathit{dst'}}}{e_{t2}}
+                    }
+                \end{array}
+            }
+        \and
+        \inferrule*[lab=DPSConstr2]
+            {
+                e_{s2} \tmcDir{\xi} e_{t2}
+            \and
+                (\mathit{dst}, \lambdOne, e_{s1}) \tmcDir{\xi} e_{t1}
+            }{
+                \left(
+                    \mathit{dst},
+                    \mathit{idx},
+                    \lambdConstr{c}{e_{s1}}{e_{s2}}
+                \right)
+                \tmcDps{\xi}
+                \begin{array}{l}
+                    \lambdLet{\mathit{dst'}}{\lambdConstr{c}{\lambdHole}{e_{t2}}}{\\
+                    \lambdSeq{\lambdStore{\mathit{dst}}{\mathit{idx}}{\mathit{dst'}}}{e_{t1}}
+                    }
+                \end{array}
+            }
+        \\
+        \inferrule*[lab=DPSDef]
+            {
+                (\mathit{dst}, \mathit{idx}, e_s) \tmcDps{\xi} e_t
+            }{
+                \lambdDef{x}{e_s}
+                \tmcDps{\xi}
+                {\begin{array}{l}
+                    \lambdDef{y}{\\ \ \begin{array}{l}
+                        \lambdLet{z}{\lambdLoad{y}{\lambdOne}}{\\
+                        \lambdLet{\mathit{dst}}{\lambdLoad{z}{\lambdOne}}{\\
+                        \lambdLet{\mathit{idx}}{\lambdLoad{z}{\lambdTwo}}{\\
+                        \lambdLet{x}{\lambdLoad{y}{\lambdTwo}}{\\
+                        e_t
+                        }}}}
+                    \end{array}}
+                \end{array}}
+            }
+    \end{mathparpagebreakable}
+    \caption{Destination-passing style TMC transformation (omitting freshness conditions)}
+    \label{fig:tmc_dps}
+\end{figure}

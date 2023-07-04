@@ -1,0 +1,49 @@
+\begin{figure}[tp]
+    \centering
+    \begin{mathparpagebreakable}
+        \inferrule*
+            {
+                v_s \similar v_t
+            }{
+                \constr[v_s]{Conv} \refined \constr[v_t]{Conv}
+            }
+        \and
+        \inferrule*
+            {
+                e_s \notin \nterm{Val}
+            \and
+                e_t \notin \nterm{Val}
+            }{
+                \constr[e_s]{Conv} \refined \constr[e_t]{Conv}
+            }
+        \and
+        \inferrule*
+            {}{
+                \constr{Div} \refined \constr{Div}
+            }
+    \end{mathparpagebreakable}
+    \\
+    \begin{align*}
+        	\mathrm{behaviours}_p (e)
+        	&\coloneqq
+        	\begin{array}{l}
+        			\{ \constr[e']{Conv} \mid \exists \sigma \ldotp (e, \emptyset) \step{p}^* (e', \sigma) \wedge \mathrm{irreducible}_p (e', \sigma) \}\ \uplus
+        		\\
+        			\{ \constr{Div} \mid\ \diverges{p}{(e, \emptyset)} \}
+            \end{array}
+        \\
+            e_s \refined e_t
+            &\coloneqq
+            \forall b_t \in \mathrm{behaviours}_{p_t} (e_t) \ldotp
+            \exists b_s \in \mathrm{behaviours}_{p_s} (e_s) \ldotp
+            b_s \refined b_t
+        \\
+            p_s \refined p_t
+            &\coloneqq
+            \forall f \in \dom{p_t}, v_s, v_t \ldotp
+            \wf{v_s} \wedge v_s \similar v_t \implies
+            \lambdCall{\lambdFunc{f}}{v_s} \refined \lambdCall{\lambdFunc{f}}{v_t}
+    \end{align*}
+    \caption{Program refinement}
+    \label{fig:refinement}
+\end{figure}

@@ -1,0 +1,41 @@
+\begin{figure}[tp]
+    \centering
+    \begin{mathparpagebreakable}
+        \inferrule*
+            {}{
+                \lambdUnit \iSimilar \lambdUnit
+            }
+        \and
+        \inferrule*
+            {}{
+                i \iSimilar i
+            }
+        \and
+        \inferrule*
+            {}{
+                n \iSimilar n
+            }
+        \and
+        \inferrule*
+            {}{
+                b \iSimilar b
+            }
+        \and
+        \inferrule*
+            {
+                \forall i \in \{0,1,2\} \ldotp
+                (\loc_s + i) \iInBij (\loc_t + i)
+            }{
+                \loc_s \iSimilar \loc_t
+            }
+        \and
+        \inferrule*
+            {
+                f \in \dom{p_s}
+            }{
+                \lambdFunc{f} \iSimilar \lambdFunc{f}
+            }
+    \end{mathparpagebreakable}
+    \caption{Similarity in $\iProp$}
+    \label{fig:isimilar}
+\end{figure}

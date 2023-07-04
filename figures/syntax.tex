@@ -1,0 +1,163 @@
+\begin{figure}[tp]
+    \begin{tabular}{rclclcl}
+            $\nterm{Index}$
+            & $\ni$ &
+            i
+            & $\Coloneqq$ &
+            $\lambdZero \mid \lambdOne \mid \lambdTwo$
+            &&
+            index
+        \\
+            $\mathbb{Z}$
+            & $\ni$ &
+            $n$
+            &&
+            &&
+            integer
+        \\
+            $\mathbb{B}$
+            & $\ni$ &
+            $b$
+            &&
+            &&
+            boolean
+    	\\
+    		$\mathbb{L}$
+    		& $\ni$ &
+    		$\loc$
+    		&&
+    		&&
+    		location
+        \\
+            $\mathbb{F}$
+            & $\ni$ &
+            $f$
+            &&
+            &&
+            function
+        \\
+            $\mathbb{X}$
+            & $\ni$ &
+            $x, y, z$
+            &&
+            &&
+            variable
+        \\
+            $\nterm{Constr}$
+            & $\ni$ &
+            $c$
+            &&
+            &&
+            constructor
+    	\\
+            $\nterm{Val}$
+            & $\ni$ &
+            $v$
+            & $\Coloneqq$ &
+            $\lambdUnit \mid i \mid n \mid b \mid \ell \mid \lambdFunc{f}$
+            &&
+            value
+        \\
+            $\nterm{Expr}$
+            & $\ni$ &
+            $e$
+            & $\Coloneqq$ &
+            $v$
+            &&
+            expression
+        \\
+            &&
+            & | &
+            $x \mid \lambdLet{x}{e_1}{e_2} \mid \lambdCall{e_1}{e_2}$
+        \\
+            &&
+            & | &
+            $\lambdUminus{e} \mid \lambdPlus{e_1}{e_2} \mid \dots$
+        \\
+            &&
+            & | &
+            $\lambdIf{e_0}{e_1}{e_2}$
+        \\
+            &&
+            & | &
+            $\lambdConstr{c}{e_1}{e_2} \mid \lambdConstrDet{c}{e_1}{e_2}$
+        \\
+            &&
+            & | &
+            $\lambdLoad{e_1}{e_2}$
+        \\
+            &&
+            & | &
+            $\lambdStore{e_1}{e_2}{e_3}$
+        \\
+            $\nterm{Ectx}$
+            & $\ni$ &
+            $K$
+            & $\Coloneqq$ &
+            $\Box$
+            &&
+            evaluation context
+        \\
+            &&
+            & | &
+            $\lambdLet{x}{K}{e_2} \mid \lambdCall{e_1}{K} \mid \lambdCall{K}{v_2}$
+        \\
+            &&
+            & | &
+            $\lambdUminus{K} \mid \lambdPlus{e_1}{K} \mid \lambdPlus{K}{v_2} \mid \dots$
+        \\
+            &&
+            & | &
+            $\lambdIf{K}{e_1}{e_2}$
+        \\
+            &&
+            & | &
+            $\lambdLoad{e_1}{K} \mid \lambdLoad{K}{v_2}$
+        \\
+            &&
+            & | &
+            $\lambdStore{e_1}{e_2}{K} \mid \lambdStore{e_1}{K}{v_3} \mid \lambdStore{K}{v_2}{v_3}$
+        \\
+            $\nterm{Def}$
+            & $\ni$ &
+            $d$
+            & $\Coloneqq$ &
+            $\lambdDef{x}{e}$
+            &&
+            definition
+        \\
+            $\nterm{Prog}$
+            & $\ni$ &
+            $p$
+            & $\coloneqq$ &
+            $\mathbb{F} \finmap \nterm{Def}$
+            &&
+            program
+        \\
+            $\nterm{State}$
+            & $\ni$ &
+            $\sigma$    
+            & $\coloneqq$ &
+            $\mathbb{L} \finmap \nterm{Val}$
+            &&
+            state
+        \\
+            $\nterm{Config}$
+            & $\ni$ &
+            $\rho$
+            & $\coloneqq$ &
+            $\nterm{Expr} \times \nterm{State}$
+            &&
+            configuration
+        \\
+            $\nterm{Bisubst}$
+            & $\ni$ &
+            $\Gamma$
+            & $\coloneqq$ &
+            $\mathbb{X} \rightarrow \nterm{Expr} \times \nterm{Expr}$
+            &&
+            bisubstitution
+    \end{tabular}
+    \caption{Syntax of \LambdaLang}
+    \label{fig:syntax}
+\end{figure}

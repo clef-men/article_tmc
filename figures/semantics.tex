@@ -1,0 +1,145 @@
+\begin{figure}[tp]
+    \begin{mathparpagebreakable}
+        \inferrule*
+            {}{
+                \boxed{- \headStep{p} - : \nterm{Config} \rightarrow \nterm{Config} \rightarrow \Prop}
+            }
+        \and
+        \inferrule*
+            {}{
+                \boxed{- \step{p} - : \nterm{Config} \rightarrow \nterm{Config} \rightarrow \Prop}
+            }
+        \\
+        \inferrule*[lab=StepLet]
+            {}{
+                \left(
+                    \lambdLet{x}{v}{e},
+                    \sigma
+                \right)
+                \headStep{p}
+                \left(
+                    e [x \backslash v],
+                    \sigma
+                \right)
+            }
+        \and
+        \inferrule*[lab=StepCall]
+            {
+                p [f] = (\lambdDef{x}{e})
+            }{
+                \left(
+                    \lambdCall{\lambdFunc{f}}{v},
+                    \sigma
+                \right)
+                \headStep{p}
+                \left(
+                    e [x \backslash v],
+                    \sigma
+                \right)
+            }
+        \\
+        \inferrule*[lab=StepConstr1]
+            {}{
+                \left(
+                    \lambdConstr{c}{e_1}{e_2},
+                    \sigma
+                \right)
+                \headStep{p}
+                \left(
+                    \begin{array}{l}
+                        \lambdLet{x_1}{e_1}{\\
+                        \lambdLet{x_2}{e_2}{\\
+                        \lambdConstrDet{c}{x_1}{x_2}}}
+                    \end{array},
+                    \sigma
+                \right)
+            }
+        \and
+        \inferrule*[lab=StepConstr2]
+            {}{
+                \left(
+                    \lambdConstr{c}{e_1}{e_2},
+                    \sigma
+                \right)
+                \headStep{p}
+                \left(
+                    \begin{array}{l}
+                        \lambdLet{x_2}{e_2}{\\
+                        \lambdLet{x_1}{e_1}{\\
+                        \lambdConstrDet{c}{x_1}{x_2}}}
+                    \end{array},
+                    \sigma
+                \right)
+            }
+        \\
+        \inferrule*[lab=StepConstrDet]
+            {
+                \forall i \in \{0,1,2\}, \loc + i \notin \dom{\sigma}
+            }{
+                \left(
+                    \lambdConstrDet{c}{v_1}{v_2},
+                    \sigma
+                \right)
+                \headStep{p}
+                \left(
+                    \ell,
+                    \sigma [\loc \backslash c, v_1, v_2]
+                \right)
+            }
+        \\
+        \inferrule*[lab=StepLoad]
+            {
+                \sigma [\loc] = v
+            }{
+                \left(
+                    \lambdLoad{\loc}{i},
+                    \sigma
+                \right)
+                \headStep{p}
+                \left(
+                    v,
+                    \sigma
+                \right)
+            }
+        \and
+        \inferrule*[lab=StepStore]
+            {
+                \loc + i \in \dom{\sigma}
+            }{
+                \left(
+                    \lambdStore{\loc}{i}{v},
+                    \sigma
+                \right)
+                \headStep{p}
+                \left(
+                    \lambdUnit,
+                    \sigma [\loc + i \backslash v]
+                \right)
+            }
+        \\
+        \inferrule*[lab=StepEctx]
+            {
+                \left(
+                    e,
+                    \sigma
+                \right)
+                \headStep{p}
+                \left(
+                    e',
+                    \sigma'
+                \right)
+            }{
+                \left(
+                    K [e],
+                    \sigma
+                \right)
+                \step{p}
+                \left(
+                    K [e'],
+                    \sigma'
+                \right)
+            }
+    \end{mathparpagebreakable}
+    \caption{Semantics of \LambdaLang (excerpt, omitting freshness conditions)}
+    \label{fig:semantics}
+\end{figure}

@@ -1,0 +1,147 @@
+\begin{figure}[tp]
+    \begin{mathparpagebreakable}
+        \inferrule*[lab=SimPost]
+            {
+                \Phi (e_s, e_t)
+            }{
+                \iSim[\Chi]{\Phi}{e_s}{e_t}
+            }
+        \and
+        \inferrule*[lab=SimBind]
+            {
+                \iSim[\Chi]{\lambdaAbs (e_s', e_t') \ldotp \iSim[\Chi]{\Phi}{K_t [e_s']}{K_t [e_t']}}{e_s}{e_t}
+            }{
+                \iSim[\Chi]{\Phi}{K_t [e_s]}{K_t [e_t]}
+            }
+        \\
+        \inferrule*[lab=SimSrcPure]
+            {
+                e_s \pureStep{p_s} e_s'
+            \and
+                \iSim[\Chi]{\Phi}{e_s'}{e_t}
+            }{
+                \iSim[\Chi]{\Phi}{e_s}{e_t}
+            }
+        \and
+        \inferrule*[lab=SimTgtPure]
+            {
+                e_t \pureStep{p_t} e_t'
+            \and
+                \iSim[\Chi]{\Phi}{e_s}{e_t'}
+            }{
+                \iSim[\Chi]{\Phi}{e_s}{e_t}
+            }
+        \\
+        \inferrule*[lab=SimSrcConstr1]
+            {
+                \iSim[\Chi]{\Phi}{
+                    \begin{array}{l}
+                        \lambdLet{x_1}{e_{s1}}{\\
+                        \lambdLet{x_2}{e_{s2}}{\\
+                        \lambdConstrDet{c}{x_1}{x_2}}}
+                    \end{array}
+                }{e_t}
+            }{
+                \iSim[\Chi]{\Phi}{\lambdConstr{c}{e_{s1}}{e_{s2}}}{e_t}
+            }
+        \and
+        \inferrule*[lab=SimSrcConstr2]
+            {
+                \iSim[\Chi]{\Phi}{
+                    \begin{array}{l}
+                        \lambdLet{x_2}{e_{s2}}{\\
+                        \lambdLet{x_1}{e_{s1}}{\\
+                        \lambdConstrDet{c}{x_1}{x_2}}}
+                    \end{array}
+                }{e_t}
+            }{
+                \iSim[\Chi]{\Phi}{\lambdConstr{c}{e_{s1}}{e_{s2}}}{e_t}
+            }
+        \and
+        \inferrule*[lab=SimTgtConstr]
+            {
+                \iSim[\Chi]{\Phi}{e_s}{
+                    \begin{array}{l}
+                        \lambdLet{x_1}{e_{t1}}{\\
+                        \lambdLet{x_2}{e_{t2}}{\\
+                        \lambdConstrDet{c}{x_1}{x_2}}}
+                    \end{array}
+                }
+            \and
+                \iSim[\Chi]{\Phi}{e_s}{
+                    \begin{array}{l}
+                        \lambdLet{x_2}{e_{t2}}{\\
+                        \lambdLet{x_1}{e_{t1}}{\\
+                        \lambdConstrDet{c}{x_1}{x_2}}}
+                    \end{array}
+                }
+            }{
+                \iSim[\Chi]{\Phi}{e_s}{\lambdConstr{c}{e_{t1}}{e_{t2}}}
+            }
+        \\
+        \inferrule*[lab=SimSrcConstrDet]
+            {
+                \forall \loc_s \ldotp
+                \loc_s \mapsto_s (c, v_{s1}, v_{s2}) \iSepImp
+                \iSim[\Chi]{\Phi}{\loc_s}{e_t}
+            }{
+                \iSim[\Chi]{\Phi}{\lambdConstrDet{c}{v_{s1}}{v_{s2}}}{e_t}
+            }
+        \and
+        \inferrule*[lab=SimTgtConstrDet]
+            {
+                \forall \loc_t \ldotp
+                \loc_t \mapsto_t (c, v_{t1}, v_{t2}) \iSepImp
+                \iSim[\Chi]{\Phi}{e_s}{\loc_t}
+            }{
+                \iSim[\Chi]{\Phi}{e_s}{\lambdConstrDet{c}{v_{t1}}{v_{t2}}}
+            }
+        \\
+        \inferrule*[lab=SimSrcStore]
+            {
+                (\loc_s + i) \mapsto_s w_s
+            \and
+                (\loc_s + i) \mapsto_s v_s \iSepImp
+                \iSim[\Chi]{\Phi}{\lambdUnit}{e_t}
+            }{
+                \iSim[\Chi]{\Phi}{\lambdStore{\loc_s}{i}{v_s}}{e_t}
+            }
+        \and
+        \inferrule*[lab=SimTgtStore]
+            {
+                (\loc_t + i) \mapsto_t w_t
+            \and
+                (\loc_t + i) \mapsto_t v_t \iSepImp
+                \iSim[\Chi]{\Phi}{e_s}{\lambdUnit}
+            }{
+                \iSim[\Chi]{\Phi}{e_s}{\lambdStore{\loc_t}{i}{v_t}}
+            }
+        \\
+        \inferrule*[lab=SimStore]
+            {
+                \loc_s \iSimilar \loc_t
+            \and
+                v_s \iSimilar v_t
+            \and
+                \Phi (\lambdUnit, \lambdUnit)
+            }{
+                \iSim[\Chi]{\Phi}{\lambdStore{\loc_s}{i}{v_s}}{\lambdStore{\loc_t}{i}{v_t}}
+            }
+        \and
+        \inferrule*[lab=SimBijInsert]
+            {
+                \loc_s \mapsto_s v_s
+            \and
+                \loc_t \mapsto_t v_t
+            \and
+                v_s \iSimilar v_t
+            \and
+                \loc_s \iInBij \loc_t \iSepImp
+                \iSim[\Chi]{\Phi}{e_s}{e_t}
+            }{
+                \iSim[\Chi]{\Phi}{e_s}{e_t}
+            }
+    \end{mathparpagebreakable}
+    \caption{Reasoning rules for simulation (excerpt, omitting freshness conditions)}
+    \label{fig:sim_rules}
+\end{figure}

@@ -1,0 +1,78 @@
+\RequirePackage{xspace}
+\RequirePackage{stackrel}
+\RequirePackage{scalerel}
+
+\newcommand{\etal}{\textit{et al.}}
+
+\newcommand{\Chi}{\mathrm{X}}
+
+\newcommand{\mathhyphen}{{\hbox{-}}}
+
+\newcommand{\circled}[1]{\raisebox{.5pt}{\textcircled{\raisebox{-.9pt} {#1}}}}
+
+\newcommand{\OCamlLang}{\textsc{OCaml}\xspace}
+\newcommand{\LambdaLang}{\textsc{Lambda}\xspace}
+
+\newcommand{\term}[1]{\texttt{#1}}
+\newcommand{\nterm}[1]{\mathrm{#1}}
+
+\newcommand{\constr}[2][]{\bold{#2}\ifx #1 \else (#1)\fi}
+
+\newcommand{\finmap}{\stackrel{\mathrm{fin}}{\rightharpoonup}}
+\newcommand{\dom}[1]{\mathrm{dom} (#1)}
+\newcommand{\codom}[1]{\mathrm{codom} (#1)}
+\newcommand{\fv}[1]{\mathrm{fv} (#1)}
+\newcommand{\Prop}{\mathrm{Prop}}
+\newcommand{\wf}[2][]{\mathrm{wf}\ifx #1 \else _#1 \fi (#2)}
+
+\newcommand{\loc}{\ell}
+
+\newcommand{\headStep}[1]{%
+    \stackrel[\scriptscriptstyle\textrm{head}]{\scriptscriptstyle#1}{\longrightarrow}%
+}
+\newcommand{\step}[1]{%
+    \stackrel{\scriptscriptstyle#1}{\longrightarrow}%
+}
+\newcommand{\pureStep}[1]{%
+    \stackrel[\scriptscriptstyle\textrm{pure}]{#1}{\longrightarrow}%
+}
+\newcommand{\diverges}[2]{%
+    #2 \Uparrow_{#1}%
+}
+
+\newcommand{\iProp}{\mathrm{iProp}}
+\newcommand{\iSep}{\ast}
+\newcommand{\iBigSep}{\scalerel*{\iSep}{\sum}}
+\newcommand{\iSepImp}{\mathrel{-\mkern-6mu\iSep}}
+\newcommand{\iBupd}{|\!\!\!\Rrightarrow}
+\newcommand{\iPersistent}{\square}
+\newcommand{\iFalse}{\mathrm{False}}
+
+\newcommand{\tmc}{\rightsquigarrow}
+\newcommand{\tmcDir}[1]{\stackrel[\mathrm{dir}]{#1}{\tmc}}
+\newcommand{\tmcDps}[1]{\stackrel[\mathrm{DPS}]{#1}{\tmc}}
+
+\newcommand{\similar}{\sim}
+\newcommand{\iSimilar}{\approx}
+\newcommand{\iInBij}{\stackrel{\scriptscriptstyle\mathrm{bij}}{\iSimilar}}
+\newcommand{\iTie}{\leftrightarrow}
+\newcommand{\refined}{\sqsupseteq}
+
+\newcommand{\iSim}[4][]{%
+    #3 \gtrsim #4 \,%
+    \ifx #1 \else \langle #1 \rangle \, \fi%
+    \lbrace #2 \rbrace%
+}
+\newcommand{\iSimv}[4][]{%
+    #3 \gtrsim #4 \,%
+    \ifx #1 \else \langle #1 \rangle \, \fi%
+    \left[ #2 \right]%
+}
+\newcommand{\iCsimv}[4][]{%
+    #3 \geq #4 \,%
+    \ifx #1 \else \langle #1 \rangle \, \fi%
+    \left[ #2 \right]%
+}
+\newcommand{\iCsimvHoare}[5][]{%
+    \left[ #2 \right] \ \iCsimv[#1]{#3}{#4}{#5}%
+}

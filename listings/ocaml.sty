@@ -1,0 +1,125 @@
+\RequirePackage{color}
+\RequirePackage{amstext}
+
+\definecolor{ocaml_keyword1}{rgb}{0,0.1,0.6}
+\definecolor{ocaml_keyword2}{rgb}{0,0.4,0.4}
+\definecolor{comment}{rgb}{0.5,0,0}
+
+\lstdefinelanguage{OCaml}{
+    keepspaces=true,
+    texcl=false,
+    sensitive=true,
+    showstringspaces=false,
+    tabsize=2,
+    extendedchars=false,
+    breaklines=false,
+    basicstyle=\small,
+    captionpos=b,
+    flexiblecolumns=false,
+% --------------------------------------------------
+    alsoletter={
+        '
+    },
+% --------------------------------------------------
+    identifierstyle={\ttfamily\color{black}},
+% --------------------------------------------------
+    keywords=[1]{
+        and,
+        as,
+        assert,
+        asr,
+        begin,
+        class,
+        closed,
+        constraint,
+        do,
+        done,
+        downto,
+        else,
+        end,
+        external,
+        false,
+        for,
+        fun,
+        function,
+        functor,
+        if,
+        in,
+        include,
+        inherit,
+        land,
+        lazy,
+        let,
+        lor,
+        lsl,
+        lsr,
+        lxor,
+        match,
+        method,
+        mod,
+        module,
+        mutable,
+        new,
+        not,
+        object,
+        of,
+        open,
+        or,
+        parser,
+        private,
+        rec,
+        repeat,
+        sig,
+        struct,
+        then,
+        to,
+        true,
+        try,
+        type,
+        val,
+        virtual,
+        when,
+        while,
+        with,
+    },
+    keywordstyle=[1]{\ttfamily\color{ocaml_keyword1}},
+% --------------------------------------------------
+    literate=*
+        {-}{$-$}1
+        {|}{{\textcolor{ocaml_keyword1}{|}}}1
+        {;}{{\textcolor{ocaml_keyword1}{;}}}1
+        {==>}{{$\textcolor{ocaml_keyword1}{\ \Rightarrow}$}}1
+        {->}{{$\textcolor{ocaml_keyword1}{\rightarrow}$}}2
+        {(}{{\textcolor{ocaml_keyword2}{(}}}1
+        {)}{{\textcolor{ocaml_keyword2}{)}}}1
+        {\{}{{\textcolor{ocaml_keyword2}{\{}}}1
+        {\}}{{\textcolor{ocaml_keyword2}{\}}}}1
+        {[}{{\textcolor{ocaml_keyword2}{[}}}1
+        {]}{{\textcolor{ocaml_keyword2}{]}}}1
+        {.}{{\textcolor{ocaml_keyword2}{.}}}1
+        {:}{{\textcolor{ocaml_keyword2}{:}}}1
+        {,}{{\textcolor{ocaml_keyword2}{,}}}1
+        {<-}{{$\textcolor{ocaml_keyword2}{\ \leftarrow\ }$}}1,
+% --------------------------------------------------
+    escapeinside={(*}{*)},
+    escapebegin={\ttfamily\color{comment}(*},
+    escapeend={*)},
+% --------------------------------------------------
+    morestring=[b]",
+    stringstyle=\ttfamily,
+}
+
+\lstnewenvironment{OCaml}{%
+    \lstset{
+        language=OCaml,
+        basicstyle=\ttfamily\normalsize
+    }%
+}{}
+
+\def\ocaml{%
+    \lstinline[
+        language=OCaml,
+        basicstyle=\ttfamily\small
+    ]%
+}
+\newcommand{\ocamlText}[1]{\text{\ocaml|#1|}}

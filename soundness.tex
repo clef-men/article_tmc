@@ -1,0 +1,99 @@
+\section{Soundness}
+
+\input{figures/similarity}
+\input{figures/refinement}
+\input{figures/sim}
+\input{figures/sim_rules}
+\input{figures/isimilar}
+\input{figures/protocol}
+\input{figures/csim}
+
+\begin{theorem}[Soundness]
+    $
+        \wf{p_s} \wedge p_s \tmc p_t \implies
+        p_s \refined p_t
+    $
+\end{theorem}
+
+\begin{theorem}[Close simulation]
+    \begin{align*}
+            &
+            \iPersistent \left(
+                \forall \Psi, e_s, e_t \ldotp
+                \Chi (\Psi, e_s, e_t) \iSepImp
+                \mathrm{sim \mathhyphen inner}_\bot (\lambdaAbs (\_, e_s, e_t) \ldotp \iSim[\Chi]{\Psi}{e_s}{e_t}) (\bot, e_s, e_t)
+            \right) \iSepImp
+        \\
+            &
+            \iSim[\Chi]{\Phi}{e_s}{e_t} \iSepImp
+            \iSim[\bot]{\Phi}{e_s}{e_t}
+    \end{align*}
+\end{theorem}
+
+\begin{theorem}[Adequacy]
+    $
+        \left( \vdash \iSimv{\iSimilar}{e_s}{e_t} \right) \implies
+        e_s \refined e_t
+    $
+\end{theorem}
+
+\begin{theorem}[Correction of direct transformation]
+    \[
+        \iCsimvHoare{
+            \wf{e_s} \iSep
+            e_s \tmcDir{\xi} e_t
+        }{
+            \iSimilar
+        }{
+            e_s
+        }{
+            e_t
+        }
+    \]
+\end{theorem}
+
+\begin{theorem}[Correction of DPS transformation]
+    \[
+        \iCsimvHoare{
+            \wf{e_s} \iSep
+            (\loc, i, e_s) \tmcDps{\xi} e_t \iSep
+            (\loc + i) \mapsto \lambdHole
+        }{
+            \lambdaAbs (v_s, w_t) \ldotp
+            \exists v_t \ldotp
+            w_t = \lambdUnit \iSep
+            (\loc + i) \mapsto v_t \iSep
+            v_s \iSimilar v_t
+        }{
+            e_s
+        }{
+            e_t
+        }
+    \]
+\end{theorem}
+
+behaviour refinement
+
+termination preserving (and safety preserving) refinement
+
+state of the art: Simuliris
+
+relational separation logic = simulation
+
+problem: direct calling convention in Simuliris, we need two calling conventions (direct + DPS)
+
+remedy: simulation parameterized by protocol, generalization of Simuliris (but: sequential, without source safety but closed at toplevel)
+
+DPS calling convention
+
+TMC protocol
+
+heap bijection
+
+simulation rules
+
+adequacy
+
+closing simulation
+
+proof

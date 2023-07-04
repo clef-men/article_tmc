@@ -1,0 +1,79 @@
+\begin{figure}[tp]
+    \begin{mathparpagebreakable}
+        \inferrule*
+            {}{
+                \boxed{- \tmcDir{\xi} - : \nterm{Expr} \rightarrow \nterm{Expr} \rightarrow \Prop}
+            }
+        \and
+        \inferrule*
+            {}{
+                \boxed{- \tmcDir{\xi} - : \nterm{Def} \rightarrow \nterm{Def} \rightarrow \Prop}
+            }
+        \\
+        \inferrule*[lab=DirVal]
+            {}{
+                v
+                \tmcDir{\xi}
+                v
+            }
+        \and
+        \inferrule*[lab=DirVar]
+            {}{
+                x
+                \tmcDir{\xi}
+                x
+            }
+        \and
+        \inferrule*[lab=DirLet]
+            {
+                e_{s1} \tmcDir{\xi} e_{t1}
+            \and
+                e_{s2} \tmcDir{\xi} e_{t2}
+            }{
+                \lambdLet{x}{e_{s1}}{e_{s2}}
+                \tmcDir{\xi}
+                \lambdLet{x}{e_{t1}}{e_{t2}}
+            }
+        \\
+        \inferrule*[lab=DirConstrDPS1]
+            {
+                e_{s1} \tmcDir{\xi} e_{t1}
+            \and
+                (\mathit{dst}, \lambdTwo, e_{s2}) \tmcDir{\xi} e_{t2}
+            }{
+                \lambdConstr{c}{e_{s1}}{e_{s2}}
+                \tmcDir{\xi}
+                \begin{array}{l}
+                    \lambdLet{\mathit{dst}}{\lambdConstr{c}{e_{t1}}{\lambdHole}}{\\
+                    \lambdSeq{e_{t2}}{\mathit{dst}}
+                    }
+                \end{array}
+            }
+        \and
+        \inferrule*[lab=DirConstrDPS2]
+            {
+                e_{s2} \tmcDir{\xi} e_{t2}
+            \and
+                (\mathit{dst}, \lambdOne, e_{s1}) \tmcDir{\xi} e_{t1}
+            }{
+                \lambdConstr{c}{e_{s1}}{e_{s2}}
+                \tmcDir{\xi}
+                \begin{array}{l}
+                    \lambdLet{\mathit{dst}}{\lambdConstr{c}{\lambdHole}{e_{t2}}}{\\
+                    \lambdSeq{e_{t1}}{\mathit{dst}}
+                    }
+                \end{array}
+            }
+        \\
+        \inferrule*[lab=DirDef]
+            {
+                e_s \tmcDir{\xi} e_t
+            }{
+                \lambdDef{x}{e_s}
+                \tmcDir{\xi}
+                \lambdDef{x}{e_t}
+            }
+    \end{mathparpagebreakable}
+    \caption{Direct TMC transformation (omitting congruence rules similar to \TirName{DirLet} and freshness conditions)}
+    \label{fig:tmc_dir}
+\end{figure}
