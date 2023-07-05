@@ -8,12 +8,12 @@
             &&
             index
         \\
-            $\mathbb{Z}$
+            $\nterm{Tag}$
             & $\ni$ &
-            $n$
+            $t$
             &&
             &&
-            integer
+            tag
         \\
             $\mathbb{B}$
             & $\ni$ &
@@ -42,19 +42,12 @@
             &&
             &&
             variable
-        \\
-            $\nterm{Constr}$
-            & $\ni$ &
-            $c$
-            &&
-            &&
-            constructor
     	\\
             $\nterm{Val}$
             & $\ni$ &
             $v$
             & $\Coloneqq$ &
-            $\lambdUnit \mid i \mid n \mid b \mid \ell \mid \lambdFunc{f}$
+            $\lambdUnit \mid i \mid t \mid b \mid \ell \mid \lambdFunc{f}$
             &&
             value
         \\
@@ -72,7 +65,7 @@
         \\
             &&
             & | &
-            $\lambdUminus{e} \mid \lambdPlus{e_1}{e_2} \mid \dots$
+            $\lambdEq{e_1}{e_2}$
         \\
             &&
             & | &
@@ -80,7 +73,7 @@
         \\
             &&
             & | &
-            $\lambdConstr{c}{e_1}{e_2} \mid \lambdConstrDet{c}{e_1}{e_2}$
+            $\lambdConstr{t}{e_1}{e_2} \mid \lambdConstrDet{t}{e_1}{e_2}$
         \\
             &&
             & | &
@@ -104,7 +97,7 @@
         \\
             &&
             & | &
-            $\lambdUminus{K} \mid \lambdPlus{e_1}{K} \mid \lambdPlus{K}{v_2} \mid \dots$
+            $\lambdEq{e_1}{K} \mid \lambdEq{K}{v_2}$
         \\
             &&
             & | &

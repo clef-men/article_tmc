@@ -41,10 +41,10 @@
             \and
                 (\mathit{dst}, \lambdTwo, e_{s2}) \tmcDir{\xi} e_{t2}
             }{
-                \lambdConstr{c}{e_{s1}}{e_{s2}}
+                \lambdConstr{t}{e_{s1}}{e_{s2}}
                 \tmcDir{\xi}
                 \begin{array}{l}
-                    \lambdLet{\mathit{dst}}{\lambdConstr{c}{e_{t1}}{\lambdHole}}{\\
+                    \lambdLet{\mathit{dst}}{\lambdConstr{t}{e_{t1}}{\lambdHole}}{\\
                     \lambdSeq{e_{t2}}{\mathit{dst}}
                     }
                 \end{array}
@@ -56,10 +56,10 @@
             \and
                 (\mathit{dst}, \lambdOne, e_{s1}) \tmcDir{\xi} e_{t1}
             }{
-                \lambdConstr{c}{e_{s1}}{e_{s2}}
+                \lambdConstr{t}{e_{s1}}{e_{s2}}
                 \tmcDir{\xi}
                 \begin{array}{l}
-                    \lambdLet{\mathit{dst}}{\lambdConstr{c}{\lambdHole}{e_{t2}}}{\\
+                    \lambdLet{\mathit{dst}}{\lambdConstr{t}{\lambdHole}{e_{t2}}}{\\
                     \lambdSeq{e_{t1}}{\mathit{dst}}
                     }
                 \end{array}

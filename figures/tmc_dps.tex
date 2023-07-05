@@ -79,11 +79,11 @@
                 \left(
                     \mathit{dst},
                     \mathit{idx},
-                    \lambdConstr{c}{e_{s1}}{e_{s2}}
+                    \lambdConstr{t}{e_{s1}}{e_{s2}}
                 \right)
                 \tmcDps{\xi}
                 \begin{array}{l}
-                    \lambdLet{\mathit{dst'}}{\lambdConstr{c}{e_{t1}}{\lambdHole}}{\\
+                    \lambdLet{\mathit{dst'}}{\lambdConstr{t}{e_{t1}}{\lambdHole}}{\\
                     \lambdSeq{\lambdStore{\mathit{dst}}{\mathit{idx}}{\mathit{dst'}}}{e_{t2}}
                     }
                 \end{array}
@@ -98,11 +98,11 @@
                 \left(
                     \mathit{dst},
                     \mathit{idx},
-                    \lambdConstr{c}{e_{s1}}{e_{s2}}
+                    \lambdConstr{t}{e_{s1}}{e_{s2}}
                 \right)
                 \tmcDps{\xi}
                 \begin{array}{l}
-                    \lambdLet{\mathit{dst'}}{\lambdConstr{c}{\lambdHole}{e_{t2}}}{\\
+                    \lambdLet{\mathit{dst'}}{\lambdConstr{t}{\lambdHole}{e_{t2}}}{\\
                     \lambdSeq{\lambdStore{\mathit{dst}}{\mathit{idx}}{\mathit{dst'}}}{e_{t1}}
                     }
                 \end{array}

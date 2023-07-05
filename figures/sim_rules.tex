@@ -38,11 +38,11 @@
                     \begin{array}{l}
                         \lambdLet{x_1}{e_{s1}}{\\
                         \lambdLet{x_2}{e_{s2}}{\\
-                        \lambdConstrDet{c}{x_1}{x_2}}}
+                        \lambdConstrDet{t}{x_1}{x_2}}}
                     \end{array}
                 }{e_t}
             }{
-                \iSim[\Chi]{\Phi}{\lambdConstr{c}{e_{s1}}{e_{s2}}}{e_t}
+                \iSim[\Chi]{\Phi}{\lambdConstr{t}{e_{s1}}{e_{s2}}}{e_t}
             }
         \and
         \inferrule*[lab=SimSrcConstr2]
@@ -51,11 +51,11 @@
                     \begin{array}{l}
                         \lambdLet{x_2}{e_{s2}}{\\
                         \lambdLet{x_1}{e_{s1}}{\\
-                        \lambdConstrDet{c}{x_1}{x_2}}}
+                        \lambdConstrDet{t}{x_1}{x_2}}}
                     \end{array}
                 }{e_t}
             }{
-                \iSim[\Chi]{\Phi}{\lambdConstr{c}{e_{s1}}{e_{s2}}}{e_t}
+                \iSim[\Chi]{\Phi}{\lambdConstr{t}{e_{s1}}{e_{s2}}}{e_t}
             }
         \and
         \inferrule*[lab=SimTgtConstr]
@@ -64,7 +64,7 @@
                     \begin{array}{l}
                         \lambdLet{x_1}{e_{t1}}{\\
                         \lambdLet{x_2}{e_{t2}}{\\
-                        \lambdConstrDet{c}{x_1}{x_2}}}
+                        \lambdConstrDet{t}{x_1}{x_2}}}
                     \end{array}
                 }
             \and
@@ -72,29 +72,29 @@
                     \begin{array}{l}
                         \lambdLet{x_2}{e_{t2}}{\\
                         \lambdLet{x_1}{e_{t1}}{\\
-                        \lambdConstrDet{c}{x_1}{x_2}}}
+                        \lambdConstrDet{t}{x_1}{x_2}}}
                     \end{array}
                 }
             }{
-                \iSim[\Chi]{\Phi}{e_s}{\lambdConstr{c}{e_{t1}}{e_{t2}}}
+                \iSim[\Chi]{\Phi}{e_s}{\lambdConstr{t}{e_{t1}}{e_{t2}}}
             }
         \\
         \inferrule*[lab=SimSrcConstrDet]
             {
                 \forall \loc_s \ldotp
-                \loc_s \mapsto_s (c, v_{s1}, v_{s2}) \iSepImp
+                \loc_s \mapsto_s (t, v_{s1}, v_{s2}) \iSepImp
                 \iSim[\Chi]{\Phi}{\loc_s}{e_t}
             }{
-                \iSim[\Chi]{\Phi}{\lambdConstrDet{c}{v_{s1}}{v_{s2}}}{e_t}
+                \iSim[\Chi]{\Phi}{\lambdConstrDet{t}{v_{s1}}{v_{s2}}}{e_t}
             }
         \and
         \inferrule*[lab=SimTgtConstrDet]
             {
                 \forall \loc_t \ldotp
-                \loc_t \mapsto_t (c, v_{t1}, v_{t2}) \iSepImp
+                \loc_t \mapsto_t (t, v_{t1}, v_{t2}) \iSepImp
                 \iSim[\Chi]{\Phi}{e_s}{\loc_t}
             }{
-                \iSim[\Chi]{\Phi}{e_s}{\lambdConstrDet{c}{v_{t1}}{v_{t2}}}
+                \iSim[\Chi]{\Phi}{e_s}{\lambdConstrDet{t}{v_{t1}}{v_{t2}}}
             }
         \\
         \inferrule*[lab=SimSrcStore]
