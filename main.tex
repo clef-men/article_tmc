@@ -147,7 +147,7 @@
 
 
 % unstructured TODO list 
-%
+
 % - To give another example of simulation with a different protocol,
 % we could look at accumulator-passing-style transformations
 % (tail-modulo-context for associative arithmetic operators). Prove
@@ -155,6 +155,13 @@
 % (two versions, one in accumulator-passing-style and the "direct
 % style" version that calls it with accumulator 1).
 %    .. et donc il faut garder les entiers!
+
+% Gabriel: should we consider adding a primitive that reduces non-deterministically to any integer?
+% This can be a model of a "read from the standard input" primitive, without having to deal with I/O in the operational semantics.
+% (And: it should be very easy to add as you already support non-determinism.)
+%
+% The context for this suggestion was to consider reducing the correctness of any function (say f : Nat -> Nat) to just
+% "main" functions with no arguments, by reading the argument from the standard input instead.
 
 \hbadness=10000
 \bibliography{english}

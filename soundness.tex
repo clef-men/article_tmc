@@ -21,7 +21,7 @@
             \iPersistent \left(
                 \forall \Psi, e_s, e_t \ldotp
                 \Chi (\Psi, e_s, e_t) \iSepImp
-                \mathrm{sim \mathhyphen inner}_\bot (\lambdaAbs (\_, e_s, e_t) \ldotp \iSim[\Chi]{\Psi}{e_s}{e_t}) (\bot, e_s, e_t)
+                \mathrm{sim \mathhyphen inner}_\bot (\lambdaAbs (\_, e_s', e_t') \ldotp \iSim[\Chi]{\Psi}{e_s'}{e_t'}) (\bot, e_s, e_t)
             \right) \iSepImp
         \\
             &
@@ -101,15 +101,80 @@ problem: direct calling convention in Simuliris, we need two calling conventions
 
 remedy: simulation parameterized by protocol, generalization of Simuliris (but: sequential, without source safety but closed at toplevel)
 
+% X_tmc := X_dir \uplus X_dps
+
+% 1. when we are done
+% 2. target stuttering (inductive)
+% 3. all one-step source movees
+%    3a. no source change (inductive)
+%    3b. at least one source reduction (coinductive / guarded)
+% 4. "open" simulation; X (\Khi) characterizes admissible foreign calls
+
+% A trick from Simuliris:
+% sim-after-progress: instance of sim-inner with bottom in well-chosen places
+% closed simulation theorem: if the protocol X is "closable",
+%   then the simulation relation for X "collapses" into a closed simulation (bottom for X, no case 4)
+%
+% MYSTERY: from a high-level perspective this "closd simulation theorem" feels a bit obvious:
+% its hypothesis says that your protocol X can always be replaced by making progress on both sides,
+% so it should be "easy" to transform a simulation proof using 1-2-3-4 into a simulation proof using only 1-2-3.
+%
+% Question: if it is "easy", cannot you do this right away (in the proof of simulation for a specific X that satisfies
+% this property), proving a closed simulation (without 4) directly?
+%
+% Clément thinks that the answer is that this would require a super
+% tricky coinduction, just like the one used in the proof of this
+% theorem.
+%
+% Clément: this theorem is a sort of coinduction principle. You can
+% prove an open simulation by induction (no coinduction
+% apparently required), and then applying this theorem gives a result
+% for which a direct proof would require a coinduction.
+
 DPS calling convention
 
 TMC protocol
 
+% The X for TMC is essentially a relation/first-order rephrasing of
+% the relation specs for direct-style and destination-passing-style
+% transformations.
+
 heap bijection
+
+% I(sigma, sigma´) is as in Simuliris, not given explicitly in the current document.
+% the \approx^bij relation refers to a component of I (a bijection between addresses)
+% that is an implicit parameter of the definitions.
+
+adequacy
+
+% If two expressions refine internally (thy are in the
+% simulation relation), and go to the internal equivalence between
+% values, then they refine externally (they are in the denotational
+% refinement relation).
+
+% This is similar to the Simuliris proof, simplified thanks to the absence
+% of concurrency.
 
 simulation rules
 
-adequacy
+% Pure reductions: those that do not need state (neither write nor read)
+
+% Gabriel: we could introduc the non-deterministic pair rules into the "pure" relation
+% if we changed the pure-target rule to quantify over all e'_t such that e_t -{pure}-> e'_t.
+% This would please Gabriel (existential on the left, universal on the right) and be more compact,
+% but Clément prefers the current presentation -- it is more standard for Iris folks -- and closer
+% to the mechanization.
+
+% SimBijInsert: \approx^bij: Simuliris calls this the escaped/public
+% locations, those that have been published.
+
+% Clément now mentions Figure 12, which shows how stores evolve on an
+% example in the TMC case. The shape of the relation between the
+% source and target stores is sort of implicit in the program logic
+% simulations rules, but it is clear on this example.
+%
+% Clément would explain this to give an informal sense of the proof,
+% before even talking about specification logic etc.
 
 closing simulation
 
