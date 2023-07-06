@@ -1,12 +1,85 @@
 \section{Soundness}
 
+(This paragraph below probably rather belongs to the introduction. Abort.)
+
+The formal contribution of our work is a mechanized soundness proof for the TMC transformation on a simplified programming language, exhibiting the salient parts of the actual transformation for OCaml.
+%
+The destination-passing style used by the TMC transformation critically relies on uniquely-owned mutable state.
+%
+It is thus natural to use separation logic as our specification language.
+
+\subsection{Proof outline}
+
+The final theorem we want to establish is a behaviour refinement $p_s \refined p_t$: the behaviours of the transformed program are included in the behaviour of the source program.
+%
+We propose a notion of behaviour refinement that gives a form of total correctness.
+%
+It is termination-preserving, but also (this is less common in the body of work around Iris) safety-preserving and divergence-preserving.
+
+Our argument can be split in three separate parts:
+
+\begin{enumerate}
+
+\item The proof technique is a simulation argument, following the approach of Simuliris~\citep*{TODO-simuliris}.
+%
+We cannot however use Simuliris directly, because it assumes that functions calls have the same structure in the source and target programs.
+%
+We had to build a modified version of Simuliris, simplified to remove concurrency which does not play a role in our work, but extended to support transformations that change the calling conventions between source and target programs.
+%
+More precisely, we make our simulation relation $\iSim[\Chi]{\phi}{e_s}{e_t}$ parametric over abstract protocols $\Chi$, extending the technique of \citet*{TODO-paulo} from the unary setting of safety predicates to the binary setting of a relational separation logic.
+%
+This definition of a simulation relation with protocols is independent
+of the TMC language or transformation, and could be reused in other
+works.
+
+\item We build a program logic on the TMC language, as a body of lemmas to establish simulations between expressions.
+
+\item Finally we use this program logic to establish the soundness of the TMC transformation.
+%
+The key ingredents are two specifications for the direct and DPS transformations that are proved in a mutually-inductive way.
+\end{enumerate}
+
+\subsection{End goal: behaviour refinement}
+
+The TMC transformation preserves the behavior of programs in a strong sense.
+%
+We expect terminating programs to remain terminating, diverging programs to remain diverging and failing programs (those that get stuck) to remain failing.
+
+ReLoC~\citep*{TODO-reloc} is focused on terminating behaviors for correct programs.
+%
+Its behaviour refinement guarantees that if the target program $e_t$ evaluates to $v_t$, then the source program $e_s$ evaluates to a $v_s$ related to $v_t$.
+
+Recent works extend the notion of behaviour refinement to preserve termination.
+%
+If $e_t$ diverges, then $e_s$ diverges; said otherwise, if $e_s$ reduces to a value,
+then $e_t$ reduces to a value or gets stuck.
+
+We further extend behaviour refinement to be safety-preserving: if $e_t$ gets stuck, then $e_s$ can get stuck.
+%
+As we cover all three possible reduction behaviours, we preserve divergence in the following sense: if a source program $e_s$ can only diverge, then the transformed program must diverge.
+%
+Note that our language is non-deterministic; if a source program $e_s$ can either converge or diverge, then a $e_t$ that refines $e_s$ could exhibit only a subset of those behaviours.
+
+We define this notion of behaviour refinement $e_s \refined e_t$ in Figure~\ref{fig:refinement}.
+%
+We define the set $\mathrm{behaviours}_p(e)$ of behaviours of an expression $e$ within a program $p$, starting from an empty store.
+%
+The behaviour $\constr{Conv}(v_s)$ indicates that $e$ can evaluate to $v_s$.
+%
+The behaviour $\constr{Conv}(e')$, when $e'$ is not a value, indicates that $e$ can reduce to a stuck configuration $(e', \sigma)$.
+%
+Finally, $\constr{Div}$ indicates that $e$ can diverge.
+
+We define a refinement relation on behaviours in a natural way: divergence refines divergence, any stuck expression refines any other stuck expression, and a value $v_t$ refines $v_s$ when they are related for a ground equivalence $v_s \similar v_t$, which is the equality for all value kinds, except for locations where it gives no information, as done in Simuliris.
+%
+This equivalence of ground values could be used, for example, to argue for the correctness of a \texttt{main} function that takes and returns integer arguments.
+
+Finally, an expresion $e_t$ refines $e_s$ when all its behaviours are refined by a behaviour of $e_s$, and a program $p_t$ refines $p_s$ when calls to source functions on equivalent inputs are in the refinement relation.
+
 \input{figures/similar}
 \input{figures/refinement}
-\input{figures/sim}
-\input{figures/sim_rules}
-\input{figures/isimilar}
-\input{figures/protocol}
-\input{figures/csim}
+
+We can now state the main soundness theorem of our work, whose proof is spread over the rest of this section.
 
 \begin{theorem}[Soundness]
     $
@@ -14,6 +87,10 @@
         p_s \refined p_t
     $
 \end{theorem}
+
+\subsection{Proof technique: Simuliris with protocols}
+
+TODO
 
 \begin{theorem}[Close simulation]
     \begin{align*}
@@ -36,64 +113,6 @@
         e_s \refined e_t
     $
 \end{theorem}
-
-\begin{theorem}[Specification of direct transformation]
-    \[
-        \iCsimvHoare{
-            \wf{e_s} \iSep
-            e_s \tmcDir{\xi} e_t
-        }{
-            \iSimilar
-        }{
-            e_s
-        }{
-            e_t
-        }
-    \]
-\end{theorem}
-
-\begin{theorem}[Specification of DPS transformation]
-    \[
-        \iCsimvHoare{
-            \wf{e_s} \iSep
-            (\loc, i, e_s) \tmcDps{\xi} e_t \iSep
-            (\loc + i) \mapsto \lambdHole
-        }{
-            \lambdaAbs (v_s, w_t) \ldotp
-            \exists v_t \ldotp
-            w_t = \lambdUnit \iSep
-            (\loc + i) \mapsto v_t \iSep
-            v_s \iSimilar v_t
-        }{
-            e_s
-        }{
-            e_t
-        }
-    \]
-\end{theorem}
-
-behaviour refinement
-
-termination preserving (and safety preserving) refinement
-
-state of the art: Simuliris
-
-% Dans ReLoC on regarde seulement les comportements convergeants vers une valeur.
-% termination-preserving refinement, tu rajoutes le Div -- la 3e règle mais pas la 2e
-
-% 1.  et value => es value  (ReLoC)
-% 3.  et diverges => es diverges  (Simuliris)
-% 2.  et fails => es fails (this work)
-%
-% Simulation that is:
-% - termination-preserving: no extra divergence appears in the target (already with Simuliris)
-% - safety-preserving: no extra failure appears in the target (new compared to ReLoC and Simuliris)
-%
-% We are also divergence-preserving: if a source programs only diverges, then the target must diverge.
-%   With Simuliris the target program could also fail (have no behaviors for their notion of behaviors)
-%
-% But: if a source program non-deterministically diverges or converge,
-% the target may choose only a subset of those behaviors.
 
 relational separation logic = simulation
 
@@ -157,6 +176,9 @@ adequacy
 
 simulation rules
 
+% Note: those inference rules are in fact Iris propositions
+% (the separating conjunction of the premises magic-wands the conclusion)
+
 % Pure reductions: those that do not need state (neither write nor read)
 
 % Gabriel: we could introduc the non-deterministic pair rules into the "pure" relation
@@ -179,3 +201,71 @@ simulation rules
 closing simulation
 
 proof
+
+
+\begin{theorem}[Specification of direct transformation]
+    \[
+        \iCsimvHoare{
+            \wf{e_s} \iSep
+            e_s \tmcDir{\xi} e_t
+        }{
+            \iSimilar
+        }{
+            e_s
+        }{
+            e_t
+        }
+    \]
+\end{theorem}
+
+\begin{theorem}[Specification of DPS transformation]
+    \[
+        \iCsimvHoare{
+            \wf{e_s} \iSep
+            (\loc, i, e_s) \tmcDps{\xi} e_t \iSep
+            (\loc + i) \mapsto \lambdHole
+        }{
+            \lambdaAbs (v_s, w_t) \ldotp
+            \exists v_t \ldotp
+            w_t = \lambdUnit \iSep
+            (\loc + i) \mapsto v_t \iSep
+            v_s \iSimilar v_t
+        }{
+            e_s
+        }{
+            e_t
+        }
+    \]
+\end{theorem}
+
+% Those two statements are proven together.
+% (First by induction on e_s, then on the two transformation relations mutually-inductively.)
+
+% Note: the \geq here is a "parametric" simulation, we assume that all
+% free variables of e_s, e_t (they must be the same) are replaced by
+% externally-equivalent values.
+
+% Taking a step back: to prove the contextual refinements between programs,
+% we have to check each function,
+%   @f vs refined by @f vt  (for vs externally-equiv. vt)
+% for this we can use the adequacy lemma
+%   f vs simulated by @f vt (for the empty protocol) into internal value equivalence
+% and for this we use the simulation closure theorem
+%   f vs simulated by @f vt (for the Xtmc protocol)
+% assuming the Xtmc protocol is valid/adequate.
+%
+% But then this is trivial, just use case (4) right away.
+% So the meat of the proof is in showing that the Xtmc protocol is valid.
+
+% To prove that the Xtmc propocol is valid:
+% - in the direct case, we have a function application on both sides,
+%   so we make a pure step on both sides and we have to show that the function bodies
+%   (with a bisubstitution (x mapsto (vs, vt)) applied) are in the relation.
+
+
+
+\input{figures/sim}
+\input{figures/sim_rules}
+\input{figures/isimilar}
+\input{figures/protocol}
+\input{figures/csim}
