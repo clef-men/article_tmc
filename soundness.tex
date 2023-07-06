@@ -78,6 +78,23 @@ termination preserving (and safety preserving) refinement
 
 state of the art: Simuliris
 
+% Dans ReLoC on regarde seulement les comportements convergeants vers une valeur.
+% termination-preserving refinement, tu rajoutes le Div -- la 3e règle mais pas la 2e
+
+% 1.  et value => es value  (ReLoC)
+% 3.  et diverges => es diverges  (Simuliris)
+% 2.  et fails => es fails (this work)
+%
+% Simulation that is:
+% - termination-preserving: no extra divergence appears in the target (already with Simuliris)
+% - safety-preserving: no extra failure appears in the target (new compared to ReLoC and Simuliris)
+%
+% We are also divergence-preserving: if a source programs only diverges, then the target must diverge.
+%   With Simuliris the target program could also fail (have no behaviors for their notion of behaviors)
+%
+% But: if a source program non-deterministically diverges or converge,
+% the target may choose only a subset of those behaviors.
+
 relational separation logic = simulation
 
 problem: direct calling convention in Simuliris, we need two calling conventions (direct + DPS)
