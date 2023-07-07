@@ -7,6 +7,19 @@ Lambda language
 % 't' for tags, 'c' for constructors
 % Clément prefers tags, but 't' looks like 'terms' (e) in many other works.
 
+% Gabriel: pourquoi ne pas faire la sémantique small-step par
+% interleaving pour avoir des paires non-déterministes ?
+%
+% Clément: en Iris la façon standard de définir des langages demande
+% une décomposition contexte-terme maximale unique K[e]. Avec
+% l'interleaving on a deux décompositions possibles pour (c, e1, e2):
+% (c, [], e2) ou (c, e1, []). Avec mon approche on ne peut pas entrer
+% à l'intérieur de (c, e1, e2), c'est un redex, donc on récupère
+% l'unicité. (Ça correspond à une sémantique un poil plus faible avec
+% moins d'entrelacements possibles.) Perdre l'unicité ne permettrait
+% plus de prouver la règle "bind' (la règle unaire d'Iris, pas la
+% règle de notre logique de programme relationnelle).
+
 syntactic sugar
 
 well-formedness, closed

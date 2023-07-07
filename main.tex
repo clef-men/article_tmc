@@ -155,6 +155,19 @@
 % (two versions, one in accumulator-passing-style and the "direct
 % style" version that calls it with accumulator 1).
 %    .. et donc il faut garder les entiers!
+%
+% Clément: j'ai commencé à bosser sur ça. Ça demande de travailler
+% sur des expressions plutôt que des valeurs (l'accumulateur peut
+% être un entier mais aussi une variable). Il faut regénéraliser
+% des bouts du développment Coq qui était spécialisé aux
+% valeurs. Il se passe un truc intéressant sur les échecs si
+% l'accumulateur est une variable qui est substituée par un
+% non-entier (échec pendant le calcul d'un côté, après le calcul
+% de l'autre).
+% La formulation où on accumule des opérations sur des expressions
+% arbitraires et pas juste des constantes entières est un peu plus
+% générale que celle de Daan Leijen (que des constantes). Elle permet
+% de faire une transformation APS sur List.sum.
 
 % Gabriel: should we consider adding a primitive that reduces non-deterministically to any integer?
 % This can be a model of a "read from the standard input" primitive, without having to deal with I/O in the operational semantics.
