@@ -1,11 +1,11 @@
 \begin{figure}[tp]
     \begin{align*}
-    		\mathrm{sim \mathhyphen inner}_\Chi
+    		\mathrm{sim \mathhyphen body}_\Chi
     		&\coloneqq
     		\begin{array}{l}
     				\lambdaAbs sim \ldotp
-    				\muAbs sim \mathhyphen inner \ldotp
-    				\lambdaAbs{(\Phi, e_s, e_t)} \ldotp
+    				\lambdaAbs sim \mathhyphen inner \ldotp
+    				\lambdaAbs {(\Phi, e_s, e_t)} \ldotp
     				\forall \sigma_s, \sigma_s \ldotp
     				\mathrm{I} (\sigma_s, \sigma_t)
     				\iSepImp \iBupd
@@ -13,18 +13,25 @@
     				\bigvee \left[ \begin{array}{ll}
     							\circled{1}
     						&
-    							\Phi (e_s, e_t) \iSep \mathrm{I} (\sigma_s, \sigma_t)
+    							\mathrm{I} (\sigma_s, \sigma_t) \iSep
+    							\Phi (e_s, e_t)
     					\\
-    							\circled{2}
+    					        \circled{2}
+                            &
+                                \mathrm{I} (\sigma_s, \sigma_t) \iSep
+    							\mathrm{strongly \mathhyphen stuck}_{p_s} (e_s) \iSep
+    							\mathrm{strongly \mathhyphen stuck}_{p_t} (e_s)
+    					\\
+    							\circled{3}
     						&
     							\exists e_s', \sigma_s' \ldotp
     							(e_s, \sigma_s) \step{p_s}^+ (e_s', \sigma_s') \iSep
     							\mathrm{I} (\sigma_s', \sigma_t) \iSep
     							sim \mathhyphen inner (\Phi, e_s', e_t)
     					\\
-    							\circled{3}
+    							\circled{4}
     						&
-								\mathrm{reducible} (e_t, \sigma_t) \iSep
+								\mathrm{reducible}_{p_t} (e_t, \sigma_t) \iSep
 								\forall e_t', \sigma_t' \ldotp
 								(e_t, \sigma_t) \step{p_t} (e_t', \sigma_t')
 								\iSepImp \iBupd
@@ -44,7 +51,7 @@
 											sim (\Phi, e_s', e_t')
 								\end{array} \right.
     					\\
-    							\circled{4}
+    							\circled{5}
     						&
     							\exists K_s, e_s', K_t, e_t', \Psi \ldotp
     					\\
@@ -61,9 +68,16 @@
     				\end{array} \right.
     		\end{array}
     	\\
+    	    \mathrm{sim \mathhyphen inner}_\Chi
+    	    &\coloneqq
+    	    \lambdaAbs sim \ldotp
+    	    \muAbs sim \mathhyphen inner \ldotp
+    	    \mathrm{sim \mathhyphen body}_\Chi (sim, sim \mathhyphen inner)
+    	\\
     		\mathrm{sim}_\Chi
     		&\coloneqq
-    		\nuAbs{\mathrm{sim \mathhyphen inner}_\Chi}
+    		\nuAbs sim \ldotp
+    		\mathrm{sim \mathhyphen inner}_\Chi (sim)
     	\\
     		\iSim[\Chi]{\Phi}{e_s}{e_t}
     		&\coloneqq
