@@ -1,4 +1,5 @@
 \section{Soundness}
+\label{sec:soundness}
 
 (This paragraph below probably rather belongs to the introduction. Abort.)
 
@@ -8,7 +9,7 @@ The destination-passing style used by the TMC transformation critically relies o
 %
 It is thus natural to use separation logic as our specification language.
 
-\subsection{Proof outline}
+\subsection{The quest for the right notion of simulation}
 
 The final theorem we want to establish is a behaviour refinement $p_s \refined p_t$: the behaviours of the transformed program are included in the behaviour of the source program.
 %
@@ -16,28 +17,52 @@ We propose a notion of behaviour refinement that gives a form of total correctne
 %
 It is termination-preserving, but also (this is less common in the body of work around Iris) safety-preserving and divergence-preserving.
 
-Our argument can be split in three separate parts:
+We prove this using a backward simulation argument for our transformations $e_s \tmc e_t$.
+%
+A direct approach, ultimately unsucessful, would be to prove that the relation is in the simulation by induction, on $e_s$ for example.
+%
+This works well for all constructions except for function calls $\lambdCall{\lambdFunc{f}}{e}$: to reason on the relation between a call to $\lambdFunc{f}$ and its transformation (in direct or DPS style), we would need to inline the function definition, which is not structurally decreasing.
+
+This is a common problem to establish simulations, and the solution is to use a form of co-induction.
+%
+In the Iris logic, a natural way to do this would be to use a ``later'' modality.
+%
+But defining simulations using a ``later'' modality is in fact non-trivial; simple definitions do not give the excepted notion of simulation, due to the subtle aspects of the semantics of ``later''.
+%
+In a sense, they capture safety properties but not liveness, as discussed in previous
+work on Transfinite Iris~\citep*{TODO-transfinite-Iris}, an alternative logic with different axioms and models.
+%
+Sticking to the main Iris logic, a good definition of simulation has been worked out
+in Simuliris~\citep*{TODO-Simuliris}.
+%
+It avois using the ``later'' modality by using the notion of coinduction native to Coq. In Simuliris, coinductive reasoning steps correspond to an ``abstract'' case in the simulation relation, used for function applications; an ``open simulation'' allows these abstract steps, while a ``closed simulation'' does not allow them.
+%
+The coinduction principle is encapsulated in a ``simulation closure'' theorem, which states if two terms are related in the open simulation, they are in fact also related in the closed simulation if we (coinductively) assume that foreign function bodies are correct.
+
+Our proof is heavily inspired by the Simuliris work, but we cannot reuse their results directly because the notion of simulation that they provide is not expressive enough for our proof: we need to support transformations that change the calling conventions between source and target programs.
+%
+(Along the way we also simplified the simulation relation by removing proof rules related to concurrency, which we do not consider in this work.)
+
+To support different calling conventions, we make our simulation relation $\iSim[\Chi]{\phi}{e_s}{e_t}$ parametric over abstract protocols $\Chi$. This extends the technique of \citet*{TODO-paulo} from the unary setting of safety predicates to the binary setting of a relational separation logic.
+
+\subsection{Proof outline}
+
+Once we have decided to reuse and extend the Simuliris work, our argument can be split in three separate parts:
 
 \begin{enumerate}
 
-\item The proof technique is a simulation argument, following the approach of Simuliris~\citep*{TODO-simuliris}.
+\item Define our notion of simulation parametric over protocols (calling conventions), prove its adequacy (it implies a behaviour refinement) and establish a ``closure theorem'' as in the Simuliris work.
 %
-We cannot however use Simuliris directly, because it assumes that functions calls have the same structure in the source and target programs.
-%
-We had to build a modified version of Simuliris, simplified to remove concurrency which does not play a role in our work, but extended to support transformations that change the calling conventions between source and target programs.
-%
-More precisely, we make our simulation relation $\iSim[\Chi]{\phi}{e_s}{e_t}$ parametric over abstract protocols $\Chi$, extending the technique of \citet*{TODO-paulo} from the unary setting of safety predicates to the binary setting of a relational separation logic.
-%
-This definition of a simulation relation with protocols is independent
-of the TMC language or transformation, and could be reused in other
-works.
+  This technical contribution is independent of the TMC language or transformation, and could be reused in other works.
 
-\item We build a program logic on the TMC language, as a body of lemmas to establish simulations between expressions.
+\item Build a relational program logic for our programming language, as a body of lemmas to establish simulations between expressions.
 
-\item Finally we use this program logic to establish the soundness of the TMC transformation.
+\item Use this program logic to establish the soundness of the TMC transformation.
 %
-The key ingredents are two specifications for the direct and DPS transformations that are proved in a mutually-inductive way.
+The key ingredients are two specifications for the direct and DPS transformations that are proved in a mutually-inductive way, and are used to prove the hypothesis of the closure theorem of our simulation.
 \end{enumerate}
+
+The rest of this section expands each step of the proof, providing the necessary technical details to follow the Coq formalization.
 
 \subsection{End goal: behaviour refinement}
 
@@ -79,7 +104,7 @@ Finally, an expresion $e_t$ refines $e_s$ when all its behaviours are refined by
 \input{figures/similar}
 \input{figures/refinement}
 
-We can now state the main soundness theorem of our work, whose proof is spread over the rest of this section.
+We can now state the main soundness theorem of our work, whose proof is spread over the rest of the present Section~\ref{sec:soundness}.
 
 \begin{theorem}[Soundness]
     $
@@ -88,9 +113,13 @@ We can now state the main soundness theorem of our work, whose proof is spread o
     $
 \end{theorem}
 
+The condition $\wf{p_s}$ guarantees that the input program $p_s$ is well-scoped. Under this condition, we can consider the target programs $p_t$ that are TMC transformations $p_s \tmc p_s$, and our theorem states that they refine $p_s$ as expected.
+
 \subsection{Proof technique: Simuliris with protocols}
 
 TODO
+
+\clearpage
 
 \begin{theorem}[Close simulation]
     \begin{align*}
