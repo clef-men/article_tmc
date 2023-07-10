@@ -1,209 +1,188 @@
 \section{Introduction}
 
-\subsection{Why TMC in OCaml?}
+In \OCamlLang, the natural implementation of the \ocaml|map| function on polymorphic lists is the following:
 
-OCaml function calls consume stack space. If a program runs out of stack space, it crashes with the dreaded \texttt{Stack\_overflow} exception. As a result, OCaml programmers have to be careful, when they write recursive functions, to remain in the so-called \emph{tail-recursive} fragment, using \emph{tail} calls that do not consume stack space.
-
-This discipline is a source of difficulties for both beginners and experts. Beginners have to be taught recursion, and then tail-recursion. Experts disagree on the "right" way to write `List.map`. The direct version is beautiful but not tail-recursive, so it crashes on larger inputs. The naive tail-recursive transformation is (slightly) slower than the direct version, and experts may want to avoid that cost. Some libraries propose complex implementations to compensate for this performance loss. In general, tail-recursion requires the programmer to manually perform sophisticated program transformations.
-
-In this work we propose an implementation of the "Tail Modulo Constructor" (TMC) transformation for OCaml. TMC is a program transformation for a fragment of non-tail-recursive functions, that rewrites them in \emph{destination-passing style}. The supported fragment is smaller than other approaches such as continuation-passing-style, but the performance of the transformed code is on par with the direct, non-tail-recursive version. Many useful functions that traverse a recursive datastructure and rebuild another recursive structure are in the TMC fragment, in particular `List.map` (and `List.filter`, `List.append`, etc.). Finally those functions can be written in a way that is beautiful, correct on all inputs, and efficient.
-
-After we introduced this TMC transformation in the OCaml compiler (merged in OCaml 4.... in ...), various functions in the standard library (...) and third-party codebases have been rewritten to use it.
-
-\subsection{TMC on an example}
-
-\newcommand{\captionlabel}[2]{\caption{#1}\label{#2}}
-\newcommand{\fref}[1]{Figure~\ref{#1}}
-
-\begin{figure}[tp]
 \begin{OCaml}
 let rec map f xs =
   match xs with
-  | [] -> []
-  | x :: xs ->
-      let y = f x in y :: map f xs
-\end{OCaml}
-\captionlabel{\ocaml|map| in direct style}{fig:map}
-\end{figure}
-
-% I am assuming
-% let set_field x i v = Obj.set_field (Obj.repr x) i (Obj.repr v)
-\begin{figure}[tp]
-\begin{OCaml}
-(* [dst] points to a partially initialized list cell. *)
-let rec map_dps dst f xs =
-  match xs with
-  | [] ->
-      (* Write our result, the empty list, to [dst]. *)
-      set_field dst 1 []
-  | x :: xs ->
+  | [] =>
+      []
+  | x :: xs =>
       let y = f x in
-      (* Allocate a new partially initialized list cell. *)
-      let dst' = y :: [] in
-      (* Write our result, [dst'], to [dst]. *)
-      set_field dst 1 dst';
-      (* Continue with [dst'] as new destination. *)
-      map_dps dst' f xs
-
-let map f xs =
-  match xs with
-  | [] -> []
-  | x :: xs ->
-      let y = f x in
-      let dst = y :: [] in
-      map_dps dst f xs;
-      dst
-\end{OCaml}
-% TODO the call from map to map_dps is not a tail call.
-%      is this what our translation does? check
-\captionlabel{\ocaml|map| in destination-passing style}{fig:map_dps}
-\end{figure}
-
-A natural%
-%
-% A comment on evaluation order.
-\footnote{The sequencing construct \ocaml|let y = f x| ensures that the call \ocaml|f x| takes place before the recursive call \ocaml|map f xs|. OCaml does not specify in which order the arguments of a constructor are evaluated. Writing \ocaml|f x :: map f xs| would allow the compiler to choose an evaluation order.  Here, left-to-right evaluation is imposed by the author of \ocaml|map|.}
-%
-implementation of the \ocaml|map| function on lists appears in \fref{fig:map}.
-%
-This code is simple, but suffers from a well-known problem: because the recursive call \ocaml|map f xs| is not a tail call, \ocaml|map| requires an amount of stack space that is linear in the size of the list~\ocaml|xs|.
-%
-The OCaml runtime limits the size of the stack, so \ocaml|map| fails (by raising a ``stack overflow'' exception) when applied to very long lists.
-
-To avoid this problem, a possible workaround is to write a variant of \ocaml|map|
-accumulator-passing style (\fref{fig:rev_map}). The function \ocaml|rev_map|
-takes an extra argument \ocaml|ys| and inserts the value \ocaml|y| \emph{in front
-  of} the list \ocaml|ys|.
-%
-It is easy to see that \ocaml|rev_map f ys xs| computes
-%
-\ocaml|ys @ rev (map f xs)|,
-%
-where \ocaml|rev| is list reversal.
-%
-This implies that
-%
-\ocaml|map f xs|
-%
-can be defined as \ocaml|rev (rev_map f [] xs)|.
-%
-Both \ocaml|rev| and \ocaml|rev_map| are tail-recursive functions, so this new
-definition of \ocaml|map| requires constant stack space and is no longer subject
-to a ``stack overflow'' issue.
-%
-Unfortunately, this implementation of \ocaml|map| is still somewhat
-unsatisfactory. It involves building an intermediate list \ocaml|ys|, which is
-immediately thrown away. Furthermore, it requires two list traversals, to~wit,
-a traversal of the original list~\ocaml|xs| and a traversal of the intermediate
-list~\ocaml|ys|.
-
-To remedy this remaining deficiency, another approach is to write a variant of
-\ocaml|map| in destination-passing style.
-% TODO should we explicitly say anything about this paper?
-\nocite{shaikha-17}
-%
-The function \ocaml|map_dps| (\fref{fig:map_dps}) takes an extra parameter
-\ocaml|dst|, which must be a list cell. Its effect is to construct the list
-\ocaml|map f xs| and to write the address of this list into the ``tail''
-field of the list cell \ocaml|dst|.
-%
-Then, \ocaml|map| can be defined in terms of \ocaml|map_dps|.
-%
-Because \ocaml|map_dps| is tail-recursive, \ocaml|map_dps| and \ocaml|map| require
-constant stack space. Furthermore, the original list is traversed only once,
-and the new list is constructed in the desired order; no reversal is required.
-
-The code of \ocaml|map_dps| uses \ocaml|set_field|, an unsafe primitive
-operation. \ocaml|set_field dst 1 dst'| writes the value \ocaml|dst'| into the field
-at offset 1 in the memory block at address~\ocaml|dst|. This operation is unsafe
-insofar as it can be used to modify a list cell, even though list cells are
-normally immutable.
-
-To sum up, the definition of \ocaml|map| in \fref{fig:map_dps} has desirable
-properties, but it is not pretty -- in fact it cannot be expressed without using safety escape hatches. The definition of \ocaml|map| in \fref{fig:map}
-is much more elegant, but is subject to the ``stack overflow'' issue. We would
-like the best of both worlds: to write the code in \fref{fig:map} and to let
-the compiler transform it into the destination-passing style implementation in
-\fref{fig:map_dps}. This is the purpose of the \emph{tail modulo cons} (TMC)
-transformation. As of OCaml 4.14, this transformation is available upon
-request: the user must annotate the definition of \ocaml|map| with the attribute
-\ocaml|[@tail_mod_cons]|:
-
-% TODO
-\nocite{sobel-friedman-98}
-\nocite{minamide-98}
-
-%%%%
-
-\begin{OCaml}
-let[@tail_mod_cons] rec map f = function
-| [] -> []
-| x :: xs -> f x :: map f xs
+      y :: map f xs
 \end{OCaml}
 
-This transformation is opt-in, only applied by the compiler on function definitions annotated with this new \ocaml{[@tail_mod_cons]} attribute. The OCaml compiler transforms this program at the level of the Lambda intermediate representation; the result of the transformation cannot be expressed as a source OCaml program, but it can be approximated by the following:
+Yet, calling \ocaml|map| on a large input list may crash with the dreaded \ocaml|Stack_overflow| exception.
+%
+Indeed, as functions calls consume stack space, the stack usage of this implementation is linear in the size of the input list.
+%
+This is the reason why \OCamlLang programmers have to be careful, when they write recursive functions, to remain in the so-called \emph{tail-recursive} fragment: every recursive call must be in tail position, that is the last thing the function does before returning.
+%
+As there is nothing to do after a tail call, the stack frame can be directly reused.
+%
+Therefore, tail calls do not consume stack space.
+%
+Knowing this, we can provide another tail-recursive implementation of \ocaml|map|:
 
-\hspace{-1.6em}
 \begin{minipage}{0.5\linewidth}
 \begin{OCaml}
-let rec map f = function
-| [] -> []
-| x::xs ->
-  let y = f x in
-  let dst = y :: [] in
-  map_dps dst 1 f xs;
-  dst
+let rec rev_map f ys xs =
+  match xs with
+  | [] ->
+      ys
+  | x :: xs ->
+      let y = f x in
+      rev_map f (y :: ys) xs
 \end{OCaml}
 \end{minipage}
 \hfill
 \begin{minipage}{0.5\linewidth}
 \begin{OCaml}
-and map_dps dst i f = function
-| [] ->
-  dst.i <- []
-| x::xs ->
-  let y = f x in
-  let dst' = y :: [] in
-  set_field dst i dst';
-  map_dps dst' 1 f xs
+let map f xs =
+  let ys = rev_map f [] xs in
+  List.rev ys
 \end{OCaml}
 \end{minipage}
 
-COMMENT (Gabriel): it is a bit unfortunate that this example is redundant with the nice DPS version from François. But note that we are parametrized over the destination index -- this is necessary in the general case, for binary trees for example. We could sweep the difference under the rug here, but not for example when comparing with the work of Daan Leijen.
+This second version computes the reverse result list with \ocaml|rev_map| in the accumulator-passing style and applies \ocaml|List.rev|.
+%
+As both \ocaml|rev_map| and \ocaml|rev| are tail-recursive, it is stack-safe.
+%
+However, it is not as efficient on small lists since it does two traversals instead of one.
+%
+There is yet another implementation:
 
-\subsection{Proving the correctness of the TMC transformation}
+\begin{minipage}{0.65\linewidth}
+\begin{OCaml}
+(* [dst] is a partially initialized list cell. *)
+let rec map_dps dst f xs =
+  match xs with
+  | [] ->
+      (* Write result empty list to [dst]. *)
+      set_field dst 1 []
+  | x :: xs ->
+      let y = f x in
+      (* New partially initialized list cell. *)
+      let dst' = y :: [] in
+      (* Write result [dst'] to [dst]. *)
+      set_field dst 1 dst' ;
+      (* Continue with [dst'] as new destination. *)
+      map_dps dst' f xs
+\end{OCaml}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\linewidth}
+\begin{OCaml}
+let map f xs =
+  match xs with
+  | [] ->
+      []
+  | x :: xs ->
+      let y = f x in
+      let dst = y :: [] in
+      map_dps dst f xs ;
+      dst
+\end{OCaml}
+\end{minipage}
 
-The TMC transformation crucially relies on the introduction of uniquely-owned mutable state. Our mechanized correctness proof establishes a backward simulation using a relational separation logic built on top of the Iris base logic.
+This third implementation is much less natural.
+%
+It takes advantage of the memory representation of lists in \OCamlLang: some constant integer for the empty list and a heap-allocated cell containing one tag followed by two fields for the list constructor.
+%
+The \ocaml|set_field| function allows us to modify these fields.
+%
+It can be implemented using the unsafe \ocaml|Obj| module.
 
-It is in fact difficult to define a notion of simulation inside Iris -- natural definitions using the ``later'' modality do not give the expected definition. We build on top of Simuliris~\citep*{TODO-simuliris}, which provides a carefully-chosen definition of simulations that works well in Iris.
+The core of this implementation is the tail-recursive \ocaml|map_dps| auxiliary function.
+%
+It is the \emph{destination-passing style} version of \ocaml|map|: it writes its result to the tail field of destination \ocaml|dst| instead of returning it.
+%
+On the empty list, it just writes the empty list.
+%
+On non-empty lists, it allocates a new partially initialized list cell \ocaml|dst'|, writes \ocaml|dst'| to \ocaml|dst| and calls itself recursively with \ocaml|dst|' as its new destination.
+%
+\ocaml|map| calls \ocaml|map_dps| on non-empty lists.
 
-Following the proof technique proposed by Simuliris, we found that their simulation definition is not expressive enough to reason about program transformations that introduce new function calling conventions. We had to generalize the Simuliris handling of function calls by parameterizing the simulation relation over an abstract protocol $\Chi$ inspired by the work of \citet*{TODO-paulo}. This contribution of our work is independent from the TMC transformation and our simplified programming language, and could be reused in future work on verifying compiler transformations.
+What happens is \ocaml|map_dps| constructs the final transformed list by modifying the last cell of the current partial transformed list.
+%
+Not only is it stack-safe but it also does only one traversal, as opposed the previous stack-safe implementation.
+%
+Unfortunately, it cannot be implemented using only safe \OCamlLang features, as list cells are normally immutable.
+%
+In fact, most strongly typed languages reject it.
+%
+A notable exception is \MezzoLang \cite{DBLP:journals/toplas/BalabonskiPP16}, which is based on a permission system inspired by \emph{separation logic}~\cite{DBLP:journals/cacm/OHearn19}.
 
-Once this machinery is applied, what remains to be proven are two crisp specifications for the two variants of each TMC-transformed function -- direct style and destination-passing style.
+We can do better.
+%
+If we cannot write it, the compiler may be able to do so.
+%
+In fact, the manual transformation of the natural implementation of \ocaml|map| we have performed is an instance of a more general transformation known as \emph{tail call optimization modulo constructor} (TMC)~\cite{risch-73,friedman-wise-75}.
+%
+TMC has been implemented in List~[TODO], Prolog~[TODO] and Koka~\cite{DBLP:journals/pacmpl/LeijenL23}.
+%
+In this work, we present our implementation of TMC in the \OCamlLang compiler as an optional optimization.
+%
+Various functions in the standard library and third-party codebases have been rewritten to use it.
+%
+For instance, the efficient stack-safe version of \ocaml|map| is obtained just by annotating the natural definition with the attribute \ocaml|[@tail_mod_cons]|:
 
-- What remains to prove are two key specifications:
-  + direct spec
-  + dps spec
+\begin{OCaml}
+let[@tail_mod_cons] rec map f xs =
+  match xs with
+  | [] -> []
+  | x :: xs -> f x :: map f xs
+\end{OCaml}
 
-- We prove these two specifications using a relational program logic for our simplified language.
+Furthermore, we describe a mechanized proof of correctness for a simplified transformation on a small untyped calculus.
+%
+We established a \emph{behavioral refinement} between the source program and the transformed program: any behavior of the transformed program, be it converging, diverging or stuck, is a behavior of the source program.
+%
+Our proof relies on \Simuliris~\cite{DBLP:journals/pacmpl/GaherSSJDKKD22}, a separation logic framework built on top of the \Iris base logic.
+%
+We found that their proof technique, a simulation relation, is not expressive enough to reason about program transformations that introduce new function calling conventions.
+%
+We had to generalize the \Simuliris handling of function calls by parameterizing the simulation relation over an abstract protocol inspired by the work of \citet*{DBLP:journals/pacmpl/VilhenaP21}.
+%
+This contribution of our work is independent from the TMC transformation and our small calculus.
+%
+It could be reused in future work on verifying compiler transformations.
 
-\subsection{Contributions}
+Interestingly, the core of the soundness proof is the specification of the two variants of each TMC-transformed function --- direct style and destination-passing style.
+%
+It conveys the essence of destination-passing style: computing the same thing and writing it to an owned destination.
+%
+For instance, delaying the definition of the simulation relation $\iSimv{\Phi}{e_s}{e_t}$ and the similarity relation $v_s \iSimilar v_t$, the specification of the variants of \ocaml|map| is:
+%
+\begin{align*}
+        \iSimvHoare{
+            \iTrue
+        }{
+            \iSimilar
+        }{
+            & \lambdCall{\lambdFunc{\ocamlText{map}}}{v_s}
+        }{
+            \lambdCall{\lambdFunc{\ocamlText{map}}}{v_t}
+        }
+    \\
+        \iSimvHoare{
+            (\loc + i) \mapsto \lambdHole
+        }{
+            \lambdaAbs (v_s, w_t) \ldotp
+            \exists v_t \ldotp
+            w_t = \lambdUnit \iSep
+            (\loc + i) \mapsto v_t \iSep
+            v_s \iSimilar v_t
+        }{
+            & \lambdCall{\lambdFunc{\ocamlText{map}}}{v_s}
+        }{
+            \lambdCall{\lambdFunc{\ocamlText{map_dps}}}{\lambdPair{\lambdPair{\loc}{i}}{v_t}}
+        }
+\end{align*}
 
-
-describe TMC
-
-OCaml compiler
-
-Daan Leijen
-
-annoncer éléments décisifs (specs dir/dps) ?
-
-contributions :
-generalization of Simuliris simulation (more calling conventions)
-mechanized proof of soundness in separation logic
-intuitive specification (direct and DPS calling conventions)
-global optimization
-
-\input{figures/ocaml_map}
-\input{figures/ocaml_map_aps}
-\input{figures/ocaml_map_dps}
+To sum up, our main contributions are:
+\begin{enumerate}
+    \item an implementation of the TMC transformation in the \OCamlLang compiler;
+    \item a mechanized proof of soundness for a simplified transformation on a small calculus;
+    \item a generalization of \Simuliris handling of function calls to reason about different calling conventions.
+\end{enumerate}

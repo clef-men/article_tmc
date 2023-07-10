@@ -11,6 +11,7 @@
 \newcommand{\circled}[1]{\raisebox{.5pt}{\textcircled{\raisebox{-.9pt} {#1}}}}
 
 \newcommand{\OCamlLang}{\textsc{OCaml}\xspace}
+\newcommand{\MezzoLang}{\textsc{Mezzo}\xspace}
 \newcommand{\LambdaLang}{\textsc{Lambda}\xspace}
 \newcommand{\Coq}{\textsc{Coq}\xspace}
 \newcommand{\Iris}{\textsc{Iris}\xspace}
@@ -49,6 +50,7 @@
 \newcommand{\iSepImp}{\mathrel{-\mkern-6mu\iSep}}
 \newcommand{\iBupd}{|\!\!\!\Rrightarrow}
 \newcommand{\iPersistent}{\square}
+\newcommand{\iTrue}{\mathrm{True}}
 \newcommand{\iFalse}{\mathrm{False}}
 
 \newcommand{\tmc}{\rightsquigarrow}
@@ -70,6 +72,9 @@
     #3 \gtrsim #4 \,%
     \ifx #1 \else \langle #1 \rangle \, \fi%
     \left[ #2 \right]%
+}
+\newcommand{\iSimvHoare}[5][]{%
+    \left[ #2 \right] \ \iSimv[#1]{#3}{#4}{#5}%
 }
 \newcommand{\iCsimv}[4][]{%
     #3 \geq #4 \,%
