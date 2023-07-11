@@ -54,19 +54,19 @@ There is yet another implementation:
 
 \begin{minipage}{0.65\linewidth}
 \begin{OCaml}
-(* [dst] is a partially initialized list cell. *)
+/* [dst] is a partially initialized list cell. */
 let rec map_dps dst f xs =
   match xs with
   | [] ->
-      (* Write result empty list to [dst]. *)
+      /* Write result empty list to [dst]. */
       set_field dst 1 []
   | x :: xs ->
       let y = f x in
-      (* New partially initialized list cell. *)
+      /* New partially initialized list cell. */
       let dst' = y :: [] in
-      (* Write result [dst'] to [dst]. *)
+      /* Write result [dst'] to [dst]. */
       set_field dst 1 dst' ;
-      (* Continue with [dst'] as new destination. *)
+      /* Continue with [dst'] as new destination. */
       map_dps dst' f xs
 \end{OCaml}
 \end{minipage}
@@ -119,9 +119,9 @@ If we cannot write it, the compiler may be able to do so.
 %
 In fact, the manual transformation of the natural implementation of \ocaml|map| we have performed is an instance of a more general transformation known as \emph{tail call optimization modulo constructor} (TMC)~\cite{risch-73,friedman-wise-75}.
 %
-TMC has been implemented in List~[TODO], Prolog~[TODO] and Koka~\cite{DBLP:journals/pacmpl/LeijenL23}.
+TMC has been implemented in Lisp~[TODO], Prolog~[TODO] and Koka~\cite{DBLP:journals/pacmpl/LeijenL23}.
 %
-In this work, we present our implementation of TMC in the \OCamlLang compiler as an optional optimization.
+The first main contribution of this work is an implementation of TMC in the \OCamlLang compiler as an optional optimization.
 %
 Various functions in the standard library and third-party codebases have been rewritten to use it.
 %
@@ -134,7 +134,7 @@ let[@tail_mod_cons] rec map f xs =
   | x :: xs -> f x :: map f xs
 \end{OCaml}
 
-Furthermore, we describe a mechanized proof of correctness for a simplified transformation on a small untyped calculus.
+The second main contribution of this work is a mechanized proof of correctness for the core of this transformation on a small untyped calculus.
 %
 We established a \emph{behavioral refinement} between the source program and the transformed program: any behavior of the transformed program, be it converging, diverging or stuck, is a behavior of the source program.
 %

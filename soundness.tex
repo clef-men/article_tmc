@@ -10,6 +10,7 @@ The destination-passing style used by the TMC transformation critically relies o
 It is thus natural to use separation logic as our specification language.
 
 \subsection{The quest for the right notion of simulation}
+\label{sec:howto-relation}
 
 The final theorem we want to establish is a behaviour refinement $p_s \refined p_t$: the behaviours of the transformed program are included in the behaviour of the source program.
 %
@@ -27,15 +28,11 @@ This is a common problem to establish simulations, and the solution is to use a 
 %
 In the Iris logic, a natural way to do this would be to use a ``later'' modality.
 %
-But defining simulations using a ``later'' modality is in fact non-trivial; simple definitions do not give the excepted notion of simulation, due to the subtle aspects of the semantics of ``later''.
+But defining simulations using a ``later'' modality is in fact non-trivial; simple definitions do not give the excepted notion of simulation, due to non-intuitive aspects of the step-indexing semantics of ``later'' in the Iris model. This problem is discussed in details in the previous work on Transfinite Iris~\citep*{TODO-transfinite-Iris}, an alternative logic with different axioms and models.
 %
-In a sense, they capture safety properties but not liveness, as discussed in previous
-work on Transfinite Iris~\citep*{TODO-transfinite-Iris}, an alternative logic with different axioms and models.
+Sticking to the main Iris logic, a good definition of simulation has been worked out in Simuliris~\citep*{TODO-Simuliris}.
 %
-Sticking to the main Iris logic, a good definition of simulation has been worked out
-in Simuliris~\citep*{TODO-Simuliris}.
-%
-It avois using the ``later'' modality by using the notion of coinduction native to Coq. In Simuliris, coinductive reasoning steps correspond to an ``abstract'' case in the simulation relation, used for function applications; an ``open simulation'' allows these abstract steps, while a ``closed simulation'' does not allow them.
+It avoids using the ``later'' modality by using the notion of coinduction native to Coq. In Simuliris, coinductive reasoning steps correspond to an ``abstract'' case in the simulation relation, used for function applications; an ``open simulation'' allows these abstract steps, while a ``closed simulation'' does not allow them.
 %
 The coinduction principle is encapsulated in a ``simulation closure'' theorem, which states if two terms are related in the open simulation, they are in fact also related in the closed simulation if we (coinductively) assume that foreign function bodies are correct.
 
@@ -43,7 +40,7 @@ Our proof is heavily inspired by the Simuliris work, but we cannot reuse their r
 %
 (Along the way we also simplified the simulation relation by removing proof rules related to concurrency, which we do not consider in this work.)
 
-To support different calling conventions, we make our simulation relation $\iSim[\Chi]{\phi}{e_s}{e_t}$ parametric over abstract protocols $\Chi$. This extends the technique of \citet*{TODO-paulo} from the unary setting of safety predicates to the binary setting of a relational separation logic.
+To support different calling conventions, we make our simulation relation $\iSim[\Chi]{\Phi}{e_s}{e_t}$ parametric over abstract protocols $\Chi$. This extends the technique of \citet*{TODO-paulo} from the unary setting of safety predicates to the binary setting of a relational separation logic.
 
 \subsection{Proof outline}
 
@@ -66,26 +63,14 @@ The rest of this section expands each step of the proof, providing the necessary
 
 \subsection{End goal: behaviour refinement}
 
-The TMC transformation preserves the behavior of programs in a strong sense.
+The TMC transformation preserves the behaviour of programs in a strong sense.
 %
-We expect terminating programs to remain terminating, diverging programs to remain diverging and failing programs (those that get stuck) to remain failing.
+We expect terminating programs to remain terminating, diverging programs to remain diverging and failing programs (those that get 
+stuck) to remain failing.
 
-ReLoC~\citep*{TODO-reloc} is focused on terminating behaviors for correct programs.
+Our definitions of behaviours and behaviour refinement are given in \fref{fig:refinement}.
 %
-Its behaviour refinement guarantees that if the target program $e_t$ evaluates to $v_t$, then the source program $e_s$ evaluates to a $v_s$ related to $v_t$.
-
-Recent works extend the notion of behaviour refinement to preserve termination.
-%
-If $e_t$ diverges, then $e_s$ diverges; said otherwise, if $e_s$ reduces to a value,
-then $e_t$ reduces to a value or gets stuck.
-
-We further extend behaviour refinement to be safety-preserving: if $e_t$ gets stuck, then $e_s$ can get stuck.
-%
-As we cover all three possible reduction behaviours, we preserve divergence in the following sense: if a source program $e_s$ can only diverge, then the transformed program must diverge.
-%
-Note that our language is non-deterministic; if a source program $e_s$ can either converge or diverge, then a $e_t$ that refines $e_s$ could exhibit only a subset of those behaviours.
-
-We define this notion of behaviour refinement $e_s \refined e_t$ in Figure~\ref{fig:refinement}.
+Our notion of behaviours follows the definitions of Simuliris~\citep*{TODO-simuliris}.
 %
 We define the set $\mathrm{behaviours}_p(e)$ of behaviours of an expression $e$ within a program $p$, starting from an empty store.
 %
@@ -95,11 +80,15 @@ The behaviour $\constr{Conv}(e')$, when $e'$ is not a value, indicates that $e$ 
 %
 Finally, $\constr{Div}$ indicates that $e$ can diverge.
 
-We define a refinement relation on behaviours in a natural way: divergence refines divergence, any stuck expression refines any other stuck expression, and a value $v_t$ refines $v_s$ when they are related for a ground equivalence $v_s \similar v_t$, which is the equality for all value kinds, except for locations where it gives no information, as done in Simuliris.
+The refinement relation on behaviours $b_s \refined b_t$ then follows in a natural way: divergence refines divergence, any stuck expression refines any other stuck expression, and a value $v_t$ refines $v_s$ when they are related for a ground equivalence $v_s \similar v_t$, which is the equality for all value kinds, except for locations where it gives no information, as done in Simuliris.
 %
 This equivalence of ground values could be used, for example, to argue for the correctness of a \texttt{main} function that takes and returns integer arguments.
 
-Finally, an expresion $e_t$ refines $e_s$ when all its behaviours are refined by a behaviour of $e_s$, and a program $p_t$ refines $p_s$ when calls to source functions on equivalent inputs are in the refinement relation.
+Note a difference to Simuliris: our refinement between stuck/failing behaviours is $\constr{Div} \refined \constr{Div}$, whereas Simuliris uses $\constr{Div} \refined b_t$: the Simuliris relation assumes that the input program is safe, never gets stuck, and the behaviour refinement thus allows a stuck source term to be refined by any target program. With our definition, a source program that only gets stuck must be transformed into a target program that only gets stuck.
+%
+This property would not be desirable for C compilers that want to optimize aggressively assuming the absence of undefined behaviors, but it does capture a finer-grained property of our program transformation.
+
+Finally, an expression $e_t$ refines $e_s$ when all its behaviours are refined by a behaviour of $e_s$, and a program $p_t$ refines $p_s$ when calls to source functions on equivalent inputs are in the refinement relation.
 
 \input{figures/similar}
 \input{figures/refinement}
@@ -116,6 +105,27 @@ We can now state the main soundness theorem of our work, whose proof is spread o
 The condition $\wf{p_s}$ guarantees that the input program $p_s$ is well-scoped. Under this condition, we can consider the target programs $p_t$ that are TMC transformations $p_s \tmc p_s$, and our theorem states that they refine $p_s$ as expected.
 
 \subsection{Proof technique: Simuliris with protocols}
+
+\input{figures/sim}
+
+Simuliris~\citep*{TODO-simuliris} suggests a definition of simulation relations in Iris. As we explained in Section~\ref{sec:howto-relation}, it carefully avoids using the ``later'' modality by using Coq's native notion of coinduction. Simuliris has several desirable properties for us: it can be defined in the un-modified Iris base logic (unlike Transfite Iris~\citep*{transfinite-iris}), it is defined in a way that makes it easy to specialize to other programming languages, and it supports showing the preservation of termination. On the other hand, the original definition is complex as it supports concurrency and notions of fairness. We reused the definition of Simuliris, simplified for the sequential setting. We then extended the resulting definition to support our treatment of stuck states as failures, and generalize the notion of external calls to abstract protocols $\Chi$. Most of the ideas below come from the Simuliris work directly, we will explicitly point out the parts that differ.
+
+As is standard in Iris, we use a \emph{state interpretation} relation $I(\sigma_s, \sigma_t)$ between source and target states. Recall that in Separation Logic, formulas contain both pure propositions and ressources, which include in particular logical assertions $l \mapsto_s v_s$ and $l \mapsto_t v_t$ on the physical states. The relation $I(\sigma_s, \sigma_t)$ enforces the consistency of those logical assertions with the physical states $\sigma_s$ and $\sigma_t$.
+
+The definition of the expression relation $\iSim[\Chi]{\Phi}{e_s}{e_t}$ is shown in \fref{fig:sim}.
+
+It starts with a double fixpoint, a greatest fixpoint $\nuAbs sim .$ (coinduction) of smallest fixpoint $\muAbs {sim \mathhyphen inner} .$ (induction) of a relation $\mathrm{sim \mathhyphen body}_\Chi$. Inside the relation definition, the cases that use the inductive $sim \mathhyphen inner$ in their recursive occurrence can only be repeated finitely many times, while the cases that use the coinductive $sim$ in their recursive occurrence can be repeated infinitely, but can only do so under a form of guardedness condition.
+%
+The simulation relation $\mathrm{sim \mathhyphen body}_\Chi$ can relate a source expression $e_s$ and a target expression $e_t$ if, for any source and target heaps that respect some relatedness invariant $I(\sigma_s, \sigma_t)$, .
+
+The relation between $e_s$ and $e_t$ must be parametric over all physical states in the state interpretation relation $I(\sigma_s, \sigma_t)$.
+
+% sim-body:
+% cas 1, 2, 3, 4: on raconte
+% "ouverte" comprend un autre cas.
+% cas 5: les appels externes, protocoles (on raconte)
+
+
 
 TODO
 
@@ -291,10 +301,17 @@ proof
 %   so we make a pure step on both sides and we have to show that the function bodies
 %   (with a bisubstitution (x mapsto (vs, vt)) applied) are in the relation.
 
-
-
-\input{figures/sim}
 \input{figures/sim_rules}
 \input{figures/isimilar}
 \input{figures/protocol}
 \input{figures/csim}
+
+% François: the relational separation logic captures the right
+% specification for functions. This is key to compositionality. We
+% cannot do this with just a refinement relation. We should emphasize
+% that this is a good approach.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

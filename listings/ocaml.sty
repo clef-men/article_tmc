@@ -17,6 +17,9 @@
     captionpos=b,
     flexiblecolumns=false,
 % --------------------------------------------------
+    morecomment=[n]{/*}{*/},%
+    commentstyle={\ttfamily\color{red!60!black}},%
+% --------------------------------------------------
     alsoletter={
         '
     },
@@ -101,10 +104,6 @@
         {,}{{\textcolor{ocaml_keyword2}{,}}}1
         {<-}{{$\textcolor{ocaml_keyword2}{\ \leftarrow\ }$}}1,
 % --------------------------------------------------
-    escapeinside={(*}{*)},
-    escapebegin={\ttfamily\color{comment}(*},
-    escapeend={*)},
-% --------------------------------------------------
     morestring=[b]",
     stringstyle=\ttfamily,
 }
@@ -112,13 +111,16 @@
 \lstnewenvironment{OCaml}{%
     \lstset{
         language=OCaml,
-        basicstyle=\ttfamily\normalsize
-    }%
+        mathescape=true,
+        basicstyle=\ttfamily\normalsize,
+        moredelim=[is][\color{red}]{/[}{]/},
+}%
 }{}
 
 \def\ocaml{%
     \lstinline[
         language=OCaml,
+        mathescape=true,
         basicstyle=\ttfamily\small
     ]%
 }
