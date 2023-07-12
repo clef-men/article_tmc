@@ -8,4 +8,62 @@
     + double fixed-point
     + state interpretation
     + 5 clauses
-      +
+      + (1) halting clause
+        + e_s, e_t already in the post-condition
+      + (2) failure clause
+        + both expressions are strongly stuck
+        + key rule for safety preservation
+        + different from the Simuliris simulation
+          + instead of assuming that the source is safe,
+            we allow to stop when it fails -- provided the target also fails
+          + strongly stuck: stuck for any state σ
+            + TODO: why strongly stuck instead of stuck?
+              + stuck would arguably be more natural
+              + do we get more with strongly stuck?
+              + does the Coq proof still pass with stuck?
+              + Clément wonders if this comes from the needs of adequacy
+      + (3) target stuttering / solo source
+        + arbitrary number of steps, any path (not all paths)
+        + why sim-inner?
+          + repeating indefinitely would break divergence preservation
+          + a loop could simulate anything, in particular a terminating expression
+      + (4)
+        + (A) source stuttering / solo target
+          + a single step, all paths
+          + why sim-inner?
+            + would break termination preservation
+            + anything could simulate a loop, in particular a terminating expression
+        + (B) synchronization point
+          + the most important clause
+          + for any single step in the target,
+            we can match it with a non-empty source reduction sequence
+          + why sim?
+            + we made progress on both sides
+            + repeating this rule infinitely does not endanger termination preservation
+      + (5) apply protocol
+        + open vs. closed simulation
+          + closed simulation: the subset with 1-2-3-4
+          + can be expressed with eₛ ≳ eₜ <⊥> {ϕ}
+        + Χ differs from Simuliris
+        + inspired by Paolo: Χ allows do v {Ψ}
+          + the protocol Χ allows the program to perform the effect v,
+            with post-condition Ψ
+        + Ψ relational postcondition of the function call
+        + the generic formulation of protocols lets external calls
+          resume computations with arbitrary expressions e_s'', e_t''
+          + we use it for function calls that return values
+        + one must prove that after resuming with es'', et'' we can
+          get back in the simulation
+        + why sim?
+          + bad definitions of Chi could give ill-defined notions of simulation
+          + we use it with protocols that guarantee some progress
+          + the closure theorem will enforce progress as a hypothesis
+          + why not sim-inner?
+            + TODO no good answer for now
+            + not a counter-example
+              + f(); loop >= f(); loop
+              + after function call we can use 5b to get back into sim
+            + maybe a counter-example
+              let rec f() = f()
+              f >= f()
+            + or could the simulation-closure theorem break?
