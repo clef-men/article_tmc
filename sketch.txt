@@ -40,6 +40,7 @@
           + why sim?
             + we made progress on both sides
             + repeating this rule infinitely does not endanger termination preservation
+            + why not sim-inner: we could not relate two loops anymore
       + (5) apply protocol
         + open vs. closed simulation
           + closed simulation: the subset with 1-2-3-4
