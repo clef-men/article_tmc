@@ -65,5 +65,5 @@
               + after function call we can use 5b to get back into sim
             + maybe a counter-example
               let rec f() = f()
-              f >= f()
+              f() >= f()
             + or could the simulation-closure theorem break?
