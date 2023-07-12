@@ -106,19 +106,28 @@ The condition $\wf{p_s}$ guarantees that the input program $p_s$ is well-scoped.
 
 \subsection{Proof technique: Simuliris with protocols}
 
-\input{figures/sim}
-
 Simuliris~\citep*{TODO-simuliris} suggests a definition of simulation relations in Iris. As we explained in Section~\ref{sec:howto-relation}, it carefully avoids using the ``later'' modality by using Coq's native notion of coinduction. Simuliris has several desirable properties for us: it can be defined in the un-modified Iris base logic (unlike Transfite Iris~\citep*{transfinite-iris}), it is defined in a way that makes it easy to specialize to other programming languages, and it supports showing the preservation of termination. On the other hand, the original definition is complex as it supports concurrency and notions of fairness. We reused the definition of Simuliris, simplified for the sequential setting. We then extended the resulting definition to support our treatment of stuck states as failures, and generalize the notion of external calls to abstract protocols $\Chi$. Most of the ideas below come from the Simuliris work directly, we will explicitly point out the parts that differ.
 
-As is standard in Iris, we use a \emph{state interpretation} relation $I(\sigma_s, \sigma_t)$ between source and target states. Recall that in Separation Logic, formulas contain both pure propositions and ressources, which include in particular logical assertions $l \mapsto_s v_s$ and $l \mapsto_t v_t$ on the physical states. The relation $I(\sigma_s, \sigma_t)$ enforces the consistency of those logical assertions with the physical states $\sigma_s$ and $\sigma_t$.
+The definition of the expression relation $\iSim[\Chi]{\Phi}{e_s}{e_t}$ is shown in \fref{fig:sim}; it reads as ``$e_s$ simulates $e_t$ under the postcondition $\Phi$ and protocol $\Chi$''. It expresses that the source $e_s$ can simulate any computation of the target $e_t$ until they both get stuck, both diverge, or reach two expressions in the relational post-condition $\Phi$. The parameter $\Chi$ is the relational protocol that must be followed by function calls in $e_s$ and $e_t$ -- generalizing the Simuliris rule for external calls.
 
-The definition of the expression relation $\iSim[\Chi]{\Phi}{e_s}{e_t}$ is shown in \fref{fig:sim}.
+As is standard in Iris, we use a \emph{state interpretation} relation $I(\sigma_s, \sigma_t)$ between source and target states. Recall that in Separation Logic, formulas contain both pure propositions and ressources, which include in particular logical assertions $\loc \mapsto_s v_s$ and $\loc \mapsto_t v_t$ on the physical states. The relation $I(\sigma_s, \sigma_t)$ enforces the consistency of those logical assertions with the physical states $\sigma_s$ and $\sigma_t$.
 
-It starts with a double fixpoint, a greatest fixpoint $\nuAbs sim .$ (coinduction) of smallest fixpoint $\muAbs {sim \mathhyphen inner} .$ (induction) of a relation $\mathrm{sim \mathhyphen body}_\Chi$. Inside the relation definition, the cases that use the inductive $sim \mathhyphen inner$ in their recursive occurrence can only be repeated finitely many times, while the cases that use the coinductive $sim$ in their recursive occurrence can be repeated infinitely, but can only do so under a form of guardedness condition.
+The definition of the relation itself starts with a double fixpoint, a greatest fixpoint $\nuAbs sim .$ (coinduction) of smallest fixpoint $\muAbs {sim \mathhyphen inner} .$ (induction) of a relation $\mathrm{sim \mathhyphen body}_\Chi$. Inside the relation definition, the cases that use the inductive $sim \mathhyphen inner$ in their recursive occurrence can only be repeated finitely many times, while the cases that use the coinductive $sim$ in their recursive occurrence can be repeated infinitely, but can only do so under a form of guardedness condition.
 %
 The simulation relation $\mathrm{sim \mathhyphen body}_\Chi$ can relate a source expression $e_s$ and a target expression $e_t$ if, for any source and target heaps that respect some relatedness invariant $I(\sigma_s, \sigma_t)$, .
 
-The relation between $e_s$ and $e_t$ must be parametric over all physical states in the state interpretation relation $I(\sigma_s, \sigma_t)$.
+\clearpage
+\input{figures/sim}
+
+The relation between $e_s$ and $e_t$, at a given post-condition $\Phi$, must be parametric over all physical states in the state interpretation relation $I(\sigma_s, \sigma_t)$. It is established by one of the following rules:
+
+\begin{enumerate}
+\item[\circled{1}]
+\item[\circled{2}]
+\item[\circled{3}]
+\item[\circled{4}]
+\item[\circled{5}]
+\end{enumerate}
 
 % sim-body:
 % cas 1, 2, 3, 4: on raconte
