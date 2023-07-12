@@ -59,11 +59,7 @@
           + we use it with protocols that guarantee some progress
           + the closure theorem will enforce progress as a hypothesis
           + why not sim-inner?
-            + TODO no good answer for now
-            + not a counter-example
-              + f(); loop >= f(); loop
-              + after function call we can use 5b to get back into sim
-            + maybe a counter-example
-              let rec f() = f()
-              f() >= f()
-            + or could the simulation-closure theorem break?
+            + Clément's intuition is that sim-inner may work
+              + it should not change the adequacy proof that
+                assumes a closed relation anyway
+              + conjecture: the closure theorem would still work
