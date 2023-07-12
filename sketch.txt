@@ -1,0 +1,11 @@
++ section ?
+  + simulation relation
+    + intuitive meaning
+      + source simulates target under postcondition Φ and protocol Χ
+      + any target execution can be reproduced in the source
+      + can stop on Φ
+      + can perform simultaneous calls in source and target according to protocol Χ (calling convention)
+    + double fixed-point
+    + state interpretation
+    + 5 clauses
+      +
