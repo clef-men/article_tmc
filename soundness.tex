@@ -108,21 +108,24 @@ The condition $\wf{p_s}$ guarantees that the input program $p_s$ is well-scoped.
 
 Simuliris~\citep*{TODO-simuliris} suggests a definition of simulation relations in Iris. As we explained in Section~\ref{sec:howto-relation}, it carefully avoids using the ``later'' modality by using Coq's native notion of coinduction. Simuliris has several desirable properties for us: it can be defined in the un-modified Iris base logic (unlike Transfite Iris~\citep*{transfinite-iris}), it is defined in a way that makes it easy to specialize to other programming languages, and it supports showing the preservation of termination. On the other hand, the original definition is complex as it supports concurrency and notions of fairness. We reused the definition of Simuliris, simplified for the sequential setting. We then extended the resulting definition to support our treatment of stuck states as failures, and generalize the notion of external calls to abstract protocols $\Chi$. Most of the ideas below come from the Simuliris work directly, we will explicitly point out the parts that differ.
 
-The definition of the expression relation $\iSim[\Chi]{\Phi}{e_s}{e_t}$ is shown in \fref{fig:sim}; it reads as ``$e_s$ simulates $e_t$ under the postcondition $\Phi$ and protocol $\Chi$''. It expresses that the source $e_s$ can simulate any computation of the target $e_t$ until they both get stuck, both diverge, or reach two expressions in the relational post-condition $\Phi$. The parameter $\Chi$ is the relational protocol that must be followed by function calls in $e_s$ and $e_t$ -- generalizing the Simuliris rule for external calls.
+\paragraph{Relating states} The \emph{state interpertation} $I(\sigma_s, \sigma_t)$ relates source and target states. It extends the unary notion of state intereptation predicate $I(\sigma)$. Recall that in separation logic, formulas contain both pure propositions and ressources, which include in particular logical points-to assertions $\loc \mapsto v$. $I(\sigma)$ enforces the consistency between those logical assertions and the physical state $\sigma$.
 
-As is standard in Iris, we use a \emph{state interpretation} relation $I(\sigma_s, \sigma_t)$ between source and target states. Recall that in Separation Logic, formulas contain both pure propositions and ressources, which include in particular logical assertions $\loc \mapsto_s v_s$ and $\loc \mapsto_t v_t$ on the physical states. The relation $I(\sigma_s, \sigma_t)$ enforces the consistency of those logical assertions with the physical states $\sigma_s$ and $\sigma_t$.
+In the relational setting, the state interpretation becomes a relation $I(\sigma_s, \sigma_t)$ tracking points-to predicates on either states $\loc_s \mapsto_s v_s$ and $\loc_t \mapsto_t v_t$. It is additionally in charge of maintaing the heap bijection mentioned in Section~\ref{TODO} by tracking predicates $\loc_s \iInBij \loc_t$. This assertion is persistent: one cannot remove locations from the bijection.
 
+\paragraph{Relating values} TODO relation between values.
+
+\paragraph{Relating expressions} The definition of the expression relation $\iSim[\Chi]{\Phi}{e_s}{e_t}$ is shown in \fref{fig:sim}; it reads as ``$e_s$ simulates $e_t$ under the postcondition $\Phi$ and protocol $\Chi$''. It expresses that the source $e_s$ can simulate any computation of the target $e_t$ until they both get stuck, both diverge, or reach two expressions in the relational post-condition $\Phi$. The parameter $\Chi$ is the relational protocol that must be followed by function calls in $e_s$ and $e_t$ -- generalizing the Simuliris rule for external calls.
+
+\paragraph{Mixed induction and coinduction}
 The definition of the relation itself starts with a double fixpoint, a greatest fixpoint $\nuAbs sim .$ (coinduction) of smallest fixpoint $\muAbs {sim \mathhyphen inner} .$ (induction) of a relation $\mathrm{sim \mathhyphen body}_\Chi$. Inside the relation definition, the cases that use the inductive $sim \mathhyphen inner$ in their recursive occurrence can only be repeated finitely many times, while the cases that use the coinductive $sim$ in their recursive occurrence can be repeated infinitely, but can only do so under a form of guardedness condition.
-%
-The simulation relation $\mathrm{sim \mathhyphen body}_\Chi$ can relate a source expression $e_s$ and a target expression $e_t$ if, for any source and target heaps that respect some relatedness invariant $I(\sigma_s, \sigma_t)$, .
 
 \clearpage
 \input{figures/sim}
 
-The relation between $e_s$ and $e_t$, at a given post-condition $\Phi$, must be parametric over all physical states in the state interpretation relation $I(\sigma_s, \sigma_t)$. It is established by one of the following rules:
+\paragraph{Simulation clauses} The relation between $e_s$ and $e_t$, at a given post-condition $\Phi$, must be parametric over all physical states in the state interpretation relation $I(\sigma_s, \sigma_t)$. It is established by one of the following clauses:
 
 \begin{enumerate}
-\item[\circled{1}] $e_s$, $e_t$ can stop if they are already in the post-condition $\Phi$ -- and the states are still related.
+\item[\circled{1}] Halting clause: $e_s$, $e_t$ can stop if they are already in the post-condition $\Phi$ -- and the states are still related.
 \item[\circled{2}]
 \item[\circled{3}]
 \item[\circled{4}]

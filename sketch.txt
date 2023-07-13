@@ -1,12 +1,24 @@
-+ section ?
++ section "Simulation"
+  + background section
+    + why we chose Simuliris
+    + we simplified concurrency away
+    + we contributed protocols
   + simulation relation
     + intuitive meaning
       + source simulates target under postcondition Φ and protocol Χ
       + any target execution can be reproduced in the source
       + can stop on Φ
       + can perform simultaneous calls in source and target according to protocol Χ (calling convention)
-    + double fixed-point
     + state interpretation
+      + statements have pure propositions and also resources
+      + unary state interpretation: I(σ), standard in Iris
+        + enforces the consistency of resource propositions
+          and the physical store
+        + unary points-to predicates lₛ ↦ₛ vₛ, lₜ ↦ₜ vₜ
+      + binary state interpretation: I(σₛ,σₜ)
+        + relationational propositions: lₛ ≈{bij} lₜ
+      + definition of I not shown in full
+    + double fixed-point
     + 5 clauses
       + (1) halting clause
         + e_s, e_t already in the post-condition
@@ -64,3 +76,9 @@
               + it should not change the adequacy proof that
                 assumes a closed relation anyway
               + conjecture: the closure theorem would still work
+  + adequacy
+  + program logic
+    + our simulation relation can be seen as a program logic
+      (clear specifications)
+    + ... equipped with the following reasoning rules
+    + at this point we explain heap bijection assertions

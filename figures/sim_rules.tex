@@ -31,21 +31,6 @@
             }{
                 \iSim[\Chi]{\Phi}{e_s}{e_t}
             }
-        \\
-        \inferrule*[lab=SimBijInsert]
-            {
-                \loc_s \mapsto_s v_s
-            \and
-                \loc_t \mapsto_t v_t
-            \and
-                v_s \iSimilar v_t
-            \and
-                \loc_s \iInBij \loc_t \iSepImp
-                \iSim[\Chi]{\Phi}{e_s}{e_t}
-            }{
-                \iSim[\Chi]{\Phi}{e_s}{e_t}
-            }
-        \\
         \inferrule*[lab=SimSrcConstr1]
             {
                 \iSim[\Chi]{\Phi}{
@@ -141,6 +126,22 @@
             }{
                 \iSim[\Chi]{\Phi}{\lambdStore{\loc_s}{i}{v_s}}{\lambdStore{\loc_t}{i}{v_t}}
             }
+
+        \\
+        \inferrule*[lab=SimBijInsert]
+            {
+                \loc_s \mapsto_s v_s
+            \and
+                \loc_t \mapsto_t v_t
+            \and
+                v_s \iSimilar v_t
+            \and
+                \loc_s \iInBij \loc_t \iSepImp
+                \iSim[\Chi]{\Phi}{e_s}{e_t}
+            }{
+                \iSim[\Chi]{\Phi}{e_s}{e_t}
+            }
+        \\
     \end{mathparpagebreakable}
     \caption{Reasoning rules for simulation (excerpt, omitting freshness conditions)}
     \label{fig:sim_rules}
