@@ -3,6 +3,14 @@
     + syntax, semantics, syntactic sugar (lists)
     + small untyped calculus
     + post closure conversion: no lambda, functions calls with function pointers and static program
+      + Gabriel disagrees with "post closure conversion":
+        this gives the wrong impression that TMC in OCaml acts at that level,
+        whereas TMC in OCaml is implemented before that, on the Lambda language
+        the current design is not part of a compiler pipeline, as "post closure conversion"
+        suggests, but the result of a modelling step where we remove irrelevant features
+      + "post closure conversion": closure conversion still allows inner lambdas, as long as they are closed
+      + "supercombinators": first-order lambda-calculus without inner lambdas
+      + inspired by SimuLang
     + constructors: tagged memory blocks
     + non-deterministic evaluation order of constructors
   + TMC transformation
@@ -68,11 +76,11 @@
           + closed simulation: the subset with 1-2-3-4
           + can be expressed with eₛ ≳ eₜ < ⊥ > { Φ }
         + Χ differs from Simuliris
-        + inspired by Paulo: Χ allows do v { Ψ }
+        + inspired by Paulo: Χ allows do v { Φ }
 	  + specification of an effect
           + protocol Χ allows the program to perform the effect v and garantees that every permitted reply satisfies postcondition Φ
-	  + "we would like programmers to think about performing an effect essentially in the same way as they thunk about calling a function"
-	  + wp parameterized by protcol: ewp e < Ψ > { Φ }
+	  + "we would like programmers to think about performing an effect essentially in the same way as they think about calling a function"
+	  + wp parameterized by protcol: ewp e < Χ > { Φ }
         + Ψ relational postcondition of the function call
         + the generic formulation of protocols lets external calls
           resume computations with arbitrary expressions e_s'', e_t''
@@ -107,7 +115,11 @@
   + adequacy
     + canonical way to leave the logic
     + resulting refinement depends only on the operational semantics
-+ proof
+  + runtime simulation
+    + essentially the same as Simuliris
+    + necessary because source and target compute similar values, not equal values
+    + as source and target expressions are executed, similar values are pushed into the runtime environment Γ
++ TMC protocols and specs
   + TMC protocol Χ_TMC
     + captures the two calling conventions involved in the transformation: direct and DPS
     + Χ_dir: direct calling convention
@@ -119,25 +131,23 @@
       + source calls some defined function f; target calls the DPS variant of f (whose name is given by ξ)
       + target points-to assertion represents the hole of the partial cell that must be filled
       + more permissive than linear hole: hole can be written several times
+  + TMC specs
+    + prove specification of the transformation
+      + similar to Χ_TMC, but generalized to arbitrary expressions
+      + specification of direct transformation
+        + body of the direct variants
+        + transformed expression computes the same thing modulo similarity
+      + specification of DPS transformation
+        + body of the direct variants
+        + transformed expression computes the same thing and additionally writes it to the destination
++ Tying things up
   + prove soundness
     + admitting Χ_TMC is valid, we get soundness for free
       + by simulation soundness, we must prove a closed simulation for the direct calling convention
       + applying the closure theorem, we open the simulation with Χ_TMC
       + we conclude by applying Χ_dir
     + suggests the difficulty lies in the validity of Χ_TMC
-  + protocol validity derives from the specification of the transformation (yet to be shown)
-  + runtime simulation
-    + essentially the same as Simuliris
-    + necessary because source and target compute similar values, not equal values
-    + as source and target expressions are executed, similar values are pushed into the runtime environment Γ
-  + prove specification of the transformation
-    + similar to Χ_TMC, but generalized to arbitrary expressions
-    + specification of direct transformation
-      + body of the direct variants
-      + transformed expression computes the same thing modulo similarity
-    + specification of DPS transformation
-      + body of the direct variants
-      + transformed expression computes the same thing and additionally writes it to the destination
+  + protocol validity derives from the specification of the transformation
 + related work
   + ReLoC Reloaded: A Mechanized Relational Logic for Fine-Grained Concurrency and Logical Atomicity
   + A Higher-Order Logic for Concurrent Termination-Preserving Refinement
