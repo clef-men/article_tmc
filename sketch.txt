@@ -16,66 +16,25 @@
   + TMC transformation
     + two transformations: direct and DPS
     + relations: to capture all possible decompositions
-+ simulation
-  + background section
-    + why we chose Simuliris
-    + we simplified concurrency away
-    + we contributed protocols
-  + simulation relation
-    + intuitive meaning
-      + source simulates target under postcondition Φ and protocol Χ
-      + any target execution can be reproduced in the source
-      + can stop on Φ
-      + can perform simultaneous calls in source and target according to protocol Χ (calling convention)
-    + state interpretation
-      + statements have pure propositions and also resources
-      + unary state interpretation: I(σ), standard in Iris
-        + enforces the consistency of resource propositions
-          and the physical store
-        + unary points-to predicates lₛ ↦ₛ vₛ, lₜ ↦ₜ vₜ
-      + binary state interpretation: I(σₛ,σₜ)
-        + relationational propositions: lₛ ≈{bij}≈ lₜ
-      + definition of I not shown in full
-    + double fixed-point (no step indexing, no Loëb induction)
-    + 5 clauses
-      + (1) halting clause
-        + e_s, e_t already in the post-condition
-      + (2) failure clause
-        + both expressions are strongly stuck
-        + key rule for safety preservation
-        + different from the Simuliris simulation
-          + instead of assuming that the source is safe,
-            we allow to stop when it fails -- provided the target also fails
-          + strongly stuck: stuck for any state σ
-            + TODO: why strongly stuck instead of stuck?
-              + stuck would arguably be more natural
-              + do we get more with strongly stuck?
-              + does the Coq proof still pass with stuck?
-              + Clément wonders if this comes from the needs of adequacy
-      + (3) target stuttering / solo source
-        + arbitrary number of steps, any path (not all paths)
-        + why sim-inner?
-          + repeating indefinitely would break divergence preservation
-          + a loop could simulate anything, in particular a terminating expression
-      + (4)
-        + (A) source stuttering / solo target
-          + a single step, all paths
-          + why sim-inner?
-            + would break termination preservation
-            + anything could simulate a loop, in particular a terminating expression
-        + (B) synchronization point
-          + the most important clause
-          + for any single step in the target,
-            we can match it with a non-empty source reduction sequence
-          + why sim?
-            + we made progress on both sides
-            + repeating this rule infinitely does not endanger termination preservation
-            + why not sim-inner: we could not relate two loops anymore
-      + (5) apply protocol
-        + open vs. closed simulation
-          + closed simulation: the subset with 1-2-3-4
-          + can be expressed with eₛ ≳ eₜ < ⊥ > { Φ }
-        + Χ differs from Simuliris
+
++ A relational separation logic for Lambda programs
+  + introduce the judgment eₛ ≳ eₜ < Χ > { Φ }
+    + a relational separation logic
+    + in fact defined as a simulation inspired by Simuliris,
+      details shown in later section
+    + reasoning rules below are simulation lemmas
+  + relational assertions
+    + source points-to
+    + target points-to
+    + heap bijection
+    + value similarity
+  + program logic = reasoning rules
+    + basic rules (independent from the language)
+      + sim-post: stop on the postcondition
+      + sim-bind: standard bind rule to sequence the computation on either side
+      + sim-src-pure: can take pure steps in the source
+      + sim-tgt-pure: can take pure steps in the target
+      + sim-apply-protocol
         + inspired by Paulo: Χ allows do v { Φ }
 	  + specification of an effect
           + protocol Χ allows the program to perform the effect v and garantees that every permitted reply satisfies postcondition Φ
@@ -85,23 +44,7 @@
         + the generic formulation of protocols lets external calls
           resume computations with arbitrary expressions e_s'', e_t''
           + we use it for function calls that return values
-        + one must prove that after resuming with es'', et'' we can
-          get back in the simulation
-        + why sim?
-          + bad definitions of Χ could give ill-defined notions of simulation
-          + we use it with protocols that guarantee some progress
-          + the closure theorem will enforce progress as a hypothesis
-          + why not sim-inner?
-            + Clément's intuition is that sim-inner may work
-              + it should not change the adequacy proof that
-                assumes a closed relation anyway
-              + conjecture: the closure theorem would still work
-  + program logic = reasoning rules (derived from the definition)
-    + basic rules (independent from the language)
-      + sim-post: stop on the postcondition
-      + sim-bind: standard bind rule to sequence the computation on either side
-      + sim-src-pure: can take pure steps in the source (unbounded finite target stuttering)
-      + sim-tgt-pure: can take pure steps in the target (unbounded finite source stuttering)
+        + one must prove that after resuming with es'', et'' we can get back in relation
     + language-specific rules
       + rules for non-deterministic and deterministic constructors
       + rules for bijection
@@ -109,16 +52,11 @@
 	  + same as similarity in Prop with more information for locations
 	  + similar locations point to heap blocks of size 3 whose content is also similar
 	+ sim-store: can write simultaneously similar values into similar blocks
-  + closure theorem
-    + if a protocol is "valid", coherent with itself, it can be ignored altogether
-    + a way to externalize coinduction
-  + adequacy
-    + canonical way to leave the logic
-    + resulting refinement depends only on the operational semantics
-  + runtime simulation
+  + runtime relation
     + essentially the same as Simuliris
     + necessary because source and target compute similar values, not equal values
     + as source and target expressions are executed, similar values are pushed into the runtime environment Γ
+
 + TMC protocols and specs
   + TMC protocol Χ_TMC
     + captures the two calling conventions involved in the transformation: direct and DPS
@@ -140,20 +78,103 @@
       + specification of DPS transformation
         + body of the direct variants
         + transformed expression computes the same thing and additionally writes it to the destination
-+ Tying things up
-  + prove soundness
+
++ Adequacy
+  + Behaviours and refinements
+  + simulation
+    + background section
+      + why we chose Simuliris
+      + we simplified concurrency away
+      + we contributed protocols
+    + simulation relation
+      + intuitive meaning
+        + source simulates target under postcondition Φ and protocol Χ
+        + any target execution can be reproduced in the source
+        + can stop on Φ
+        + can perform simultaneous calls in source and target according to protocol Χ (calling convention)
+      + state interpretation
+        + unary state interpretation: I(σ), standard in Iris
+          + enforces the consistency of resource propositions
+            and the physical store
+          + unary points-to predicates lₛ ↦ₛ vₛ, lₜ ↦ₜ vₜ
+        + binary state interpretation: I(σₛ,σₜ)
+          + relationational propositions: lₛ ≈{bij}≈ lₜ
+        + definition of I not shown in full
+      + double fixed-point (no step indexing, no Loëb induction)
+      + 5 clauses
+        + (1) halting clause
+          + e_s, e_t already in the post-condition
+        + (2) failure clause
+          + both expressions are strongly stuck
+          + key rule for safety preservation
+          + different from the Simuliris simulation
+            + instead of assuming that the source is safe,
+              we allow to stop when it fails -- provided the target also fails
+            + strongly stuck: stuck for any state σ
+              + TODO: why strongly stuck instead of stuck?
+                + stuck would arguably be more natural
+                + do we get more with strongly stuck?
+                + does the Coq proof still pass with stuck?
+                + Clément wonders if this comes from the needs of adequacy
+        + (3) target stuttering / solo source
+          + unbounded finite number of steps, any path (not all paths)
+          + why sim-inner?
+            + repeating indefinitely would break divergence preservation
+            + a loop could simulate anything, in particular a terminating expression
+        + (4)
+          + (A) source stuttering / solo target
+            + a single step, all paths
+            + why sim-inner?
+              + would break termination preservation
+              + anything could simulate a loop, in particular a terminating expression
+          + (B) synchronization point
+            + the most important clause
+            + for any single step in the target,
+              we can match it with a non-empty source reduction sequence
+            + why sim?
+              + we made progress on both sides
+              + repeating this rule infinitely does not endanger termination preservation
+              + why not sim-inner: we could not relate two loops anymore
+        + (5) apply protocol
+          + open vs. closed simulation
+            + closed simulation: the subset with 1-2-3-4
+            + can be expressed with eₛ ≳ eₜ < ⊥ > { Φ }
+          + Χ differs from Simuliris, inspired by Paulo
+          + why sim?
+            + bad definitions of Χ could give ill-defined notions of simulation
+            + we use it with protocols that guarantee some progress
+            + the closure theorem will enforce progress as a hypothesis
+            + why not sim-inner?
+              + Clément's intuition is that sim-inner may work
+                + it should not change the adequacy proof that
+                  assumes a closed relation anyway
+                + conjecture: the closure theorem would still work
+    + closure theorem
+      + if a protocol is "valid", coherent with itself, it can be ignored altogether
+      + a way to externalize coinduction
+    + adequacy
+      + canonical way to leave the logic
+      + resulting refinement depends only on the operational semantics
+  + the proof
     + admitting Χ_TMC is valid, we get soundness for free
       + by simulation soundness, we must prove a closed simulation for the direct calling convention
       + applying the closure theorem, we open the simulation with Χ_TMC
       + we conclude by applying Χ_dir
     + suggests the difficulty lies in the validity of Χ_TMC
-  + protocol validity derives from the specification of the transformation
+    + protocol validity derives from the specification of the transformation
+
 + related work
-  + ReLoC Reloaded: A Mechanized Relational Logic for Fine-Grained Concurrency and Logical Atomicity
-  + A Higher-Order Logic for Concurrent Termination-Preserving Refinement
-  + Transfinite Iris: Resolving an Existential Dilemma of Step-Indexed Separation Logic
-  + Simuliris: A Separation Logic Framework for Verifying Concurrent Program Optimizations
-  + A Separation Logic for Effect Handlers
-  + Tail Recursion Modulo Context: An Equational Approach
-  + A Functional Representation of Data Structures with a Hole
-  + Melocoton: A Program Logic for Verified Interoperability Between OCaml and C
+  + implementing TMC
+    TODO gather related work on TMC from the JFLA paper
+  + reasoning about DPS and TMC
+    + A Functional Representation of Data Structures with a Hole
+    + Mezzo
+    + Tail Recursion Modulo Context: An Equational Approach
+  + relational reasoning in separation logic
+    + ReLoC Reloaded: A Mechanized Relational Logic for Fine-Grained Concurrency and Logical Atomicity
+    + A Higher-Order Logic for Concurrent Termination-Preserving Refinement
+    + Transfinite Iris: Resolving an Existential Dilemma of Step-Indexed Separation Logic
+    + Simuliris: A Separation Logic Framework for Verifying Concurrent Program Optimizations
+  + Protocols
+    + A Separation Logic for Effect Handlers
+    + Melocoton: A Program Logic for Verified Interoperability Between OCaml and C
