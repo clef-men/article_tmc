@@ -1,4 +1,14 @@
-+ section "Simulation"
++ transformation
+  + language: Lambda
+    + syntax, semantics, syntactic sugar (lists)
+    + small untyped calculus
+    + post closure conversion: no lambda, functions calls with function pointers and static program
+    + constructors: tagged memory blocks
+    + non-deterministic evaluation order of constructors
+  + TMC transformation
+    + two transformations: direct and DPS
+    + relations: to capture all possible decompositions
++ simulation
   + background section
     + why we chose Simuliris
     + we simplified concurrency away
@@ -16,9 +26,9 @@
           and the physical store
         + unary points-to predicates lₛ ↦ₛ vₛ, lₜ ↦ₜ vₜ
       + binary state interpretation: I(σₛ,σₜ)
-        + relationational propositions: lₛ ≈{bij} lₜ
+        + relationational propositions: lₛ ≈{bij}≈ lₜ
       + definition of I not shown in full
-    + double fixed-point
+    + double fixed-point (no step indexing, no Loëb induction)
     + 5 clauses
       + (1) halting clause
         + e_s, e_t already in the post-condition
@@ -56,11 +66,13 @@
       + (5) apply protocol
         + open vs. closed simulation
           + closed simulation: the subset with 1-2-3-4
-          + can be expressed with eₛ ≳ eₜ <⊥> {ϕ}
+          + can be expressed with eₛ ≳ eₜ < ⊥ > { Φ }
         + Χ differs from Simuliris
-        + inspired by Paolo: Χ allows do v {Ψ}
-          + the protocol Χ allows the program to perform the effect v,
-            with post-condition Ψ
+        + inspired by Paulo: Χ allows do v { Ψ }
+	  + specification of an effect
+          + protocol Χ allows the program to perform the effect v and garantees that every permitted reply satisfies postcondition Φ
+	  + "we would like programmers to think about performing an effect essentially in the same way as they thunk about calling a function"
+	  + wp parameterized by protcol: ewp e < Ψ > { Φ }
         + Ψ relational postcondition of the function call
         + the generic formulation of protocols lets external calls
           resume computations with arbitrary expressions e_s'', e_t''
@@ -68,7 +80,7 @@
         + one must prove that after resuming with es'', et'' we can
           get back in the simulation
         + why sim?
-          + bad definitions of Chi could give ill-defined notions of simulation
+          + bad definitions of Χ could give ill-defined notions of simulation
           + we use it with protocols that guarantee some progress
           + the closure theorem will enforce progress as a hypothesis
           + why not sim-inner?
@@ -76,9 +88,62 @@
               + it should not change the adequacy proof that
                 assumes a closed relation anyway
               + conjecture: the closure theorem would still work
+  + program logic = reasoning rules (derived from the definition)
+    + basic rules (independent from the language)
+      + sim-post: stop on the postcondition
+      + sim-bind: standard bind rule to sequence the computation on either side
+      + sim-src-pure: can take pure steps in the source (unbounded finite target stuttering)
+      + sim-tgt-pure: can take pure steps in the target (unbounded finite source stuttering)
+    + language-specific rules
+      + rules for non-deterministic and deterministic constructors
+      + rules for bijection
+        + definition similarity in iProp
+	  + same as similarity in Prop with more information for locations
+	  + similar locations point to heap blocks of size 3 whose content is also similar
+	+ sim-store: can write simultaneously similar values into similar blocks
+  + closure theorem
+    + if a protocol is "valid", coherent with itself, it can be ignored altogether
+    + a way to externalize coinduction
   + adequacy
-  + program logic
-    + our simulation relation can be seen as a program logic
-      (clear specifications)
-    + ... equipped with the following reasoning rules
-    + at this point we explain heap bijection assertions
+    + canonical way to leave the logic
+    + resulting refinement depends only on the operational semantics
++ proof
+  + TMC protocol Χ_TMC
+    + captures the two calling conventions involved in the transformation: direct and DPS
+    + Χ_dir: direct calling convention
+      + essentially the same as Simuliris
+      + source and target call the same function (which must be defined as we don't suppose source behaviour is well defined)
+      + given similar arguments, the call returns similar values
+    + Χ_DPS: DPS calling convention
+      + intuitive specification of DPS: target computes essentially the same thing and additionally writes it in the destination
+      + source calls some defined function f; target calls the DPS variant of f (whose name is given by ξ)
+      + target points-to assertion represents the hole of the partial cell that must be filled
+      + more permissive than linear hole: hole can be written several times
+  + prove soundness
+    + admitting Χ_TMC is valid, we get soundness for free
+      + by simulation soundness, we must prove a closed simulation for the direct calling convention
+      + applying the closure theorem, we open the simulation with Χ_TMC
+      + we conclude by applying Χ_dir
+    + suggests the difficulty lies in the validity of Χ_TMC
+  + protocol validity derives from the specification of the transformation (yet to be shown)
+  + runtime simulation
+    + essentially the same as Simuliris
+    + necessary because source and target compute similar values, not equal values
+    + as source and target expressions are executed, similar values are pushed into the runtime environment Γ
+  + prove specification of the transformation
+    + similar to Χ_TMC, but generalized to arbitrary expressions
+    + specification of direct transformation
+      + body of the direct variants
+      + transformed expression computes the same thing modulo similarity
+    + specification of DPS transformation
+      + body of the direct variants
+      + transformed expression computes the same thing and additionally writes it to the destination
++ related work
+  + ReLoC Reloaded: A Mechanized Relational Logic for Fine-Grained Concurrency and Logical Atomicity
+  + A Higher-Order Logic for Concurrent Termination-Preserving Refinement
+  + Transfinite Iris: Resolving an Existential Dilemma of Step-Indexed Separation Logic
+  + Simuliris: A Separation Logic Framework for Verifying Concurrent Program Optimizations
+  + A Separation Logic for Effect Handlers
+  + Tail Recursion Modulo Context: An Equational Approach
+  + A Functional Representation of Data Structures with a Hole
+  + Melocoton: A Program Logic for Verified Interoperability Between OCaml and C
