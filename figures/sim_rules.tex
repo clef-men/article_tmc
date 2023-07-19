@@ -31,6 +31,18 @@
             }{
                 \iSim[\Chi]{\Phi}{e_s}{e_t}
             }
+        \\
+        \inferrule*[lab=SimApplyProtocol]
+            {
+              \Chi(\Psi, e_s, e_t)
+            \and
+               \forall e_s', e_t' \ldotp
+               \Psi(e_s', e_t') \iSepImp
+               \iSim[\Chi]{\Phi}{e'_s}{e'_t}
+            }{
+                \iSim[\Chi]{\Phi}{e_s}{e_t}
+            }
+        \\
         \inferrule*[lab=SimSrcConstr1]
             {
                 \iSim[\Chi]{\Phi}{
@@ -141,10 +153,14 @@
             }{
                 \iSim[\Chi]{\Phi}{e_s}{e_t}
             }
-        \\
     \end{mathparpagebreakable}
     \caption{Reasoning rules for simulation (excerpt, omitting freshness conditions)}
     \label{fig:sim_rules}
 \end{figure}
 
 % TODO add the rule that uses X
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End:
