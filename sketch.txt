@@ -176,5 +176,9 @@
     + Transfinite Iris: Resolving an Existential Dilemma of Step-Indexed Separation Logic
     + Simuliris: A Separation Logic Framework for Verifying Concurrent Program Optimizations
   + Protocols
+    + Compiler Verification Meets Cross-Language Linking via Data Abstraction
+      axiomatic semantics are close to protocols in spirit, they include in the
+      syntactic reasoning rules an "axiomatic" step that non-deterministically
+      reduces a function call following a (P,Q) pre/post
     + A Separation Logic for Effect Handlers
     + Melocoton: A Program Logic for Verified Interoperability Between OCaml and C

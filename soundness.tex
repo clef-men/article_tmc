@@ -1,5 +1,69 @@
-\section{Soundness}
+\section{A relational separation logic for \LambdaLang programs}
+\label{sec:reasoning_rules}
+
+The proof technique we propose to verify program transformations such
+as TMC is to capture a relational specification between inputs and
+outputs of the translation using a relational separation logic.
+
+We use a quadruple of the form $\iSim[\Chi]{\Phi}{e_s}{e_t}$, which can be read as ``$e_t$ refines $e_s$ under the postcondition $\Phi$ and protocol $\Chi$''. Intuitively, it states that $e_s$ and $e_t$ behave in a related way, and eventually (both get stuck or) reduce to expressions in the relational post-condition $\Phi$. The parameter $\Chi$ is a \emph{protocol} that specifies ``external'' transitions, typically used to model function calls.
+
+Traditionally this quadruple would be a judgment in a bespoke system of inference rules, proved correct by establishing a soundness or adequacy theorem. Our work instead uses the standard Iris approach of defining it directly as an assertion in a separation logic. The inference rules that we will provide are admissible lemmas, and they use separation logic as their meta-logic.
+
+We defer the definition of the assertion as a simulation to Section~\ref{sec:adequacy}, where it will also be proved adequate with respect to a notion of behavior refinement expressed outside Iris.
+
+\subsection{Relation assertions}
+
+The separation logic in which our reasoning rules are formulated is relational: it describes resources from a source and target programs and relations between them. We use the following primite assertions:
+
+\begin{itemize}
+\item $\loc_s \mapsto_s v_s$, a points-to assertion for the source program
+\item $\loc_t \mapsto_t v_t$, for the target program
+\item $\loc_s \iInBij \loc_t$, which asserts that the source location
+  $\loc_s$ and the target location $\loc_t$ are in the ``heap
+  bijection'' mentioned in Section~\ref{TODO}. This assertion is
+  persistent: one cannot remove locations from the bijection.
+\end{itemize}
+
+\input{figures/isimilar}
+
+On top of these assertions we define a \emph{value similarity} relation $\iSimilar {v_s} {v_t}$, given in Figure~\ref{fig:isimilar}.  Except for locations, this is exactly the equality. For locations, notice that locations appearing during the reduction of our programs are locations of valid blocks (always of size 3 in our language). We relate them by asking their field locations to be in the heap bijection.
+
+\subsection{Reasoning rules}
+
+\input{figures/sim_rules}
+
+Figure~\ref{fig:sim_rules} defines the reasoning rules for our relational program logic. We omitted some standard rules for brevity.
+
+\paragraph{Language-independent rules} The following rules are
+independent of \LambdaLang and could be reused as-is in further works.
+
+$\RefTirName{SimPost}$ states that two terms are related when they are in the relational postcondition.
+
+$\RefTirName{SimBind}$ is a standard bind rule sequencing computations on both sides.
+
+$\RefTirName{SimSrcPure}$ and $\RefTirName{SimTgtPure}$ let us take pure reduction steps in either the source or target and remain related. Pure steps (omitted for space) are the reduction steps that are deterministic and do not depend on the state.
+
+\paragraph{Abstract protocols}
+$\RefTirName{SimApplyProtocol}$ is the reasoning rule for external transitions specified by the protocol parameter $\Chi$. The protocol is a relation that axiomatizes the ability of certain pairs of expressions $e_s$ and $e_t$ to evolve in an abstract way specified by a relational postcondition $\Psi$ -- they may reduce to arbitrary expressions $e_s'$ and $e_t'$ related by $\Psi$. To conclude that $e_s$ and $e_t$ are related, one must prove that any such $e_s'$ and $e_t'$ remain related.
+
+TODO: finish this paragraph (follow the sketch)
+
+
+\paragraph{Language-specific rules} The following rules capture the behavior of \LambdaLang constructs.
+
+
+
+
+
+
+\section{Reasoning about TMC: protocols and specifications}
+\label{sec:TMC_protocols_and_specs}
+
+TODO (see sketch)
+
+\section{Adequacy}
 \label{sec:soundness}
+\label{sec:adequacy}
 
 (This paragraph below probably rather belongs to the introduction. Abort.)
 
@@ -65,8 +129,7 @@ The rest of this section expands each step of the proof, providing the necessary
 
 The TMC transformation preserves the behaviour of programs in a strong sense.
 %
-We expect terminating programs to remain terminating, diverging programs to remain diverging and failing programs (those that get 
-stuck) to remain failing.
+We expect terminating programs to remain terminating, diverging programs to remain diverging and failing programs (those that get stuck) to remain failing.
 
 Our definitions of behaviours and behaviour refinement are given in \fref{fig:refinement}.
 %
@@ -313,8 +376,6 @@ proof
 %   so we make a pure step on both sides and we have to show that the function bodies
 %   (with a bisubstitution (x mapsto (vs, vt)) applied) are in the relation.
 
-\input{figures/sim_rules}
-\input{figures/isimilar}
 \input{figures/protocol}
 \input{figures/csim}
 

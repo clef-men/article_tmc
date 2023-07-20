@@ -11,6 +11,8 @@
 
 \usepackage{mathpartir}
 \let\TirName\textsc
+\renewcommand{\DefTirName}[1]{\hypertarget{#1}{\TirName {#1}}}
+\newcommand{\RefTirName}[1]{\hyperlink{#1}{\TirName {#1}}}
 
 \let\oldexists\exists
 \let\exists\relax\DeclareMathOperator{\exists}{\oldexists}

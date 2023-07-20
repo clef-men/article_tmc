@@ -9,9 +9,9 @@
         \and
         \inferrule*[lab=SimBind]
             {
-                \iSim[\Chi]{\lambdaAbs (e_s', e_t') \ldotp \iSim[\Chi]{\Phi}{K_t [e_s']}{K_t [e_t']}}{e_s}{e_t}
+                \iSim[\Chi]{\lambdaAbs (e_s', e_t') \ldotp \iSim[\Chi]{\Phi}{K_s [e_s']}{K_t [e_t']}}{e_s}{e_t}
             }{
-                \iSim[\Chi]{\Phi}{K_t [e_s]}{K_t [e_t]}
+                \iSim[\Chi]{\Phi}{K_s [e_s]}{K_t [e_t]}
             }
         \\
         \inferrule*[lab=SimSrcPure]
@@ -157,8 +157,6 @@
     \caption{Reasoning rules for simulation (excerpt, omitting freshness conditions)}
     \label{fig:sim_rules}
 \end{figure}
-
-% TODO add the rule that uses X
 
 %%% Local Variables:
 %%% mode: latex
