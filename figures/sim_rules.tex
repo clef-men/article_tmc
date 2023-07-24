@@ -108,37 +108,45 @@
                 \iSim[\Chi]{\Phi}{e_s}{\lambdConstrDet{t}{v_{t1}}{v_{t2}}}
             }
         \\
+        \inferrule*[lab=SimSrcLoad]
+            {
+                (\loc_s + i) \mapsto_s v_s
+                \\\\
+                (\loc_s + i) \mapsto_s v_s \iSepImp
+                \iSim[\Chi]{\Phi}{v_s}{e_t}
+            }{
+                \iSim[\Chi]{\Phi}{\lambdLoad{\loc_s}{i}}{e_t}
+            }
+        \and
         \inferrule*[lab=SimSrcStore]
             {
-                (\loc_s + i) \mapsto_s w_s
-            \and
-                (\loc_s + i) \mapsto_s v_s \iSepImp
+                (\loc_s + i) \mapsto_s v_s
+                \\\\
+                (\loc_s + i) \mapsto_s w_s \iSepImp
                 \iSim[\Chi]{\Phi}{\lambdUnit}{e_t}
             }{
-                \iSim[\Chi]{\Phi}{\lambdStore{\loc_s}{i}{v_s}}{e_t}
+                \iSim[\Chi]{\Phi}{\lambdStore{\loc_s}{i}{w_s}}{e_t}
+            }
+        \\
+        \inferrule*[lab=SimTgtLoad]
+            {
+                (\loc_t + i) \mapsto_t v_t
+                \\\\
+                (\loc_s + i) \mapsto_t v_t \iSepImp
+                \iSim[\Chi]{\Phi}{e_s}{v_t}
+            }{
+                \iSim[\Chi]{\Phi}{e_s}{\lambdLoad{\loc_t}{i}}
             }
         \and
         \inferrule*[lab=SimTgtStore]
             {
-                (\loc_t + i) \mapsto_t w_t
-            \and
-                (\loc_t + i) \mapsto_t v_t \iSepImp
+                (\loc_t + i) \mapsto_t v_t
+                \\\\
+                (\loc_t + i) \mapsto_t w_t \iSepImp
                 \iSim[\Chi]{\Phi}{e_s}{\lambdUnit}
             }{
-                \iSim[\Chi]{\Phi}{e_s}{\lambdStore{\loc_t}{i}{v_t}}
+                \iSim[\Chi]{\Phi}{e_s}{\lambdStore{\loc_t}{i}{w_t}}
             }
-        \\
-        \inferrule*[lab=SimStore]
-            {
-                \loc_s \iSimilar \loc_t
-            \and
-                v_s \iSimilar v_t
-            \and
-                \Phi (\lambdUnit, \lambdUnit)
-            }{
-                \iSim[\Chi]{\Phi}{\lambdStore{\loc_s}{i}{v_s}}{\lambdStore{\loc_t}{i}{v_t}}
-            }
-
         \\
         \inferrule*[lab=SimBijInsert]
             {
@@ -152,6 +160,29 @@
                 \iSim[\Chi]{\Phi}{e_s}{e_t}
             }{
                 \iSim[\Chi]{\Phi}{e_s}{e_t}
+            }
+        \\
+        \inferrule*[lab=SimLoad]
+            {
+                \loc_s \iSimilar \loc_t
+            \and
+                \forall v_s, v_t \ldotp
+                v_s \iSimilar v_t
+                \iSepImp
+                \Phi (v_s, v_t)
+            }{
+                \iSim[\Chi]{\Phi}{\lambdLoad{\loc_s}{i}}{\lambdLoad{\loc_t}{i}}
+            }
+        \and
+        \inferrule*[lab=SimStore]
+            {
+                \loc_s \iSimilar \loc_t
+            \and
+                v_s \iSimilar v_t
+            \and
+                \Phi (\lambdUnit, \lambdUnit)
+            }{
+                \iSim[\Chi]{\Phi}{\lambdStore{\loc_s}{i}{v_s}}{\lambdStore{\loc_t}{i}{v_t}}
             }
     \end{mathparpagebreakable}
     \caption{Reasoning rules for simulation (excerpt, omitting freshness conditions)}

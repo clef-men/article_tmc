@@ -28,6 +28,7 @@
     + target points-to
     + heap bijection
     + value similarity
+      + similar locations point to heap blocks of size 3 whose content is also similar
   + program logic = reasoning rules
     + basic rules (independent from the language)
       + sim-post: stop on the postcondition
@@ -35,11 +36,6 @@
       + sim-src-pure: can take pure steps in the source
       + sim-tgt-pure: can take pure steps in the target
       + sim-apply-protocol
-        + inspired by Paulo: Χ allows do v { Φ }
-	  + specification of an effect
-          + protocol Χ allows the program to perform the effect v and garantees that every permitted reply satisfies postcondition Φ
-	  + "we would like programmers to think about performing an effect essentially in the same way as they think about calling a function"
-	  + wp parameterized by protcol: ewp e < Χ > { Φ }
         + Ψ relational postcondition of the function call
         + the generic formulation of protocols lets external calls
           resume computations with arbitrary expressions e_s'', e_t''
@@ -48,9 +44,6 @@
     + language-specific rules
       + rules for non-deterministic and deterministic constructors
       + rules for bijection
-        + definition similarity in iProp
-	  + same as similarity in Prop with more information for locations
-	  + similar locations point to heap blocks of size 3 whose content is also similar
 	+ sim-store: can write simultaneously similar values into similar blocks
   + runtime relation
     + essentially the same as Simuliris
@@ -181,4 +174,9 @@
       syntactic reasoning rules an "axiomatic" step that non-deterministically
       reduces a function call following a (P,Q) pre/post
     + A Separation Logic for Effect Handlers
+      we inspired by Paulo: Χ allows do v { Φ }
+        + specification of an effect
+        + protocol Χ allows the program to perform the effect v and garantees that every permitted reply satisfies postcondition Φ
+        + "we would like programmers to think about performing an effect essentially in the same way as they think about calling a function"
+	+ wp parameterized by protcol: ewp e < Χ > { Φ }
     + Melocoton: A Program Logic for Verified Interoperability Between OCaml and C

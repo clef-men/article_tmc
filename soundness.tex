@@ -44,17 +44,77 @@ $\RefTirName{SimBind}$ is a standard bind rule sequencing computations on both s
 $\RefTirName{SimSrcPure}$ and $\RefTirName{SimTgtPure}$ let us take pure reduction steps in either the source or target and remain related. Pure steps (omitted for space) are the reduction steps that are deterministic and do not depend on the state.
 
 \paragraph{Abstract protocols}
-$\RefTirName{SimApplyProtocol}$ is the reasoning rule for external transitions specified by the protocol parameter $\Chi$. The protocol is a relation that axiomatizes the ability of certain pairs of expressions $e_s$ and $e_t$ to evolve in an abstract way specified by a relational postcondition $\Psi$ -- they may reduce to arbitrary expressions $e_s'$ and $e_t'$ related by $\Psi$. To conclude that $e_s$ and $e_t$ are related, one must prove that any such $e_s'$ and $e_t'$ remain related.
+$\RefTirName{SimApplyProtocol}$ is the reasoning rule for external transitions specified by the protocol parameter $\Chi$. The protocol is a relation that axiomatizes the ability of certain pairs of expression $e_s$ and $e_t$ to evolve in an abstract way specified by a relational postcondition $\Psi$ -- they may reduce to arbitrary expressions $e_s'$ and $e_t'$ related by $\Psi$. To conclude that $e_s$ and $e_t$ are related, one must prove that any such $e_s'$ and $e_t'$ remain related.
 
-TODO: finish this paragraph (follow the sketch)
+Here is a simple protocol to relate calls to the same functions in the source and target expressions:
+\begin{align*}
+  \Chi_\mathrm{dir} (\Psi, e_s, e_t)
+  &\coloneqq
+  \begin{array}{l}
+          \exists f, v_s, v_t \ldotp
+      \\
+          f \in \dom{p_s} \iSep
+          e_s = \lambdCall{\lambdFunc{f}}{v_s} \iSep
+          e_t = \lambdCall{\lambdFunc{f}}{v_t} \iSep
+          v_s \iSimilar v_t \iSep {}
+      \\
+          \forall v_s', v_t' \ldotp
+          v_s' \iSimilar v_t' \iSepImp
+          \Psi (v_s', v_t')
+  \end{array}
+\end{align*}
+This protocol relates two calls of the same function $\lambdFunc{f}$
+with related arguments $v_s \iSimilar v_t$. Informally, it then
+guarantees that the results of the calls will be related values
+$v_s' \iSimilar v_t'$; precisely, it accepts any choice of post-condition $\Psi$ contains the similarity relation on values.
 
+If we use this protocol in the reasoning rule
+$\RefTirName{SimApplyProtocol}$ and instiatiate the postcondition $\Phi$ to be the value similarity relation $(\iSimilar)$ itself, we get the following specialized rule:
+\begin{mathpar}
+\infer
+{
+  f \in \dom{p_s}
+  \and
+  v_s \iSimilar v_t
+}{
+  \iSim[\Chi]{\iSimilar}
+    {\lambdCall{\lambdFunc{f}}{v_s}}
+    {\lambdCall{\lambdFunc{f}}{v_t}}
+}
+\end{mathpar}
+This is exactly the \TirName{Sim-Call} rule of \Simuliris~\citep*{TODO-simuliris}. Our generalized rule $\RefTirName{SimApplyProtocol}$ is a contribution of our work, inspired by \citet*{TODO-paulo}. The extra expressivity is required to support program transformations such as TMC that change function calling conventions.
 
-\paragraph{Language-specific rules} The following rules capture the behavior of \LambdaLang constructs.
+\paragraph{Language-specific rules: non-determinism}
+%
+Our relation $\iSim[\Chi]{\Phi}{e_s}{e_t}$ asserts that the target expression $e_t$ refines the source expression $e_s$: any behavior of $e_t$ is a valid behavior of $e_s$, all reductions of $e_t$ can be matched by some reduction of $e_s$. Consequently, non-determinism is treated differently in the source and target: we treat non-determinism as \emph{angelic} in source reductions and \emph{demonic} in target reductions.
 
+Our operational semantics uses non-deterministic rule for reduction of constructors: the non-deterministic constructor $\lambdConstr{c}{e_1}{e_2}$ reduces to a deterministic constructor $\lambdConstrDet{c}{x_1}{x_2}$, where the $x_1$ and $x_2$ are bound to $e_1$ and $e_2$ in some non-determistic order.
+%
+In the program logic, the user may \emph{choose} an order for the source reduction, by using one of the rules $\RefTirName{SimSrcConstr1}$ or $\RefTirName{SimSrcConstr2}$, and it has to prove that the expressions are related against \emph{any} target order, by proving the two premises of the rule $\RefTirName{SimTgtConstr}$.
 
+Once we have a deterministic constructor $\lambdConstrDet{c}{v_1}{v_2}$, the source and target reasoning rules $\RefTirName{SimSrcConstrDet}$ and $\RefTirName{SimTgtConstrDet}$ are symmetric.
+%
+They allocate the block at a new location in the source or target state; the user can assume a points-to predicate and has to prove that the location is related to the other expression.
 
+\paragraph{Language-specific rules: private locations}
+%
+If the user owns a points-to assertion $(\loc + i) \mapsto v$ on the source or target side, they can use it to reason about loads and stores on the location $\loc$ at index $i$. The rules $\RefTirName{SimSrcLoad}$ and $\RefTirName{SimTgtLoad}$ let us replace the load expression $\lambdLoad{\loc}{i}$ by the pointed value $v$, and the rules $\RefTirName{SimSrcStore}$ and $\RefTirName{SimTgtStore}$ let us store a new value $w$, replacing the points-to assertion by $(\loc + i) \mapsto w$.
 
+\paragraph{Language-specific rules: locations in the bijection}
+%
+In addition to points-to predicate on source and target locations, we maintain a heap bijection formed by the resource assertions $\loc_s \iInBij \loc_t$.
 
+At any point the user can add two locations to the heap bijection using the rule $\RefTirName{SimBijInsert}$. They need to provide private points-to predicates $\loc_s \mapsto_s v_s$ and $\loc_t \mapsto_t v_t$, and prove that the content of the locations are related: $v_s \iSimilar v_t$.
+%
+In exchange they receive a heap bijection assertion $\loc_s \iInBij \loc_t$. These locations will remain in the heap bijection forever ($\loc_s \iInBij \loc_t$ is a persistent assertion), and we will preserve the invariant that their values are related.
+
+To add locations $\loc_s, \loc_t$ to the bijections, we \emph{consume} their points-to assertions. At this point we cannot use the one-sided reasoning rules for load and store: we lost ownership of $\loc_s \mapsto_s v_s$, $\loc_t \mapsto_t v_t$.
+%
+The user must instead use the synchronized rules $\RefTirName{SimLoad}$ and $\RefTirName{SimStore}$, which relate two loads or two stores on $\loc_s$ and $\loc_t$.
+%
+$\RefTirName{SimLoad}$ proves that two loads $\lambdLoad{\loc_s}{i}$ and $\lambdLoad{\loc_t}{i}$ are related. The user must prove that $\loc_s \iSimilar \loc_t$, that is, that all three pairs of fields $(\loc_s + i), (\loc_t + i)$ are in the bijection; it knows nothing of the current values $v_s, v_t$ at these locations, except that they are related by the bijection invariant.
+%
+$\RefTirName{SimStore}$ proves that two stores $\lambdStore{\loc_s}{i}{v_s}$ and $\lambdStore{\loc_t}{i}{v_t}$ are related. The user must show that $\loc_s, \loc_t$ are in the bijection, and preserve the bijection invariant by proving that the values to be stored are related.
 
 \section{Reasoning about TMC: protocols and specifications}
 \label{sec:TMC_protocols_and_specs}
