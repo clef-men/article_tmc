@@ -1,21 +1,21 @@
 \begin{figure}[tp]
     \begin{align*}
-    		\wf{\Gamma}
+    		\wf{\gamma}
     		&\coloneqq
     		\forall x \ldotp
     		\exists v_s, v_t \ldotp
-    		\Gamma (x) = (v_s, v_t) \iSep
+    		\gamma (x) = (v_s, v_t) \iSep
     		v_s \iSimilar v_t
     	\\
-    		\iCsimv{\Phi}{e_s}{e_t}
+    		\iCsimv[\Chi]{\Phi}{e_s}{e_t}
     		&\coloneqq
-    		\forall \Gamma \ldotp
-    		\wf{\Gamma} \iSepImp
-    		\iSimv[\Chi_\mathrm{TMC}]{\Phi}{\Gamma_s (e_s)}{\Gamma_t (e_t)}
+    		\forall \gamma \ldotp
+    		\wf{\gamma} \iSepImp
+    		\iSimv[\Chi]{\Phi}{\gamma_s (e_s)}{\gamma_t (e_t)}
     	\\
-    	   \iCsimvHoare{P}{\Phi}{e_s}{e_t}
+    	   \iCsimvHoare[\Chi]{P}{\Phi}{e_s}{e_t}
     	   &\coloneqq
-    	   \iPersistent \left( P \iSepImp \iCsimv{\Phi}{e_s}{e_t} \right)
+    	   \iPersistent \left( P \iSepImp \iCsimv[\Chi]{\Phi}{e_s}{e_t} \right)
     \end{align*}
     \caption{Closed simulation}
     \label{fig:csim}

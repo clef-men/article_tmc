@@ -116,6 +116,16 @@ $\RefTirName{SimLoad}$ proves that two loads $\lambdLoad{\loc_s}{i}$ and $\lambd
 %
 $\RefTirName{SimStore}$ proves that two stores $\lambdStore{\loc_s}{i}{v_s}$ and $\lambdStore{\loc_t}{i}{v_t}$ are related. The user must show that $\loc_s, \loc_t$ are in the bijection, and preserve the bijection invariant by proving that the values to be stored are related.
 
+\subsection{Runtime relation}
+
+\input{figures/csim}
+
+The assertion $\iSim[\Chi]{\Phi}{e_s}{e_t}$ relates closed terms that may contain locations, as may be produced by our operational semantics. To prove the correctness of a program transformation, we proceed by induction on its definition on well-formed source terms, that do not contain locations and contain free variables.
+
+To bridge the gap between the two sorts of terms, we define in Figure~\ref{fig:csim} a \emph{runtime relation} $\iCsimv[\Chi]{\Phi}{e_s}{e_t}$ that closes over all bisubstitutions $\gamma$ of related values for free variables. This sort of definition is standard (considering our simulation as an untyped logical relation), it is simply called the ``logical relation'' in \Simuliris.
+
+Our theorems state that terms related by the TMC transformation are in the runtime relation $\iCsimv[\Chi]{\Phi}{e_s}{e_t}$, and their proofs expand its definition to introduce an arbitrary bisubstitution $\gamma$ and work directly on $\iSim[\Chi]{\Phi}{e_s}{e_t}$ using our reasoning rules.
+
 \section{Reasoning about TMC: protocols and specifications}
 \label{sec:TMC_protocols_and_specs}
 
@@ -437,7 +447,6 @@ proof
 %   (with a bisubstitution (x mapsto (vs, vt)) applied) are in the relation.
 
 \input{figures/protocol}
-\input{figures/csim}
 
 % François: the relational separation logic captures the right
 % specification for functions. This is key to compositionality. We
