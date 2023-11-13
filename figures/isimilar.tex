@@ -3,37 +3,37 @@
     \begin{mathparpagebreakable}
         \inferrule*
             {}{
-                \lambdUnit \iSimilar \lambdUnit
+                \datalangUnit \iSimilar \datalangUnit
             }
         \and
         \inferrule*
             {}{
-                i \iSimilar i
+                \datalangIdx \iSimilar \datalangIdx
             }
         \and
         \inferrule*
             {}{
-                t \iSimilar t
+                \datalangTag \iSimilar \datalangTag
             }
         \and
         \inferrule*
             {}{
-                b \iSimilar b
+                \datalangBool \iSimilar \datalangBool
             }
         \and
         \inferrule*
             {
-                \forall i \in \{0,1,2\} \ldotp
-                (\loc_s + i) \iInBij (\loc_t + i)
+                \forall \datalangIdx \in \datalangIdx[] \ldotp
+                (\datalangLoc_s + \datalangIdx) \iInBij (\datalangLoc_t + \datalangIdx)
             }{
-                \loc_s \iSimilar \loc_t
+                \datalangLoc_s \iSimilar \datalangLoc_t
             }
         \and
         \inferrule*
             {
-                f \in \dom{p_s}
+                \datalangFn \in \dom{\datalangProg_s}
             }{
-                \lambdFunc{f} \iSimilar \lambdFunc{f}
+                \datalangFnptr{\datalangFn} \iSimilar \datalangFnptr{\datalangFn}
             }
     \end{mathparpagebreakable}
     \caption{Similarity in $\iProp$}

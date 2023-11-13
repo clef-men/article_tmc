@@ -1,6 +1,6 @@
 \section{Introduction}
 
-In \OCamlLang, the natural implementation of the \ocaml|map| function on polymorphic lists is the following:
+In \OCaml, the natural implementation of the \ocaml|map| function on polymorphic lists is the following:
 
 \begin{OCaml}
 let rec map f xs =
@@ -16,7 +16,7 @@ Yet, calling \ocaml|map| on a large input list may crash with the dreaded \ocaml
 %
 Indeed, as functions calls consume stack space, the stack usage of this implementation is linear in the size of the input list.
 %
-This is the reason why \OCamlLang programmers have to be careful, when they write recursive functions, to remain in the so-called \emph{tail-recursive} fragment: every recursive call must be in tail position, that is the last thing the function does before returning.
+This is the reason why \OCaml programmers have to be careful, when they write recursive functions, to remain in the so-called \emph{tail-recursive} fragment: every recursive call must be in tail position, that is the last thing the function does before returning.
 %
 As there is nothing to do after a tail call, the stack frame can be directly reused.
 %
@@ -25,7 +25,7 @@ Therefore, tail calls do not consume stack space.
 Knowing this, we can provide another tail-recursive implementation of \ocaml|map|:
 
 \begin{minipage}{0.5\linewidth}
-\begin{OCaml}
+\begin{Ocaml}
 let rec rev_map f ys xs =
   match xs with
   | [] ->
@@ -33,15 +33,15 @@ let rec rev_map f ys xs =
   | x :: xs ->
       let y = f x in
       rev_map f (y :: ys) xs
-\end{OCaml}
+\end{Ocaml}
 \end{minipage}
 \hfill
 \begin{minipage}{0.5\linewidth}
-\begin{OCaml}
+\begin{Ocaml}
 let map f xs =
   let ys = rev_map f [] xs in
   List.rev ys
-\end{OCaml}
+\end{Ocaml}
 \end{minipage}
 
 This second version computes the reverse result list with \ocaml|rev_map| in the accumulator-passing style and applies \ocaml|List.rev|.
@@ -53,7 +53,7 @@ However, it is not as efficient on small lists since it does two traversals inst
 There is yet another implementation:
 
 \begin{minipage}{0.65\linewidth}
-\begin{OCaml}
+\begin{Ocaml}
 /* [dst] is a partially initialized list cell. */
 let rec map_dps dst f xs =
   match xs with
@@ -68,11 +68,11 @@ let rec map_dps dst f xs =
       set_field dst 1 dst' ;
       /* Continue with [dst'] as new destination. */
       map_dps dst' f xs
-\end{OCaml}
+\end{Ocaml}
 \end{minipage}
 \hfill
 \begin{minipage}{0.45\linewidth}
-\begin{OCaml}
+\begin{Ocaml}
 let map f xs =
   match xs with
   | [] ->
@@ -82,12 +82,12 @@ let map f xs =
       let dst = y :: [] in
       map_dps dst f xs ;
       dst
-\end{OCaml}
+\end{Ocaml}
 \end{minipage}
 
 This third implementation is much less natural.
 %
-It takes advantage of the memory representation of lists in \OCamlLang: some constant integer for the empty list and a heap-allocated cell containing one tag followed by two fields for the list constructor.
+It takes advantage of the memory representation of lists in \OCaml: some constant integer for the empty list and a heap-allocated cell containing one tag followed by two fields for the list constructor.
 %
 The \ocaml|set_field| function allows us to modify these fields.
 %
@@ -107,11 +107,11 @@ What happens is \ocaml|map_dps| constructs the final transformed list by modifyi
 %
 Not only is it stack-safe but it also does only one traversal, as opposed the previous stack-safe implementation.
 %
-Unfortunately, it cannot be implemented using only safe \OCamlLang features, as list cells are normally immutable.
+Unfortunately, it cannot be implemented using only safe \OCaml features, as list cells are normally immutable.
 %
 In fact, most strongly typed languages reject it.
 %
-A notable exception is \MezzoLang \cite{DBLP:journals/toplas/BalabonskiPP16}, which is based on a permission system inspired by \emph{separation logic}~\cite{DBLP:journals/cacm/OHearn19}.
+A notable exception is \Mezzo \cite{DBLP:journals/toplas/BalabonskiPP16}, which is based on a permission system inspired by \emph{separation logic}~\cite{DBLP:journals/cacm/OHearn19}.
 
 We can do better.
 %
@@ -121,18 +121,18 @@ In fact, the manual transformation of the natural implementation of \ocaml|map| 
 %
 TMC has been implemented in Lisp~[TODO], Prolog~[TODO] and Koka~\cite{DBLP:journals/pacmpl/LeijenL23}.
 %
-The first main contribution of this work is an implementation of TMC in the \OCamlLang compiler as an optional optimization.
+The first main contribution of this work is an implementation of TMC in the \OCaml compiler as an optional optimization.
 %
 Various functions in the standard library and third-party codebases have been rewritten to use it.
 %
 For instance, the efficient stack-safe version of \ocaml|map| is obtained just by annotating the natural definition with the attribute \ocaml|[@tail_mod_cons]|:
 
-\begin{OCaml}
+\begin{Ocaml}
 let[@tail_mod_cons] rec map f xs =
   match xs with
   | [] -> []
   | x :: xs -> f x :: map f xs
-\end{OCaml}
+\end{Ocaml}
 
 The second main contribution of this work is a mechanized proof of correctness for the core of this transformation on a small untyped calculus.
 %
@@ -142,7 +142,7 @@ Our proof relies on \Simuliris~\cite{DBLP:journals/pacmpl/GaherSSJDKKD22}, a sep
 %
 We found that their proof technique, a simulation relation, is not expressive enough to reason about program transformations that introduce new function calling conventions.
 %
-We had to generalize the \Simuliris handling of function calls by parameterizing the simulation relation over an abstract protocol inspired by the work of \citet*{DBLP:journals/pacmpl/VilhenaP21}.
+We had to generalize the \Simuliris handling of function calls by parameterizing the simulation relation over an abstract protocol inspired by the work of \citeauthor{DBLP:journals/pacmpl/VilhenaP21}~\cite{DBLP:journals/pacmpl/VilhenaP21}.
 %
 This contribution of our work is independent from the TMC transformation and our small calculus.
 %
@@ -152,7 +152,7 @@ Interestingly, the core of the soundness proof is the specification of the two v
 %
 It conveys the essence of destination-passing style: computing the same thing and writing it to an owned destination.
 %
-For instance, delaying the definition of the simulation relation $\iSimv{\Phi}{e_s}{e_t}$ and the similarity relation $v_s \iSimilar v_t$, the specification of the variants of \ocaml|map| is:
+For instance, delaying the definition of the simulation relation $\iSimv{\Phi}{e_s}{e_t}$ and the similarity relation $\datalangVal_s \iSimilar \datalangVal_t$, the specification of the variants of \ocaml|map| is:
 %
 \begin{align*}
         \iSimvHoare{
@@ -160,29 +160,29 @@ For instance, delaying the definition of the simulation relation $\iSimv{\Phi}{e
         }{
             \iSimilar
         }{
-            & \lambdCall{\lambdFunc{\ocamlText{map}}}{v_s}
+            & \datalangCall{\datalangFnptr{\ocamlText{map}}}{\datalangVal_s}
         }{
-            \lambdCall{\lambdFunc{\ocamlText{map}}}{v_t}
+            \datalangCall{\datalangFnptr{\ocamlText{map}}}{\datalangVal_t}
         }
     \\
         \iSimvHoare{
-            (\loc + i) \mapsto \lambdHole
+            (\datalangLoc + \datalangIdx) \iPointsto \datalangHole
         }{
-            \lambdaAbs (v_s, w_t) \ldotp
-            \exists v_t \ldotp
-            w_t = \lambdUnit \iSep
-            (\loc + i) \mapsto v_t \iSep
-            v_s \iSimilar v_t
+            \lambdaAbs (\datalangVal_s, \datalangVal_t') \ldotp
+            \exists \datalangVal_t \ldotp
+            \datalangVal_t' = \datalangUnit \iSep
+            (\datalangLoc + \datalangIdx) \iPointsto \datalangVal_t \iSep
+            \datalangVal_s \iSimilar \datalangVal_t
         }{
-            & \lambdCall{\lambdFunc{\ocamlText{map}}}{v_s}
+            & \datalangCall{\datalangFnptr{\ocamlText{map}}}{\datalangVal_s}
         }{
-            \lambdCall{\lambdFunc{\ocamlText{map_dps}}}{\lambdPair{\lambdPair{\loc}{i}}{v_t}}
+            \datalangCall{\datalangFnptr{\ocamlText{map_dps}}}{\datalangPair{\datalangPair{\datalangLoc}{\datalangIdx}}{\datalangVal_t}}
         }
 \end{align*}
 
 To sum up, our main contributions are:
 \begin{enumerate}
-    \item an implementation of the TMC transformation in the \OCamlLang compiler;
+    \item an implementation of the TMC transformation in the \OCaml compiler;
     \item a mechanized proof of soundness for a simplified transformation on a small calculus;
     \item a generalization of \Simuliris handling of function calls to reason about different calling conventions.
 \end{enumerate}

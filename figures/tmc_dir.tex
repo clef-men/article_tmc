@@ -2,76 +2,74 @@
     \begin{mathparpagebreakable}
         \inferrule*
             {}{
-                \boxed{- \tmcDir{\xi} - : \nterm{Expr} \rightarrow \nterm{Expr} \rightarrow \Prop}
+                \boxed{- \tmcDir{\datalangRenaming} - : \datalangExpr[] \rightarrow \datalangExpr[] \rightarrow \Prop}
             }
         \and
         \inferrule*
             {}{
-                \boxed{- \tmcDir{\xi} - : \nterm{Def} \rightarrow \nterm{Def} \rightarrow \Prop}
+                \boxed{- \tmcDir{\datalangRenaming} - : \datalangDef[] \rightarrow \datalangDef[] \rightarrow \Prop}
             }
         \\
         \inferrule*[lab=DirVal]
             {}{
-                v
-                \tmcDir{\xi}
-                v
+                \datalangVal
+                \tmcDir{\datalangRenaming}
+                \datalangVal
             }
         \and
         \inferrule*[lab=DirVar]
             {}{
-                x
-                \tmcDir{\xi}
-                x
+                \datalangVar
+                \tmcDir{\datalangRenaming}
+                \datalangVar
             }
         \and
         \inferrule*[lab=DirLet]
             {
-                e_{s1} \tmcDir{\xi} e_{t1}
+                \datalangExpr_{s1} \tmcDir{\datalangRenaming} \datalangExpr_{t1}
             \and
-                e_{s2} \tmcDir{\xi} e_{t2}
+                \datalangExpr_{s2} \tmcDir{\datalangRenaming} \datalangExpr_{t2}
             }{
-                \lambdLet{x}{e_{s1}}{e_{s2}}
-                \tmcDir{\xi}
-                \lambdLet{x}{e_{t1}}{e_{t2}}
+                \datalangLet{\datalangVar}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
+                \tmcDir{\datalangRenaming}
+                \datalangLet{\datalangVar}{\datalangExpr_{t1}}{\datalangExpr_{t2}}
             }
         \\
-        \inferrule*[lab=DirConstrDPS1]
+        \inferrule*[lab=DirBlockDPS1]
             {
-                e_{s1} \tmcDir{\xi} e_{t1}
+                \datalangExpr_{s1} \tmcDir{\datalangRenaming} \datalangExpr_{t1}
             \and
-                (\mathit{dst}, \lambdTwo, e_{s2}) \tmcDir{\xi} e_{t2}
+                (\datalangExpr_\mathit{dst}, \datalangTwo, \datalangExpr_{s2}) \tmcDir{\datalangRenaming} \datalangExpr_{t2}
             }{
-                \lambdConstr{t}{e_{s1}}{e_{s2}}
-                \tmcDir{\xi}
+                \datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
+                \tmcDir{\datalangRenaming}
                 \begin{array}{l}
-                    \lambdLet{\mathit{dst}}{\lambdConstr{t}{e_{t1}}{\lambdHole}}{\\
-                    \lambdSeq{e_{t2}}{\mathit{dst}}
-                    }
+                    \datalangLet{\datalangExpr_\mathit{dst}}{\datalangBlock{\datalangTag}{\datalangExpr_{t1}}{\datalangHole}}{\\
+                    \datalangSeq{\datalangExpr_{t2}}{\datalangExpr_\mathit{dst}}}
                 \end{array}
             }
         \and
-        \inferrule*[lab=DirConstrDPS2]
+        \inferrule*[lab=DirBlockDPS2]
             {
-                e_{s2} \tmcDir{\xi} e_{t2}
+                \datalangExpr_{s2} \tmcDir{\datalangRenaming} \datalangExpr_{t2}
             \and
-                (\mathit{dst}, \lambdOne, e_{s1}) \tmcDir{\xi} e_{t1}
+                (\datalangExpr_\mathit{dst}, \datalangOne, \datalangExpr_{s1}) \tmcDir{\datalangRenaming} \datalangExpr_{t1}
             }{
-                \lambdConstr{t}{e_{s1}}{e_{s2}}
-                \tmcDir{\xi}
+                \datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
+                \tmcDir{\datalangRenaming}
                 \begin{array}{l}
-                    \lambdLet{\mathit{dst}}{\lambdConstr{t}{\lambdHole}{e_{t2}}}{\\
-                    \lambdSeq{e_{t1}}{\mathit{dst}}
-                    }
+                    \datalangLet{\datalangExpr_\mathit{dst}}{\datalangBlock{\datalangTag}{\datalangHole}{\datalangExpr_{t2}}}{\\
+                    \datalangSeq{\datalangExpr_{t1}}{\datalangExpr_\mathit{dst}}}
                 \end{array}
             }
         \\
         \inferrule*[lab=DirDef]
             {
-                e_s \tmcDir{\xi} e_t
+                \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
             }{
-                \lambdDef{x}{e_s}
-                \tmcDir{\xi}
-                \lambdDef{x}{e_t}
+                \datalangRec{\datalangVar}{\datalangExpr_s}
+                \tmcDir{\datalangRenaming}
+                \datalangRec{\datalangVar}{\datalangExpr_t}
             }
     \end{mathparpagebreakable}
     \caption{Direct TMC transformation (omitting congruence rules similar to \TirName{DirLet} and freshness conditions)}

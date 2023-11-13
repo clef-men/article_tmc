@@ -1,0 +1,137 @@
+\begin{figure}[tp]
+	\centering
+	\begin{tabular}{|c|ccc||c|ccc|}
+		\hline
+				\multicolumn{4}{|c||}{\bf{Source program}}
+			&
+				\multicolumn{4}{c|}{\bf{Transformed program}}
+		\\ \hline
+				\bf{Heap}
+			&
+				\multicolumn{3}{c||}{\bf{Position}}
+			&
+				\bf{Heap}
+			&
+				\multicolumn{3}{c|}{\bf{Position}}
+		\\ \hline
+				$\emptyset$
+			&
+				$\rightarrow$
+			&
+				$\datalangCall{\datalangText{map}}{\datalangLoc_1}$
+			&
+			&
+				$\emptyset$
+			&
+				$\rightarrow$
+			&
+				$\datalangCall{\datalangText{map}}{\datalangLoc_1}$
+			&
+		\\ \hline
+				$\emptyset$
+			&
+				$\rightarrow$
+			&
+				$\datalangCall{\datalangText{map}}{\datalangLoc_2}$
+			&
+			&
+				$\datalangLoc_1' \iPointsto (\mathrm{CONS}, \datalangVal_1', \datalangHole)$
+			&
+				$\rightarrow$
+			&
+				$\datalangCall{\datalangText{map\_dps}}{\datalangPair{\datalangPair{\datalangLoc_1'}{\datalangTwo}}{\datalangLoc_2}}$
+			&
+		\\ \hline
+				$\emptyset$
+			&
+				$\rightarrow$
+			&
+				$\datalangCall{\datalangText{map}}{\datalangLoc_3}$
+			&
+			&
+				$\begin{array}{l}
+						\datalangLoc_1' \iPointsto (\mathrm{CONS}, \datalangVal_1', \datalangLoc_2') \iSep {}
+					\\
+						\datalangLoc_2' \iPointsto (\mathrm{CONS}, \datalangVal_2', \datalangHole)
+				\end{array}$
+			&
+				$\rightarrow$
+			&
+				$\datalangCall{\datalangText{map_dps}}{\datalangPair{\datalangPair{\datalangLoc_2'}{\datalangTwo}}{\datalangLoc_3}}$
+			&
+		\\ \hline
+				$\textcolor{teal}{\datalangLoc_3'} \iPointsto (\mathrm{NIL}, \datalangUnit, \datalangUnit)$
+			&
+			&
+				$\datalangCall{\datalangText{map}}{\datalangLoc_3}$
+			&
+				$\rightarrow$
+			&
+				$\begin{array}{l}
+						\datalangLoc_1' \iPointsto (\mathrm{CONS}, \datalangVal_1', \datalangLoc_2') \iSep {}
+					\\
+						\datalangLoc_2' \iPointsto (\mathrm{CONS}, \datalangVal_2', \datalangLoc_3') \iSep {}
+					\\
+                        \textcolor{teal}{\datalangLoc_3'} \iPointsto (\mathrm{NIL}, \datalangUnit, \datalangUnit)
+				\end{array}$
+			&
+			&
+				$\datalangCall{\datalangText{map\_dps}}{\datalangPair{\datalangPair{\datalangLoc_2'}{\datalangTwo}}{\datalangLoc_3}}$
+			&
+				$\rightarrow$
+		\\ \hline
+				$\begin{array}{l}
+				        \textcolor{teal}{\datalangLoc_3'} \iPointsto (\mathrm{NIL}, \datalangUnit, \datalangUnit) \iSep {}
+                    \\
+				        \textcolor{blue}{\datalangLoc_2'} \iPointsto (\mathrm{CONS}, \datalangVal_2', \datalangLoc_3')
+				\end{array}$
+			&
+			&
+				$\datalangCall{\datalangText{map}}{\datalangLoc_2}$
+			&
+				$\rightarrow$
+			&
+				$\begin{array}{l}
+						\datalangLoc_1' \iPointsto (\mathrm{CONS}, \datalangVal_1', \datalangLoc_2') \iSep {}
+					\\
+						\textcolor{blue}{\datalangLoc_2'} \iPointsto (\mathrm{CONS}, \datalangVal_2', \datalangLoc_3')
+					\\
+                        \textcolor{teal}{\datalangLoc_3'} \iPointsto (\mathrm{NIL}, \datalangUnit, \datalangUnit)
+				\end{array}$
+			&
+			&
+				$\datalangCall{\datalangText{map\_dps}}{\datalangPair{\datalangPair{\datalangLoc_1'}{\datalangTwo}}{\datalangLoc_2}}$
+			&
+				$\rightarrow$
+		\\ \hline
+				$\begin{array}{l}
+				        \textcolor{teal}{\datalangLoc_3'} \iPointsto (\mathrm{NIL}, \datalangUnit, \datalangUnit) \iSep {}
+                    \\
+						\textcolor{blue}{\datalangLoc_2'} \iPointsto (\mathrm{CONS}, \datalangVal_2', \datalangLoc_3') \iSep {}
+					\\
+						\textcolor{red}{\datalangLoc_1'} \iPointsto (\mathrm{CONS}, \datalangVal_1', \datalangLoc_2')
+				\end{array}$
+			&
+			&
+				$\datalangCall{\datalangText{map}}{\datalangLoc_1}$
+			&
+				$\rightarrow$
+			&
+				$\begin{array}{l}
+						\textcolor{red}{\datalangLoc_1'} \iPointsto (\mathrm{CONS}, \datalangVal_1', \datalangLoc_2') \iSep {}
+					\\
+						\textcolor{blue}{\datalangLoc_2'} \iPointsto (\mathrm{CONS}, \datalangVal_2', \datalangLoc_3')
+					\\
+                        \textcolor{teal}{\datalangLoc_3'} \iPointsto (\mathrm{NIL}, \datalangUnit, \datalangUnit)
+				\end{array}$
+			&
+			&
+				$\datalangCall{\datalangText{map}}{\datalangLoc_1}$
+			&
+				$\rightarrow$
+		\\ \hline
+	\end{tabular}
+	\captionsetup{format=hang}
+	\caption{Execution of \datalang{map} in the source program and the transformed program from the heap ${\datalangLoc_1 \iPointsto (\mathrm{CONS}, \datalangVal_1, \datalangLoc_2) \iSep \datalangLoc_2 \iPointsto (\mathrm{CONS}, \datalangVal_2, \datalangLoc_3) \iSep \datalangLoc_3 \iPointsto (\mathrm{NIL}, \datalangUnit, \datalangUnit)}$}
+	\label{fig:heap_bij}
+\end{figure}

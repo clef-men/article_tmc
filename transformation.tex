@@ -1,39 +1,55 @@
 \section{Transformation}
 
-Lambda language
+To define the TMC transformation, we draw inspiration from the work of \citeauthor{DBLP:journals/corr/abs-2102-09823}~\cite{DBLP:journals/corr/abs-2102-09823}.
+In our presentation, formalized in \cref{fig:tmc}, transforming a program $\datalangProg$ consists in:
 
-% Functions (function pointers) as values: useful for the example of 'map'.
+\paragraph{1) Choosing a subset of toplevel functions to be TMC-transformed}
+In \OCaml, the programmer has to annotate these.
+For each such function $\datalangFn$, we also require a fresh function name (that is not defined in $\datalangProg$) that will be defined to the \emph{destination-passing style} (DPS) version of $\datalangFn$ in the transformed program.
+Formally, this is given by a renaming $\datalangRenaming$ as a parameter of the auxiliary transformations we describe next.
 
-% 't' for tags, 'c' for constructors
-% Clément prefers tags, but 't' looks like 'terms' (e) in many other works.
+\paragraph{2) For each TMC-transformed function $\datalangFn$, computing its DPS transform}
+Actually, it is not unique.
+In \OCaml, the ambiguity is resolved by annotations and rules described in~\cite{DBLP:journals/corr/abs-2102-09823} (section 4).
+To represent all possible DPS transformations, we introduce in \cref{fig:tmc_dps} the relations $\datalangDef_s \tmcDps{\datalangRenaming} \datalangDef_t$ for definitions and $(\datalangExpr_\mathit{dst}, \datalangExpr_\mathit{idx}, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$ for expressions.
 
-% Gabriel: pourquoi ne pas faire la sémantique small-step par
-% interleaving pour avoir des paires non-déterministes ?
-%
-% Clément: en Iris la façon standard de définir des langages demande
-% une décomposition contexte-terme maximale unique K[e]. Avec
-% l'interleaving on a deux décompositions possibles pour (c, e1, e2):
-% (c, [], e2) ou (c, e1, []). Avec mon approche on ne peut pas entrer
-% à l'intérieur de (c, e1, e2), c'est un redex, donc on récupère
-% l'unicité. (Ça correspond à une sémantique un poil plus faible avec
-% moins d'entrelacements possibles.) Perdre l'unicité ne permettrait
-% plus de prouver la règle "bind' (la règle unaire d'Iris, pas la
-% règle de notre logique de programme relationnelle).
+$\datalangDef_s \tmcDps{\datalangRenaming} \datalangDef_t$ expresses that:
+1) $\datalangDef_t$ has an additional parameter representing the destination where it must write its result: the location of a memory block $\datalangVar_\mathit{dst}$ along with the index $\datalangVar_\mathit{idx}$ of a particular field in this block.
+2) The body of $\datalangDef_t$ is the DPS transform of the body of $\datalangDef_s$ under the given destination.
 
-syntactic sugar
+$(\datalangExpr_\mathit{dst}, \datalangExpr_\mathit{idx}, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$ expresses that $\datalangExpr_t$ is the DPS transform of $\datalangExpr_s$ under destination $(\datalangExpr_\mathit{dst}, \datalangExpr_\mathit{idx})$.
+Intuitively, this means $\datalangExpr_t$ computes the same thing as $\datalangExpr_s$ but writes it into the destination instead of returning it.
+We will formalize this intuition in \cref{sec:sketch}.
 
-well-formedness, closed
+Most rules are straightforward.
+Whenever it is possible, we take the direct transformation as described next of sub-expressions that are not inductively DPS-transformed.
 
-TMC relation
+The core of the TMC transformation lies in the symmetric \RefTirName{DPSBlock1} and \RefTirName{DPSBlock2} rules:
+1) We choose a side to evaluate first and partially initialize a new memory block with it.
+2) We write this block to the destination.
+3) We fill the uninitialized field by passing it as destination to the DPS-transformed corresponding source sub-expression.
 
-example: map
+\paragraph{3) For each function $\datalangFn$ defined in $\datalangProg$, computing its direct transform.}
+As before, as it is not unique, we introduce in \cref{fig:tmc_dir} the relations $\datalangDef_s \tmcDir{\datalangRenaming} \datalangDef_t$ for definitions and $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangDef_t$ for expressions.
 
-\input{figures/syntax}
-\input{figures/sugar}
-\input{figures/semantics}
-\input{figures/tmc_dir}
-\input{figures/tmc_dps}
+$\datalangDef_s \tmcDir{\datalangRenaming} \datalangDef_t$ expresses that:
+1) $\datalangDef_t$ has the same calling convention as $\datalangDef_s$.
+2) The body of $\datalangDef_t$ is the direct transform of the body of $\datalangDef_s$.
+
+$\datalangExpr_s \tmcDir{\datalangRenaming} \datalangDef_t$ expresses that $\datalangExpr_t$ is the direct transform of $\datalangExpr_s$.
+Intuitively, this means $\datalangExpr_t$ computes the same thing as $\datalangExpr_s$.
+
+Again, most cases are straightforward.
+The symmetric rules \RefTirName{DirBlockDPS1} and \RefTirName{DirBlockDPS2} are the equivalent of \RefTirName{DPSBlock1} and \RefTirName{DPSBlock2}:
+1) We choose a side to evaluate first and partially initialize a new memory block with it.
+2) We trigger the DPS transformation on the other side, passing the uninitialized field as destination.
+3) We return the now fully initialized block.
+
+\medskip
+
+As an example, we can show that the two \DataLang functions defined in \cref{fig:map_tmc} are respectively the direct and DPS transforms of the original \datalang|map| function defined in \cref{fig:map}.
+
 \input{figures/tmc}
-\input{figures/lambda_map}
-\input{figures/lambda_map_dps}
-\input{figures/heap}
+\input{figures/tmc_dps}
+\input{figures/tmc_dir}
+\input{figures/map_tmc}

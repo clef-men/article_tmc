@@ -1,156 +1,119 @@
 \begin{figure}[tp]
-    \begin{tabular}{rclclcl}
-            $\nterm{Index}$
+    \begin{tabular}{lclcl}
+            $\datalangIdx[]$
             & $\ni$ &
-            i
+            $\datalangIdx$
             & $\Coloneqq$ &
-            $\lambdZero \mid \lambdOne \mid \lambdTwo$
-            &&
-            index
+            $\datalangZero \mid \datalangOne \mid \datalangTwo$
         \\
-            $\nterm{Tag}$
+            $\datalangTag[]$
             & $\ni$ &
-            $t$
-            &&
-            &&
-            tag
+            $\datalangTag$
         \\
-            $\mathbb{B}$
+            $\datalangBool[]$
             & $\ni$ &
-            $b$
-            &&
-            &&
-            boolean
+            $\datalangBool$
     	\\
-    		$\mathbb{L}$
+    		$\datalangLoc[]$
     		& $\ni$ &
-    		$\loc$
-    		&&
-    		&&
-    		location
+    		$\datalangLoc$
         \\
-            $\mathbb{F}$
+            $\datalangFn[]$
             & $\ni$ &
-            $f$
-            &&
-            &&
-            function
+            $\datalangFn$
         \\
-            $\mathbb{X}$
+            $\datalangVar[]$
             & $\ni$ &
-            $x, y, z$
-            &&
-            &&
-            variable
+            $\datalangVar, \datalangVarTwo$
     	\\
-            $\nterm{Val}$
+            $\datalangVal[]$
             & $\ni$ &
-            $v$
+            $\datalangVal$
             & $\Coloneqq$ &
-            $\lambdUnit \mid i \mid t \mid b \mid \ell \mid \lambdFunc{f}$
-            &&
-            value
+            $\datalangUnit \mid \datalangIdx \mid \datalangTag \mid \datalangBool \mid \datalangLoc \mid \datalangFnptr{\datalangFn}$
         \\
-            $\nterm{Expr}$
+            $\datalangExpr[]$
             & $\ni$ &
-            $e$
+            $\datalangExpr$
             & $\Coloneqq$ &
-            $v$
-            &&
-            expression
+            $\datalangVal$
         \\
             &&
             & | &
-            $x \mid \lambdLet{x}{e_1}{e_2} \mid \lambdCall{e_1}{e_2}$
+            $\datalangVar \mid \datalangLet{\datalangVar}{\datalangExpr_1}{\datalangExpr_2} \mid \datalangCall{\datalangExpr_1}{\datalangExpr_2}$
         \\
             &&
             & | &
-            $\lambdEq{e_1}{e_2}$
+            $\datalangEq{\datalangExpr_1}{\datalangExpr_2}$
         \\
             &&
             & | &
-            $\lambdIf{e_0}{e_1}{e_2}$
+            $\datalangIf{\datalangExpr_0}{\datalangExpr_1}{\datalangExpr_2}$
         \\
             &&
             & | &
-            $\lambdConstr{t}{e_1}{e_2} \mid \lambdConstrDet{t}{e_1}{e_2}$
+            $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2} \mid \datalangBlockDet{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$
         \\
             &&
             & | &
-            $\lambdLoad{e_1}{e_2}$
+            $\datalangLoad{\datalangExpr_1}{\datalangExpr_2} \mid \datalangStore{\datalangExpr_1}{\datalangExpr_2}{\datalangExpr_3}$
         \\
-            &&
-            & | &
-            $\lambdStore{e_1}{e_2}{e_3}$
-        \\
-            $\nterm{Ectx}$
+            $\datalangEctx[]$
             & $\ni$ &
-            $K$
+            $\datalangEctx$
             & $\Coloneqq$ &
             $\Box$
-            &&
-            evaluation context
         \\
             &&
             & | &
-            $\lambdLet{x}{K}{e_2} \mid \lambdCall{e_1}{K} \mid \lambdCall{K}{v_2}$
+            $\datalangLet{\datalangVar}{\datalangEctx}{\datalangExpr_2} \mid \datalangCall{\datalangExpr_1}{\datalangEctx} \mid \datalangCall{\datalangEctx}{\datalangVal_2}$
         \\
             &&
             & | &
-            $\lambdEq{e_1}{K} \mid \lambdEq{K}{v_2}$
+            $\datalangEq{\datalangExpr_1}{\datalangEctx} \mid \datalangEq{\datalangEctx}{\datalangVal_2}$
         \\
             &&
             & | &
-            $\lambdIf{K}{e_1}{e_2}$
+            $\datalangIf{\datalangEctx}{\datalangExpr_1}{\datalangExpr_2}$
         \\
             &&
             & | &
-            $\lambdLoad{e_1}{K} \mid \lambdLoad{K}{v_2}$
+            $\datalangLoad{\datalangExpr_1}{\datalangEctx} \mid \datalangLoad{\datalangEctx}{\datalangVal_2}$
         \\
             &&
             & | &
-            $\lambdStore{e_1}{e_2}{K} \mid \lambdStore{e_1}{K}{v_3} \mid \lambdStore{K}{v_2}{v_3}$
+            $\datalangStore{\datalangExpr_1}{\datalangExpr_2}{K} \mid \datalangStore{\datalangExpr_1}{\datalangEctx}{\datalangVal_3} \mid \datalangStore{\datalangEctx}{\datalangVal_2}{\datalangVal_3}$
         \\
-            $\nterm{Def}$
+            $\datalangDef[]$
             & $\ni$ &
-            $d$
+            $\datalangDef$
             & $\Coloneqq$ &
-            $\lambdDef{x}{e}$
-            &&
-            definition
+            $\datalangRec{\datalangVar}{\datalangExpr}$
         \\
-            $\nterm{Prog}$
+            $\datalangProg[]$
             & $\ni$ &
-            $p$
+            $\datalangProg$
             & $\coloneqq$ &
-            $\mathbb{F} \finmap \nterm{Def}$
-            &&
-            program
+            $\datalangFn[] \finmap \datalangDef[]$
         \\
-            $\nterm{State}$
+            $\datalangState[]$
             & $\ni$ &
-            $\sigma$    
+            $\datalangState$    
             & $\coloneqq$ &
-            $\mathbb{L} \finmap \nterm{Val}$
-            &&
-            state
+            $\datalangLoc[] \finmap \datalangVal[]$
         \\
-            $\nterm{Config}$
+            $\datalangConfig[]$
             & $\ni$ &
-            $\rho$
+            $\datalangConfig$
             & $\coloneqq$ &
-            $\nterm{Expr} \times \nterm{State}$
-            &&
-            configuration
+            $\datalangExpr[] \times \datalangState[]$
         \\
-            $\nterm{Bisubst}$
+            $\datalangBisubst[]$
             & $\ni$ &
-            $\Gamma$
+            $\datalangBisubst$
             & $\coloneqq$ &
-            $\mathbb{X} \rightarrow \nterm{Expr} \times \nterm{Expr}$
-            &&
-            bisubstitution
+            $\datalangVar[] \rightarrow \datalangExpr[] \times \datalangExpr[]$
     \end{tabular}
-    \caption{Syntax of \LambdaLang}
+    \caption{Syntax of \DataLang}
     \label{fig:syntax}
 \end{figure}

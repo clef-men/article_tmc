@@ -1,0 +1,206 @@
+\RequirePackage{xcolor}
+\RequirePackage{amstext}
+
+\definecolor{datalangKeyword1}{rgb}{0,0.1,0.6}
+\definecolor{datalangKeyword3}{rgb}{0,0.4,0.4}
+\definecolor{datalangKeyword2}{rgb}{0.3,0,0.5}
+\definecolor{datalangComment}{rgb}{0.5,0,0}
+
+\lstdefinelanguage{Datalang}{
+    keepspaces=true,
+    texcl=false,
+    sensitive=true,
+    showstringspaces=false,
+    tabsize=2,
+    extendedchars=false,
+    breaklines=false,
+    basicstyle=\small,
+    captionpos=b,
+    flexiblecolumns=false,
+%
+    alsoletter={
+        '
+    },
+%
+    identifierstyle={\ttfamily\color{black}},
+%
+    keywords=[1]{
+        else,
+        if,
+        in,
+        let,
+        match,
+        then,
+        with,
+    },
+    keywordstyle=[1]{\ttfamily\color{datalangKeyword1}},
+%
+    keywords=[2]{
+        rec
+    },
+    keywordstyle=[2]{\ttfamily\color{datalangKeyword2}},
+%
+    literate=*
+        {-}{$-$}1
+        {|}{{\textcolor{datalangKeyword1}{|}}}1
+        {|->}{$\mapsto$}2
+        {;}{{\textcolor{datalangKeyword1}{;}}}1
+        {==>}{{$\textcolor{datalangKeyword1}{\Rightarrow}$}}2
+        {@}{{\textcolor{datalangKeyword2}{@}}}1
+        {(}{{\textcolor{datalangKeyword3}{(}}}1
+        {)}{{\textcolor{datalangKeyword3}{)}}}1
+        {\{}{{\textcolor{datalangKeyword3}{\{}}}1
+        {\}}{{\textcolor{datalangKeyword3}{\}}}}1
+        {[}{{\textcolor{datalangKeyword3}{[}}}1
+        {]}{{\textcolor{datalangKeyword3}{]}}}1
+        {.}{{\textcolor{datalangKeyword3}{.}}}1
+        {:}{{\textcolor{datalangKeyword3}{:}}}1
+        {,}{{\textcolor{datalangKeyword3}{,}}}1
+        {<-}{{$\textcolor{datalangKeyword3}{\ \leftarrow\ }$}}1,
+%
+    escapeinside={(*}{*)},
+    escapebegin={\ttfamily\color{comment}(*},
+    escapeend={*)},
+%
+    morestring=[b]",
+    stringstyle=\ttfamily,
+}
+
+\lstnewenvironment{Datalang}{%
+    \lstset{
+        language=Datalang,
+        basicstyle=\ttfamily\normalsize
+    }%
+}{}
+
+\def\datalang{%
+    \lstinline[
+        language=Datalang,
+        basicstyle=\ttfamily\small
+    ]%
+}
+\newcommand{\datalangText}[1]{\text{\datalang|#1|}}
+
+% ------------------------------------------------------------------------------
+
+\makeatletter
+\newcommand{\datalangIdx}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil i \else \nterm{Index} \fi%
+}
+\newcommand{\datalangTag}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil t \else \nterm{Tag} \fi%
+}
+\newcommand{\datalangBool}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil b \else \mathbb{B} \fi%
+}
+\newcommand{\datalangLoc}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil \ell \else \mathbb{L} \fi%
+}
+\newcommand{\datalangFn}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil f \else \mathbb{F} \fi%
+}
+\newcommand{\datalangVar}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil x \else \mathbb{X} \fi%
+}
+\newcommand{\datalangVarTwo}{%
+    y%
+}
+\newcommand{\datalangVal}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil v \else \nterm{Val} \fi%
+}
+\newcommand{\datalangExpr}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil e \else \nterm{Expr} \fi%
+}
+\newcommand{\datalangEctx}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil K \else \nterm{Ectx} \fi%
+}
+\newcommand{\datalangDef}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil d \else \nterm{Def} \fi%
+}
+\newcommand{\datalangProg}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil p \else \nterm{Prog} \fi%
+}
+\newcommand{\datalangState}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil \sigma \else \nterm{State} \fi%
+}
+\newcommand{\datalangConfig}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil \rho \else \nterm{Config} \fi%
+}
+\newcommand{\datalangBisubst}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil \Gamma \else \nterm{Bisubst} \fi%
+}
+\newcommand{\datalangRenaming}{%
+    \xi%
+}
+\makeatother
+
+% ------------------------------------------------------------------------------
+
+\newcommand{\datalangZero}{%
+    \term{0}%
+}
+\newcommand{\datalangOne}{%
+    \term{1}%
+}
+\newcommand{\datalangTwo}{%
+    \term{2}%
+}
+\newcommand{\datalangUnit}{%
+    \term{\color{datalangKeyword3}{()}}%
+}
+\newcommand{\datalangFnptr}[1]{%
+    \term{\color{datalangKeyword2}{@}} #1%
+}
+\newcommand{\datalangLet}[3]{%
+    \term{\color{datalangKeyword1}{let}}\ #1\ \term{=}\ #2\ \term{\color{datalangKeyword1}{in}}\ #3%
+}
+\newcommand{\datalangSeq}[2]{%
+    #1\ \term{\color{datalangKeyword1}{;}}\ #2%
+}
+\newcommand{\datalangCall}[2]{%
+    #1\ #2%
+}
+\newcommand{\datalangEq}[2]{%
+    #1\ \term{=}\ #2%
+}
+\newcommand{\datalangIf}[3]{%
+    \term{\color{datalangKeyword1}{if}}\ #1\ %
+    \term{\color{datalangKeyword1}{then}}\ #2\ %
+    \term{\color{datalangKeyword1}{else}}\ #3%
+}
+\newcommand{\datalangBlock}[3]{%
+    \term{\color{datalangKeyword3}{\{}}\, #1 \term{\color{datalangKeyword3}{,}}\, #2 \term{\color{datalangKeyword3}{,}}\, #3 \,\term{\color{datalangKeyword3}{\}}}%
+}
+\newcommand{\datalangBlockDet}[3]{%
+    \term{\color{datalangKeyword3}{[}}\, #1 \term{\color{datalangKeyword3}{,}}\, #2 \term{\color{datalangKeyword3}{,}}\, #3 \,\term{\color{datalangKeyword3}{]}}%
+}
+\newcommand{\datalangLoad}[2]{%
+    #1 \term{\color{datalangKeyword3}{.(}} #2 \term{\color{datalangKeyword3}{)}}%
+}
+\newcommand{\datalangStore}[3]{%
+    #1 \term{\color{datalangKeyword3}{.(}} #2 \term{\color{datalangKeyword3}{)}}\ {\color{datalangKeyword3}{\leftarrow}}\ #3%
+}
+\newcommand{\datalangRec}[2]{%
+    \term{\color{datalangKeyword2}{rec}}\ #1\ \term{=}\ #2%
+}
+\newcommand{\datalangPair}[2]{%
+    \term{\color{datalangKeyword3}{(}} #1 \term{\color{datalangKeyword3}{,}}\, #2 \term{\color{datalangKeyword3}{)}}%
+}
+\newcommand{\datalangNil}{%
+    \term{\color{datalangKeyword3}{[]}}%
+}
+\newcommand{\datalangCons}[2]{%
+    #1\ \term{\color{datalangKeyword3}{::}}\ #2%
+}
+\newcommand{\datalangMatch}[5]{%
+    \begin{array}{l}
+            \term{\color{datalangKeyword1}{match}}\ #1\ \term{\color{datalangKeyword1}{with}}
+        \\
+            \term{\color{datalangKeyword1}{|}}\ \datalangNil\ \textcolor{datalangKeyword1}{\Rightarrow}\ #2
+        \\
+            \term{\color{datalangKeyword1}{|}}\ \datalangCons{#3}{#4}\ \textcolor{datalangKeyword1}{\Rightarrow}\ #5
+    \end{array}%
+}
+\newcommand{\datalangHole}{%
+    \blacksquare%
+}

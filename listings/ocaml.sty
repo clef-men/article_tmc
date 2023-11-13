@@ -1,11 +1,10 @@
 \RequirePackage{color}
 \RequirePackage{amstext}
 
-\definecolor{ocaml_keyword1}{rgb}{0,0.1,0.6}
-\definecolor{ocaml_keyword2}{rgb}{0,0.4,0.4}
-\definecolor{comment}{rgb}{0.5,0,0}
+\definecolor{ocamlKeyword1}{rgb}{0,0.1,0.6}
+\definecolor{ocamlKeyword2}{rgb}{0,0.4,0.4}
 
-\lstdefinelanguage{OCaml}{
+\lstdefinelanguage{Ocaml}{
     keepspaces=true,
     texcl=false,
     sensitive=true,
@@ -16,16 +15,16 @@
     basicstyle=\small,
     captionpos=b,
     flexiblecolumns=false,
-% --------------------------------------------------
-    morecomment=[n]{/*}{*/},%
-    commentstyle={\ttfamily\color{red!60!black}},%
-% --------------------------------------------------
+%
+    morecomment=[n]{/*}{*/},
+    commentstyle={\ttfamily\color{red!60!black}},
+%
     alsoletter={
         '
     },
-% --------------------------------------------------
+%
     identifierstyle={\ttfamily\color{black}},
-% --------------------------------------------------
+%
     keywords=[1]{
         and,
         as,
@@ -85,32 +84,32 @@
         while,
         with,
     },
-    keywordstyle=[1]{\ttfamily\color{ocaml_keyword1}},
-% --------------------------------------------------
+    keywordstyle=[1]{\ttfamily\color{ocamlKeyword1}},
+%
     literate=*
         {-}{$-$}1
-        {|}{{\textcolor{ocaml_keyword1}{|}}}1
-        {;}{{\textcolor{ocaml_keyword1}{;}}}1
-        {==>}{{$\textcolor{ocaml_keyword1}{\ \Rightarrow}$}}1
-        {->}{{$\textcolor{ocaml_keyword1}{\rightarrow}$}}2
-        {(}{{\textcolor{ocaml_keyword2}{(}}}1
-        {)}{{\textcolor{ocaml_keyword2}{)}}}1
-        {\{}{{\textcolor{ocaml_keyword2}{\{}}}1
-        {\}}{{\textcolor{ocaml_keyword2}{\}}}}1
-        {[}{{\textcolor{ocaml_keyword2}{[}}}1
-        {]}{{\textcolor{ocaml_keyword2}{]}}}1
-        {.}{{\textcolor{ocaml_keyword2}{.}}}1
-        {:}{{\textcolor{ocaml_keyword2}{:}}}1
-        {,}{{\textcolor{ocaml_keyword2}{,}}}1
-        {<-}{{$\textcolor{ocaml_keyword2}{\ \leftarrow\ }$}}1,
-% --------------------------------------------------
+        {|}{{\textcolor{ocamlKeyword1}{|}}}1
+        {;}{{\textcolor{ocamlKeyword1}{;}}}1
+        {==>}{{$\textcolor{ocamlKeyword1}{\ \Rightarrow}$}}1
+        {->}{{$\textcolor{ocamlKeyword1}{\rightarrow}$}}2
+        {(}{{\textcolor{ocamlKeyword2}{(}}}1
+        {)}{{\textcolor{ocamlKeyword2}{)}}}1
+        {\{}{{\textcolor{ocamlKeyword2}{\{}}}1
+        {\}}{{\textcolor{ocamlKeyword2}{\}}}}1
+        {[}{{\textcolor{ocamlKeyword2}{[}}}1
+        {]}{{\textcolor{ocamlKeyword2}{]}}}1
+        {.}{{\textcolor{ocamlKeyword2}{.}}}1
+        {:}{{\textcolor{ocamlKeyword2}{:}}}1
+        {,}{{\textcolor{ocamlKeyword2}{,}}}1
+        {<-}{{$\textcolor{ocamlKeyword2}{\ \leftarrow\ }$}}1,
+%
     morestring=[b]",
     stringstyle=\ttfamily,
 }
 
-\lstnewenvironment{OCaml}{%
+\lstnewenvironment{Ocaml}{%
     \lstset{
-        language=OCaml,
+        language=Ocaml,
         mathescape=true,
         basicstyle=\ttfamily\normalsize,
         moredelim=[is][\color{red}]{/[}{]/},
@@ -119,7 +118,7 @@
 
 \def\ocaml{%
     \lstinline[
-        language=OCaml,
+        language=Ocaml,
         mathescape=true,
         basicstyle=\ttfamily\small
     ]%

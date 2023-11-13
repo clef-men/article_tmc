@@ -1,4 +1,8 @@
-\documentclass[acmsmall,screen]{acmart}
+\documentclass[acmsmall,screen,review,anonymous]{acmart}
+\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\renewcommand\footnotetextcopyrightpermission[1]{} % removes footnote with conference information in first column
+
+% ------------------------------------------------------------------------------
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -25,13 +29,15 @@
 
 % ------------------------------------------------------------------------------
 
+\usepackage{macros}
+
 \usepackage{listings}
 \usepackage{listings/ocaml}
-\usepackage{listings/lambd}
+\usepackage{listings/datalang}
 
 % ------------------------------------------------------------------------------
 
-\usepackage{macros}
+\usepackage{cleveref}
 
 % ------------------------------------------------------------------------------
 
@@ -40,10 +46,10 @@
 %% use defaults for review submission.
 \acmJournal{PACMPL}
 \acmVolume{1}
-\acmNumber{POPL} % CONF = POPL or ICFP or OOPSLA
+\acmNumber{PLDI}
 \acmArticle{1}
-\acmYear{2018}
-\acmMonth{1}
+\acmYear{2023}
+\acmMonth{11}
 \acmDOI{} % \acmDOI{10.1145/nnnnnnn.nnnnnnn}
 \startPage{1}
 
@@ -79,14 +85,6 @@
 }
 \email{clement.allain@inria.fr}
 
-\author{François Pottier}
-\affiliation{
-  \institution{Inria}
-  \city{Paris}
-  \country{France}
-}
-\email{francois.pottier@inria.fr}
-
 \author{Gabriel Scherer}
 \affiliation{
   \institution{Inria}
@@ -95,8 +93,16 @@
 }
 \email{gabriel.scherer@inria.fr}
 
+\author{François Pottier}
+\affiliation{
+  \institution{Inria}
+  \city{Paris}
+  \country{France}
+}
+\email{francois.pottier@inria.fr}
+
 \begin{abstract}
-\input{abstract}
+  \input{abstract}
 \end{abstract}
 
 \maketitle
@@ -124,17 +130,31 @@
 % ------------------------------------------------------------------------------
 
 \input{introduction}
-\input{tmc-for-ocaml-users}
-\input{transformation}
+\clearpage
 
-\clearpage % TODO remove later, this is to force figure-section ordering
+\input{language}
+\clearpage
+
+\input{transformation}
+\clearpage
+
+\input{sketch}
+\clearpage
+
+\input{program_logic}
+\clearpage
 
 \input{soundness}
-\input{implementation}
-\input{tmc-for-ocaml-implementors}
-\input{tmc-for-ocaml-evaluation}
+\clearpage
+
+\input{simulation}
+\clearpage
+
 \input{related}
+\clearpage
+
 \input{conclusion}
+\clearpage
 
 % Missing sections ?
 % TMC in OCaml, for users
@@ -154,7 +174,7 @@
 % vu sim. sim-innerX(sim)
 
 
-% unstructured TODO list 
+% unstructured TODO list
 
 % - To give another example of simulation with a different protocol,
 % we could look at accumulator-passing-style transformations

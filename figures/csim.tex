@@ -1,21 +1,21 @@
 \begin{figure}[tp]
     \begin{align*}
-    		\wf{\gamma}
+    		\wf{\datalangBisubst}
     		&\coloneqq
-    		\forall x \ldotp
-    		\exists v_s, v_t \ldotp
-    		\gamma (x) = (v_s, v_t) \iSep
-    		v_s \iSimilar v_t
+    		\forall \datalangVar \ldotp
+    		\exists \datalangVal_s, \datalangVal_t \ldotp
+    		\datalangBisubst (\datalangVar) = (\datalangVal_s, \datalangVal_t) \iSep
+    		\datalangVal_s \iSimilar \datalangVal_t
     	\\
-    		\iCsimv[\Chi]{\Phi}{e_s}{e_t}
+    		\iCsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
     		&\coloneqq
-    		\forall \gamma \ldotp
-    		\wf{\gamma} \iSepImp
-    		\iSimv[\Chi]{\Phi}{\gamma_s (e_s)}{\gamma_t (e_t)}
+    		\forall \datalangBisubst \ldotp
+    		\wf{\datalangBisubst} \iSepImp
+    		\iSimv[\iProt]{\iPred}{\datalangBisubst_s (\datalangExpr_s)}{\datalangBisubst_t (\datalangExpr_t)}
     	\\
-    	   \iCsimvHoare[\Chi]{P}{\Phi}{e_s}{e_t}
+    	   \iCsimvHoare[\iProt]{P}{\iPred}{\datalangExpr_s}{\datalangExpr_t}
     	   &\coloneqq
-    	   \iPersistent \left( P \iSepImp \iCsimv[\Chi]{\Phi}{e_s}{e_t} \right)
+    	   \iPersistent \left( P \iSepImp \iCsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t} \right)
     \end{align*}
     \caption{Closed simulation}
     \label{fig:csim}

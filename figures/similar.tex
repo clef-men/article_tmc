@@ -3,32 +3,32 @@
     \begin{mathparpagebreakable}
         \inferrule*
             {}{
-                \lambdUnit \similar \lambdUnit
+                \datalangUnit \similar \datalangUnit
             }
         \and
         \inferrule*
             {}{
-                i \similar i
+                \datalangIdx \similar \datalangIdx
             }
         \and
         \inferrule*
             {}{
-                t \similar t
+                \datalangTag \similar \datalangTag
             }
         \and
         \inferrule*
             {}{
-                b \similar b
+                \datalangBool \similar \datalangBool
             }
         \and
         \inferrule*
             {}{
-                \loc_s \similar \loc_t
+                \datalangLoc_s \similar \datalangLoc_t
             }
         \and
         \inferrule*
             {}{
-                \lambdFunc{f} \similar \lambdFunc{f}
+                \datalangFnptr{\datalangFn} \similar \datalangFnptr{\datalangFn}
             }
     \end{mathparpagebreakable}
     \caption{Similarity in $\Prop$}

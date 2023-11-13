@@ -2,144 +2,144 @@
     \begin{mathparpagebreakable}
         \inferrule*
             {}{
-                \boxed{- \headStep{p} - : \nterm{Config} \rightarrow \nterm{Config} \rightarrow \Prop}
+                \boxed{- \headStep{\datalangProg} - : \datalangConfig[] \rightarrow \datalangConfig[] \rightarrow \Prop}
             }
         \and
         \inferrule*
             {}{
-                \boxed{- \step{p} - : \nterm{Config} \rightarrow \nterm{Config} \rightarrow \Prop}
+                \boxed{- \step{\datalangProg} - : \datalangConfig[] \rightarrow \datalangConfig[] \rightarrow \Prop}
             }
         \\
         \inferrule*[lab=StepLet]
             {}{
                 \left(
-                    \lambdLet{x}{v}{e},
-                    \sigma
+                    \datalangLet{\datalangVar}{\datalangVal}{\datalangExpr},
+                    \datalangState
                 \right)
-                \headStep{p}
+                \headStep{\datalangProg}
                 \left(
-                    e [x \backslash v],
-                    \sigma
+                    \datalangExpr{} [\datalangVar \backslash \datalangVal],
+                    \datalangState
                 \right)
             }
         \and
         \inferrule*[lab=StepCall]
             {
-                p [f] = (\lambdDef{x}{e})
+                \datalangProg{} [\datalangFn] = (\datalangRec{\datalangVar}{\datalangExpr})
             }{
                 \left(
-                    \lambdCall{\lambdFunc{f}}{v},
-                    \sigma
+                    \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal},
+                    \datalangState
                 \right)
-                \headStep{p}
+                \headStep{\datalangProg}
                 \left(
-                    e [x \backslash v],
-                    \sigma
+                    \datalangExpr{} [\datalangVar \backslash \datalangVal],
+                    \datalangState
                 \right)
             }
         \\
-        \inferrule*[lab=StepConstr1]
+        \inferrule*[lab=StepBlock1]
             {}{
                 \left(
-                    \lambdConstr{t}{e_1}{e_2},
-                    \sigma
+                    \datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2},
+                    \datalangState
                 \right)
-                \headStep{p}
+                \headStep{\datalangProg}
                 \left(
                     \begin{array}{l}
-                        \lambdLet{x_1}{e_1}{\\
-                        \lambdLet{x_2}{e_2}{\\
-                        \lambdConstrDet{t}{x_1}{x_2}}}
+                        \datalangLet{\datalangVar_1}{\datalangExpr_1}{\\
+                        \datalangLet{\datalangVar_2}{\datalangExpr_2}{\\
+                        \datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}}}
                     \end{array},
-                    \sigma
+                    \datalangState
                 \right)
             }
         \and
-        \inferrule*[lab=StepConstr2]
+        \inferrule*[lab=StepBlock2]
             {}{
                 \left(
-                    \lambdConstr{t}{e_1}{e_2},
-                    \sigma
+                    \datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2},
+                    \datalangState
                 \right)
-                \headStep{p}
+                \headStep{\datalangProg}
                 \left(
                     \begin{array}{l}
-                        \lambdLet{x_2}{e_2}{\\
-                        \lambdLet{x_1}{e_1}{\\
-                        \lambdConstrDet{t}{x_1}{x_2}}}
+                        \datalangLet{\datalangVar_2}{\datalangExpr_2}{\\
+                        \datalangLet{\datalangVar_1}{\datalangExpr_1}{\\
+                        \datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}}}
                     \end{array},
-                    \sigma
+                    \datalangState
                 \right)
             }
         \\
-        \inferrule*[lab=StepConstrDet]
+        \inferrule*[lab=StepBlockDet]
             {
-                \forall i \in \{0,1,2\}, \loc + i \notin \dom{\sigma}
+                \forall \datalangIdx \in \datalangIdx[], \datalangLoc + \datalangIdx \notin \dom{\datalangState}
             }{
                 \left(
-                    \lambdConstrDet{t}{v_1}{v_2},
-                    \sigma
+                    \datalangBlockDet{\datalangTag}{\datalangVal_1}{\datalangVal_2},
+                    \datalangState
                 \right)
-                \headStep{p}
+                \headStep{\datalangProg}
                 \left(
-                    \ell,
-                    \sigma [\loc \mapsto t, v_1, v_2]
+                    \datalangLoc,
+                    \datalangState{} [\datalangLoc \mapsto \datalangTag, \datalangVal_1, \datalangVal_2]
                 \right)
             }
         \\
         \inferrule*[lab=StepLoad]
             {
-                \sigma [\loc] = v
+                \datalangState{} [\datalangLoc] = \datalangVal
             }{
                 \left(
-                    \lambdLoad{\loc}{i},
-                    \sigma
+                    \datalangLoad{\datalangLoc}{\datalangIdx},
+                    \datalangState
                 \right)
-                \headStep{p}
+                \headStep{\datalangProg}
                 \left(
-                    v,
-                    \sigma
+                    \datalangVal,
+                    \datalangState
                 \right)
             }
         \and
         \inferrule*[lab=StepStore]
             {
-                \loc + i \in \dom{\sigma}
+                \datalangLoc + \datalangIdx \in \dom{\datalangState}
             }{
                 \left(
-                    \lambdStore{\loc}{i}{v},
-                    \sigma
+                    \datalangStore{\datalangLoc}{\datalangIdx}{\datalangVal},
+                    \datalangState
                 \right)
-                \headStep{p}
+                \headStep{\datalangProg}
                 \left(
-                    \lambdUnit,
-                    \sigma [\loc + i \mapsto v]
+                    \datalangUnit,
+                    \datalangState{} [\datalangLoc + \datalangIdx \mapsto \datalangVal]
                 \right)
             }
         \\
         \inferrule*[lab=StepEctx]
             {
                 \left(
-                    e,
-                    \sigma
+                    \datalangExpr,
+                    \datalangState
                 \right)
-                \headStep{p}
+                \headStep{\datalangProg}
                 \left(
-                    e',
-                    \sigma'
+                    \datalangExpr',
+                    \datalangState'
                 \right)
             }{
                 \left(
-                    K [e],
-                    \sigma
+                    \datalangEctx{} [\datalangExpr],
+                    \datalangState
                 \right)
-                \step{p}
+                \step{\datalangProg}
                 \left(
-                    K [e'],
-                    \sigma'
+                    \datalangEctx{} [\datalangExpr'],
+                    \datalangState'
                 \right)
             }
     \end{mathparpagebreakable}
-    \caption{Semantics of \LambdaLang (excerpt, omitting freshness conditions)}
+    \caption{Semantics of \DataLang (excerpt, omitting freshness conditions)}
     \label{fig:semantics}
 \end{figure}

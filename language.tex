@@ -1,0 +1,29 @@
+\section{Language}
+
+To formalize the TMC transformation, we define the \DataLang language.
+Its syntax and semantics are given in \cref{fig:syntax} and \cref{fig:semantics}.
+We also introduce syntactic sugar in \cref{fig:sugar}, including some for lists.
+For instance, we can define the \datalang|map| function on lists as in \cref{fig:map}.
+
+\DataLang is an untyped sequential post closure conversion lambda calculus with mutable state.
+That is, it does not feature lambda expressions, which are already compiled to toplevel closed functions referred to using function pointers ($\datalangFnptr{\datalangFn}$).
+
+There is one noteworthy trait.
+To express constructors and closures, \DataLang features tagged mutable memory blocks with two fields.
+One can allocate a block with $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$, access its fields with $\datalangLoad{\datalangExpr_1}{\datalangExpr_2}$ and modify them with $\datalangStore{\datalangExpr_1}{\datalangExpr_2}{\datalangExpr_3}$.
+As in \OCaml, the evaluation order of subexpressions $\datalangExpr_1$ and $\datalangExpr_2$ in $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ is unspecified.
+To model this in the semantics, such an expression first nondeterministically reduces to either $\datalangLet{\datalangVar_1}{\datalangExpr_1}{\datalangLet{\datalangVar_2}{\datalangExpr_2}{\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}}}$ through \RefTirName{StepBlock1} or $\datalangLet{\datalangVar_2}{\datalangExpr_2}{\datalangLet{\datalangVar_1}{\datalangExpr_1}{\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}}}$ through \RefTirName{StepBlock2} and $\datalangBlockDet{\datalangTag}{\datalangVal_1}{\datalangVal_2}$ performs the allocation  through \RefTirName{StepBlockDet}.
+This $\datalangBlockDet{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ construction cannot appear in source programs.
+
+%Another choice is to take an interleaving semantics.
+
+Obviously, \DataLang does not support all features of the \LambdaLang intermediate language in which the original TMC transformation is written.
+It is only meant to study and verify the core of the transformation.
+
+As a side note, we use named expression variables in this article but the \Coq mechanization actually adopts de Bruijn syntax better suited to define transformations involving binders.
+More precisely, we rely on the \Autosubst library~\cite{DBLP:conf/itp/SchaferTS15}.
+
+\input{figures/syntax}
+\input{figures/sugar}
+\input{figures/semantics}
+\input{figures/map}

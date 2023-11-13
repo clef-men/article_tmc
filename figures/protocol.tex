@@ -1,43 +1,44 @@
 \begin{figure}[tp]
-    \begin{align*}
-            \Chi_\mathrm{dir} (\Psi, e_s, e_t)
-            &\coloneqq
-            \begin{array}{l}
-                    \exists f, v_s, v_t \ldotp
-                \\
-                    f \in \dom{p_s} \iSep
-                    e_s = \lambdCall{\lambdFunc{f}}{v_s} \iSep
-                    e_t = \lambdCall{\lambdFunc{f}}{v_t} \iSep
-                    v_s \iSimilar v_t \iSep {}
-                \\
-                    \forall v_s', v_t' \ldotp
-                    v_s' \iSimilar v_t' \iSepImp
-                    \Psi (v_s', v_t')
-            \end{array}
+    \begin{tabular}{rcl}
+            $\iProt_\mathrm{dir} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
+            & $\coloneqq$ &
+            $\exists \datalangFn, \datalangVal_s, \datalangVal_t \ldotp$
         \\
-            \Chi_\mathrm{DPS} (\Psi, e_s, e_t)
-            &\coloneqq
-            \begin{array}{l}
-                    \exists f, f_\mathit{dps}, v_s, \loc, i, v_t \ldotp
-                \\
-                    f \in \dom{p_s} \iSep
-                    \xi [f] = f_\mathit{dps} \iSep
-                    e_s = \lambdCall{\lambdFunc{f}}{v_s} \iSep
-                    e_t = \lambdCall{\lambdFunc{f_\mathit{dps}}}{\lambdPair{\lambdPair{\loc}{i}}{v_t}} \iSep
-                    v_s \iSimilar v_t \iSep {}
-                \\
-                    (\loc + i) \mapsto \lambdHole \iSep {}
-                \\
-                    \forall v_s', v_t' \ldotp
-                    (\loc + i) \mapsto v_t' \iSep
-                    v_s' \iSimilar v_t' \iSepImp
-                    \Psi (v_s', \lambdUnit)
-            \end{array}
+            &&
+            $\datalangFn \in \dom{\datalangProg_s} \iSep
+            \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \iSep
+            \datalangExpr_t = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_t} \iSep
+            \datalangVal_s \iSimilar \datalangVal_t \iSep {}$
         \\
-            \Chi_\mathrm{TMC}
-            &\coloneqq
-            \Chi_\mathrm{dir} \sqcup \Chi_\mathrm{DPS}
-    \end{align*}
+            &&
+            $\forall \datalangVal_s', \datalangVal_t' \ldotp
+            \datalangVal_s' \iSimilar \datalangVal_t' \iSepImp
+            \iPredTwo (\datalangVal_s', \datalangVal_t')$
+        \\
+            $\iProt_\mathrm{DPS} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
+            & $\coloneqq$ &
+            $\exists \datalangFn, \datalangFn_\mathit{dps}, \datalangVal_s, \datalangLoc, \datalangIdx, \datalangVal_t \ldotp$
+        \\
+            &&
+            $\datalangFn \in \dom{\datalangProg_s} \iSep
+            \datalangRenaming [\datalangFn] = \datalangFn_\mathit{dps} \iSep
+            \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \iSep
+            \datalangExpr_t = \datalangCall{\datalangFnptr{\datalangFn_\mathit{dps}}}{\datalangPair{\datalangPair{\datalangLoc}{\datalangIdx}}{\datalangVal_t}} \iSep
+            \datalangVal_s \iSimilar \datalangVal_t \iSep {}$
+        \\
+            &&
+            $(\datalangLoc + \datalangIdx) \iPointsto \datalangHole \iSep {}$
+        \\
+            &&
+            $\forall \datalangVal_s', \datalangVal_t' \ldotp
+            (\datalangLoc + \datalangIdx) \iPointsto \datalangVal_t' \iSep
+            \datalangVal_s' \iSimilar \datalangVal_t' \iSepImp
+            \iPredTwo (\datalangVal_s', \datalangUnit)$
+        \\
+            $\iProt_\mathrm{TMC}$
+            & $\coloneqq$ &
+            $\iProt_\mathrm{dir} \sqcup \iProt_\mathrm{DPS}$
+    \end{tabular}
     \caption{TMC protocol}
     \label{fig:protocol}
 \end{figure}

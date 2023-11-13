@@ -3,18 +3,18 @@
     \begin{mathparpagebreakable}
         \inferrule*
             {
-                v_s \similar v_t
+                \datalangVal_s \similar \datalangVal_t
             }{
-                \constr[v_s]{Conv} \refined \constr[v_t]{Conv}
+                \constr[\datalangVal_s]{Conv} \refined \constr[\datalangVal_t]{Conv}
             }
         \and
         \inferrule*
             {
-                e_s \notin \nterm{Val}
+                \datalangExpr_s \notin \datalangVal[]
             \and
-                e_t \notin \nterm{Val}
+                \datalangExpr_t \notin \datalangVal[]
             }{
-                \constr[e_s]{Conv} \refined \constr[e_t]{Conv}
+                \constr[\datalangExpr_s]{Conv} \refined \constr[\datalangExpr_t]{Conv}
             }
         \and
         \inferrule*
@@ -23,27 +23,26 @@
             }
     \end{mathparpagebreakable}
     \\
-    \begin{align*}
-        	\mathrm{behaviours}_p (e)
-        	&\coloneqq
-        	\begin{array}{l}
-        			\{ \constr[e']{Conv} \mid \exists \sigma \ldotp (e, \emptyset) \step{p}^* (e', \sigma) \wedge \mathrm{irreducible}_p (e', \sigma) \}\ \uplus
-        		\\
-        			\{ \constr{Div} \mid\ \diverges{p}{(e, \emptyset)} \}
-            \end{array}
+    \begin{tabular}{rcl}
+        	$\mathrm{behaviours}_{\datalangProg} (\datalangExpr)$
+        	& $\coloneqq$ &
+			$\{ \constr[\datalangExpr']{Conv} \mid \exists \datalangState \ldotp (\datalangExpr, \emptyset) \step{\datalangProg}^* (\datalangExpr', \datalangState) \wedge \mathrm{irreducible}_{\datalangProg} (\datalangExpr', \datalangState) \}\ \uplus$
+    	\\
+            &&
+    		$\{ \constr{Div} \mid\ \diverges{\datalangProg}{(\datalangExpr, \emptyset)} \}$
         \\
-            e_s \refined e_t
-            &\coloneqq
-            \forall b_t \in \mathrm{behaviours}_{p_t} (e_t) \ldotp
-            \exists b_s \in \mathrm{behaviours}_{p_s} (e_s) \ldotp
-            b_s \refined b_t
+            $\datalangExpr_s \refined \datalangExpr_t$
+            & $\coloneqq$ &
+            $\forall b_t \in \mathrm{behaviours}_{\datalangProg_t} (\datalangExpr_t) \ldotp
+            \exists b_s \in \mathrm{behaviours}_{\datalangProg_s} (\datalangExpr_s) \ldotp
+            b_s \refined b_t$
         \\
-            p_s \refined p_t
-            &\coloneqq
-            \forall f \in \dom{p_s}, v_s, v_t \ldotp
-            \wf{v_s} \wedge v_s \similar v_t \implies
-            \lambdCall{\lambdFunc{f}}{v_s} \refined \lambdCall{\lambdFunc{f}}{v_t}
-    \end{align*}
+            $\datalangProg_s \refined \datalangProg_t$
+            & $\coloneqq$ &
+            $\forall \datalangFn \in \dom{\datalangProg_s}, \datalangVal_s, \datalangVal_t \ldotp
+            \wf{\datalangVal_s} \wedge \datalangVal_s \similar \datalangVal_t \implies
+            \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \refined \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_t}$
+    \end{tabular}
     \caption{Program refinement}
     \label{fig:refinement}
 \end{figure}

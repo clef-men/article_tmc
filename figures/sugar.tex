@@ -1,44 +1,53 @@
 \begin{figure}[tp]
     \begin{align*}
-            \lambdSeq{e_1}{e_2}
+            \datalangSeq{\datalangExpr_1}{\datalangExpr_2}
             &\coloneqq
-            \lambdLet{x}{e_1}{e_2}
-            &&
-            x \notin \fv{e_2}
+            \datalangLet{\datalangVar}{\datalangExpr_1}{\datalangExpr_2}
         \\
-            \lambdPair{e_1}{e_2}
+            \datalangPair{\datalangExpr_1}{\datalangExpr_2}
             &\coloneqq
-            \lambdConstr{\mathrm{PAIR}}{e_1}{e_2}
+            \datalangBlock{\mathrm{PAIR}}{\datalangExpr_1}{\datalangExpr_2}
         \\
-            \lambdNil
-            &\coloneqq
-            \lambdConstr{\mathrm{NIL}}{\lambdUnit}{\lambdUnit}
-        \\
-            \lambdCons{e_1}{e_2}
-            &\coloneqq
-            \lambdConstr{\mathrm{CONS}}{e_1}{e_2}
-        \\
-            \lambdMatch{e_0}{e_1}{x}{\mathit{xs}}{e_2}
+            \datalangLet{\datalangPair{\datalangVar_1}{\datalangVar_2}}{\datalangExpr_1}{\datalangExpr_2}
             &\coloneqq
             \begin{array}{l}
-                \lambdLet{y}{e_0}{\\
-                \lambdIf{
-                    \lambdEq{\lambdLoad{y}{0}}{\mathrm{NIL}}
+                \datalangLet{\datalangVarTwo}{\datalangExpr_1}{\\
+                \datalangLet{\datalangVar_1}{\datalangLoad{\datalangVarTwo}{1}}{\\
+                \datalangLet{\datalangVar_2}{\datalangLoad{\datalangVarTwo}{2}}{\\
+                \datalangExpr_2}}}
+            \end{array}
+        \\
+            \datalangRec{\datalangPair{\datalangVar_1}{\datalangVar_2}}{\datalangExpr}
+            &\coloneqq
+            \datalangRec{\datalangVarTwo}{
+            \datalangLet{\datalangPair{\datalangVar_1}{\datalangVar_2}}{\datalangVarTwo}{\datalangExpr}}
+        \\
+            \datalangNil
+            &\coloneqq
+            \datalangBlock{\mathrm{NIL}}{\datalangUnit}{\datalangUnit}
+        \\
+            \datalangCons{\datalangExpr_1}{\datalangExpr_2}
+            &\coloneqq
+            \datalangBlock{\mathrm{CONS}}{\datalangExpr_1}{\datalangExpr_2}
+        \\
+            \datalangMatch{\datalangExpr_0}{\datalangExpr_1}{\datalangVar}{\mathit{\datalangVar s}}{\datalangExpr_2}
+            &\coloneqq
+            \begin{array}{l}
+                \datalangLet{\datalangVarTwo}{\datalangExpr_0}{\\
+                \datalangIf{
+                    \datalangEq{\datalangLoad{\datalangVarTwo}{0}}{\mathrm{NIL}}
                 }{\\ \ \ \ 
-                    e_1
+                    \datalangExpr_1
                 \\}{\\ \ \begin{array}{l}
-                    \lambdLet{x}{\lambdLoad{y}{1}}{\\
-                    \lambdLet{\mathit{xs}}{\lambdLoad{y}{2}}{\\
-                    e_2}}
+                    \datalangLet{\datalangPair{\datalangVar}{\mathit{\datalangVar s}}}{\datalangVarTwo}{\\
+                    \datalangExpr_2}
                 \end{array}}}
             \end{array}
-            &&
-            y \notin \{x, \mathit{xs}\} \cup \fv{e_1} \cup \fv{e_2}
         \\
-            \lambdHole
+            \datalangHole
             &\coloneqq
-            \lambdUnit
+            \datalangUnit
     \end{align*}
-    \caption{Syntactic sugar for \LambdaLang}
+    \caption{Syntactic sugar for \DataLang (omitting freshness conditions)}
     \label{fig:sugar}
 \end{figure}

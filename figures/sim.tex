@@ -1,91 +1,91 @@
 \begin{figure}[tp]
     \begin{align*}
-    		\mathrm{sim \mathhyphen body}_\Chi
+    		\mathrm{sim \mathhyphen body}_\iProt
     		&\coloneqq
     		\begin{array}{l}
     				\lambdaAbs sim \ldotp
     				\lambdaAbs sim \mathhyphen inner \ldotp
-    				\lambdaAbs {(\Phi, e_s, e_t)} \ldotp
-    				\forall \sigma_s, \sigma_s \ldotp
-    				\mathrm{I} (\sigma_s, \sigma_t)
+    				\lambdaAbs {(\iPred, \datalangExpr_s, \datalangExpr_t)} \ldotp
+    				\forall \datalangState_s, \datalangState_s \ldotp
+    				\mathrm{I} (\datalangState_s, \datalangState_t)
     				\iSepImp \iBupd
     			\\
     				\bigvee \left[ \begin{array}{ll}
     							\circled{1}
     						&
-    							\mathrm{I} (\sigma_s, \sigma_t) \iSep
-    							\Phi (e_s, e_t)
+    							\mathrm{I} (\datalangState_s, \datalangState_t) \iSep
+    							\iPred (\datalangExpr_s, \datalangExpr_t)
     					\\
     					        \circled{2}
                             &
-                                \mathrm{I} (\sigma_s, \sigma_t) \iSep
-    							\mathrm{strongly \mathhyphen stuck}_{p_s} (e_s) \iSep
-    							\mathrm{strongly \mathhyphen stuck}_{p_t} (e_s)
+                                \mathrm{I} (\datalangState_s, \datalangState_t) \iSep
+    							\mathrm{strongly \mathhyphen stuck}_{\datalangProg_s} (\datalangExpr_s) \iSep
+    							\mathrm{strongly \mathhyphen stuck}_{\datalangProg_t} (\datalangExpr_s)
     					\\
     							\circled{3}
     						&
-    							\exists e_s', \sigma_s' \ldotp
-    							(e_s, \sigma_s) \step{p_s}^+ (e_s', \sigma_s') \iSep
-    							\mathrm{I} (\sigma_s', \sigma_t) \iSep
-    							sim \mathhyphen inner (\Phi, e_s', e_t)
+    							\exists \datalangExpr_s', \datalangState_s' \ldotp
+    							(\datalangExpr_s, \datalangState_s) \step{\datalangProg_s}^+ (\datalangExpr_s', \datalangState_s') \iSep
+    							\mathrm{I} (\datalangState_s', \datalangState_t) \iSep
+    							sim \mathhyphen inner (\iPred, \datalangExpr_s', \datalangExpr_t)
     					\\
     							\circled{4}
     						&
-								\mathrm{reducible}_{p_t} (e_t, \sigma_t) \iSep
-								\forall e_t', \sigma_t' \ldotp
-								(e_t, \sigma_t) \step{p_t} (e_t', \sigma_t')
+								\mathrm{reducible}_{\datalangProg_t} (\datalangExpr_t, \datalangState_t) \iSep
+								\forall \datalangExpr_t', \datalangState_t' \ldotp
+								(\datalangExpr_t, \datalangState_t) \step{\datalangProg_t} (\datalangExpr_t', \datalangState_t')
 								\iSepImp \iBupd
 						\\
                             &
 								\bigvee \left[ \begin{array}{ll}
 											\circled{A}
 										&
-											\mathrm{I} (\sigma_s, \sigma_t') \iSep
-											sim \mathhyphen inner (\Phi, e_s, e_t')
+											\mathrm{I} (\datalangState_s, \datalangState_t') \iSep
+											sim \mathhyphen inner (\iPred, \datalangExpr_s, \datalangExpr_t')
 									\\
 											\circled{B}
 										&
-											\exists e_s', \sigma_s' \ldotp
-											(e_s, \sigma_s) \step{p_s}^+ (e_s', \sigma_s') \iSep
-											\mathrm{I} (\sigma_s', \sigma_t') \iSep
-											sim (\Phi, e_s', e_t')
+											\exists \datalangExpr_s', \datalangState_s' \ldotp
+											(\datalangExpr_s, \datalangState_s) \step{\datalangProg_s}^+ (\datalangExpr_s', \datalangState_s') \iSep
+											\mathrm{I} (\datalangState_s', \datalangState_t') \iSep
+											sim (\iPred, \datalangExpr_s', \datalangExpr_t')
 								\end{array} \right.
     					\\
     							\circled{5}
     						&
-    							\exists K_s, e_s', K_t, e_t', \Psi \ldotp
+    							\exists \datalangEctx_s, \datalangExpr_s', \datalangEctx_t, \datalangExpr_t', \iPredTwo \ldotp
     					\\
     					    &
-    					        e_s = K_s [e_s'] \iSep
-    							e_t = K_t [e_t'] \iSep
-    						    \Chi (\Psi, e_s', e_t') \iSep
-    						    \mathrm{I} (\sigma_s, \sigma_t) \iSep {}
+    					        \datalangExpr_s = \datalangEctx_s [\datalangExpr_s'] \iSep
+    							\datalangExpr_t = \datalangEctx_t [\datalangExpr_t'] \iSep
+    						    \iProt (\iPredTwo, \datalangExpr_s', \datalangExpr_t') \iSep
+    						    \mathrm{I} (\datalangState_s, \datalangState_t) \iSep {}
     					\\
                             &
-								\forall e_s'', e_t'' \ldotp
-								\Psi (e_s'', e_t'') \iSepImp
-								sim (\Phi, K_s [e_s''], K_t [e_t''])
+								\forall \datalangExpr_s'', \datalangExpr_t'' \ldotp
+								\iPredTwo (\datalangExpr_s'', \datalangExpr_t'') \iSepImp
+								sim (\iPred, \datalangEctx_s [\datalangExpr_s''], \datalangEctx_t [\datalangExpr_t''])
     				\end{array} \right.
     		\end{array}
     	\\
-    	    \mathrm{sim \mathhyphen inner}_\Chi
+    	    \mathrm{sim \mathhyphen inner}_\iProt
     	    &\coloneqq
     	    \lambdaAbs sim \ldotp
     	    \muAbs sim \mathhyphen inner \ldotp
-    	    \mathrm{sim \mathhyphen body}_\Chi (sim, sim \mathhyphen inner)
+    	    \mathrm{sim \mathhyphen body}_\iProt (sim, sim \mathhyphen inner)
     	\\
-    		\mathrm{sim}_\Chi
+    		\mathrm{sim}_\iProt
     		&\coloneqq
     		\nuAbs sim \ldotp
-    		\mathrm{sim \mathhyphen inner}_\Chi (sim)
+    		\mathrm{sim \mathhyphen inner}_\iProt (sim)
     	\\
-    		\iSim[\Chi]{\Phi}{e_s}{e_t}
+    		\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
     		&\coloneqq
-    		\mathrm{sim}_\Chi (\Phi, e_s, e_t)
+    		\mathrm{sim}_\iProt (\iPred, \datalangExpr_s, \datalangExpr_t)
     	\\
-    	   \iSimv[\Chi]{\Phi}{e_s}{e_t}
+    	   \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
     	   &\coloneqq
-    	   \iSim[\Chi]{\lambdaAbs (e_s', e_t') \ldotp \exists v_s, v_t \ldotp e_s' = v_s \iSep e_t' = v_t \iSep \Phi (v_s, v_t)}{e_s}{e_t}
+    	   \iSim[\iProt]{\lambdaAbs (\datalangExpr_s', \datalangExpr_t') \ldotp \exists \datalangVal_s, \datalangVal_t \ldotp \datalangExpr_s' = \datalangVal_s \iSep \datalangExpr_t' = \datalangVal_t \iSep \iPred (\datalangVal_s, \datalangVal_t)}{\datalangExpr_s}{\datalangExpr_t}
     \end{align*}
     \caption{Simulation with protocol}
     \label{fig:sim}

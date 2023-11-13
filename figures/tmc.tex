@@ -1,22 +1,22 @@
 \begin{figure}[tp]
     \[
-        p_s \tmc p_t
+        \datalangProg_s \tmc \datalangProg_t
         \coloneqq
-        \exists \xi \ldotp
+        \exists \datalangRenaming \ldotp
         \bigwedge \left[ \begin{array}{l}
-                \dom{\xi} \subseteq \dom{p_s}
+                \dom{\datalangRenaming} \subseteq \dom{\datalangProg_s}
             \\
-                \dom{p_t} = \dom{p_s} \cup \codom{\xi}
+                \dom{\datalangProg_t} = \dom{\datalangProg_s} \cup \codom{\datalangRenaming}
             \\
-                \forall f, d_s \ldotp
-                p_s [f] = d_s \implies
-                \exists d_t \ldotp
-                p_t [f] = d_t \wedge d_s \tmcDir{\xi} d_t
+                \forall \datalangFn, \datalangDef_s \ldotp
+                \datalangProg_s [\datalangFn] = \datalangDef_s \implies
+                \exists \datalangDef_t \ldotp
+                \datalangProg_t [\datalangFn] = \datalangDef_t \wedge \datalangDef_s \tmcDir{\datalangRenaming} \datalangDef_t
             \\
-                \forall f, f_\mathit{dps}, d_s \ldotp
-                p_s [f] = d_s \wedge \xi [f] = f_{\mathit{dps}} \implies
-                \exists d_t \ldotp
-                p_t [f_\mathit{dps}] = d_t \wedge d_s \tmcDps{\xi} d_t
+                \forall \datalangFn, \datalangFn_\mathit{dps}, \datalangDef_s \ldotp
+                \datalangProg_s [\datalangFn] = \datalangDef_s \wedge \datalangRenaming [\datalangFn] = \datalangFn_{\mathit{dps}} \implies
+                \exists \datalangDef_t \ldotp
+                \datalangProg_t [\datalangFn_\mathit{dps}] = \datalangDef_t \wedge \datalangDef_s \tmcDps{\datalangRenaming} \datalangDef_t
         \end{array} \right.
     \]
     \caption{TMC transformation}
