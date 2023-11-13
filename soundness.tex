@@ -47,22 +47,26 @@ independent of \DataLang and could be reused as-is in further works.
 \RefTirName{SimApplyProtocol} is the reasoning rule for external transitions specified by the protocol parameter $\iProt$. The protocol is a relation that axiomatizes the ability of certain pairs of expression $\datalangExpr_s$ and $\datalangExpr_t$ to evolve in an abstract way specified by a relational postcondition $\iPredTwo$ -- they may reduce to arbitrary expressions $\datalangExpr_s'$ and $\datalangExpr_t'$ related by $\iPredTwo$. To conclude that $\datalangExpr_s$ and $\datalangExpr_t$ are related, one must prove that any such $\datalangExpr_s'$ and $\datalangExpr_t'$ remain related.
 
 Here is a simple protocol to relate calls to the same functions in the source and target expressions:
-\begin{align*}
-  \iProt_\mathrm{dir} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)
-  &\coloneqq
-  \begin{array}{l}
-          \exists \datalangFn, \datalangVal_s, \datalangVal_t \ldotp
-      \\
-          \datalangFn \in \dom{\datalangProg_s} \iSep
-          \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \iSep
-          \datalangExpr_t = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_t} \iSep
-          \datalangVal_s \iSimilar \datalangVal_t \iSep {}
-      \\
-          \forall \datalangVal_s', \datalangVal_t' \ldotp
-          \datalangVal_s' \iSimilar \datalangVal_t' \iSepImp
-          \iPredTwo (\datalangVal_s', \datalangVal_t')
-  \end{array}
-\end{align*}
+
+\begin{center}
+\begin{tabular}{rcl}
+        $\iProt_\mathrm{dir} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
+        & $\coloneqq$ &
+        $\exists \datalangFn, \datalangVal_s, \datalangVal_t \ldotp$
+    \\
+        &&
+        $\datalangFn \in \dom{\datalangProg_s} \iSep
+        \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \iSep
+        \datalangExpr_t = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_t} \iSep
+        \datalangVal_s \iSimilar \datalangVal_t \iSep {}$
+    \\
+        &&
+        $\forall \datalangVal_s', \datalangVal_t' \ldotp
+        \datalangVal_s' \iSimilar \datalangVal_t' \iSepImp
+        \iPredTwo (\datalangVal_s', \datalangVal_t')$
+\end{tabular}
+\end{center}
+
 This protocol relates two calls of the same function $\datalangFnptr{\datalangFn}$
 with related arguments $\datalangVal_s \iSimilar \datalangVal_t$. Informally, it then
 guarantees that the results of the calls will be related values
