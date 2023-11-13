@@ -43,7 +43,7 @@
                 \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
             }
         \\
-        \inferrule*[lab=SimSrcConstr1]
+        \inferrule*[lab=SimSrcBlock1]
             {
                 \iSim[\iProt]{\iPred}{
                     \begin{array}{l}
@@ -56,7 +56,7 @@
                 \iSim[\iProt]{\iPred}{\datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}}{\datalangExpr_t}
             }
         \and
-        \inferrule*[lab=SimSrcConstr2]
+        \inferrule*[lab=SimSrcBlock2]
             {
                 \iSim[\iProt]{\iPred}{
                     \begin{array}{l}
@@ -69,7 +69,7 @@
                 \iSim[\iProt]{\iPred}{\datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}}{\datalangExpr_t}
             }
         \and
-        \inferrule*[lab=SimTgtConstr]
+        \inferrule*[lab=SimTgtBlock]
             {
                 \iSim[\iProt]{\iPred}{\datalangExpr_s}{
                     \begin{array}{l}
@@ -90,7 +90,7 @@
                 \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangBlock{\datalangTag}{\datalangExpr_{t1}}{\datalangExpr_{t2}}}
             }
         \\
-        \inferrule*[lab=SimSrcConstrDet]
+        \inferrule*[lab=SimSrcBlockDet]
             {
                 \forall \datalangLoc_s \ldotp
                 \datalangLoc_s \iPointsto_s (\datalangTag, \datalangVal_{s1}, \datalangVal_{s2}) \iSepImp
@@ -99,7 +99,7 @@
                 \iSim[\iProt]{\iPred}{\datalangBlockDet{\datalangTag}{\datalangVal_{s1}}{\datalangVal_{s2}}}{\datalangExpr_t}
             }
         \and
-        \inferrule*[lab=SimTgtConstrDet]
+        \inferrule*[lab=SimTgtBlockDet]
             {
                 \forall \datalangLoc_t \ldotp
                 \datalangLoc_t \iPointsto_t (\datalangTag, \datalangVal_{t1}, \datalangVal_{t2}) \iSepImp

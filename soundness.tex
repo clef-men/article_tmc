@@ -1,5 +1,4 @@
-\section{A relational separation logic for \DataLang programs}
-\label{sec:reasoning_rules}
+\section{Soundness proof}
 
 The proof technique we propose to verify program transformations such
 as TMC is to capture a relational specification between inputs and
@@ -11,115 +10,6 @@ Traditionally this quadruple would be a judgment in a bespoke system of inferenc
 
 We defer the definition of the assertion as a simulation to \cref{sec:adequacy}, where it will also be proved adequate with respect to a notion of behavior refinement expressed outside Iris.
 
-\subsection{Relation assertions}
-
-The separation logic in which our reasoning rules are formulated is relational: it describes resources from a source and target programs and relations between them. We use the following primite assertions:
-
-\begin{itemize}
-\item $\datalangLoc_s \iPointsto_s \datalangVal_s$, a points-to assertion for the source program
-\item $\datalangLoc_t \iPointsto_t \datalangVal_t$, for the target program
-\item $\datalangLoc_s \iInBij \datalangLoc_t$, which asserts that the source location
-  $\datalangLoc_s$ and the target location $\datalangLoc_t$ are in the ``heap
-  bijection'' mentioned in \cref{TODO}. This assertion is
-  persistent: one cannot remove locations from the bijection.
-\end{itemize}
-
-\input{figures/isimilar}
-
-On top of these assertions we define a \emph{value similarity} relation $\iSimilar {\datalangVal_s}{\datalangVal_t}$, given in Figure~\ref{fig:isimilar}.  Except for locations, this is exactly the equality. For locations, notice that locations appearing during the reduction of our programs are locations of valid blocks (always of size 3 in our language). We relate them by asking their field locations to be in the heap bijection.
-
-\subsection{Reasoning rules}
-
-\input{figures/sim_rules}
-
-Figure~\ref{fig:sim_rules} defines the reasoning rules for our relational program logic. We omitted some standard rules for brevity.
-
-\paragraph{Language-independent rules} The following rules are
-independent of \DataLang and could be reused as-is in further works.
-
-\RefTirName{SimPost} states that two terms are related when they are in the relational postcondition.
-
-\RefTirName{SimBind} is a standard bind rule sequencing computations on both sides.
-
-\RefTirName{SimSrcPure} and \RefTirName{SimTgtPure} let us take pure reduction steps in either the source or target and remain related. Pure steps (omitted for space) are the reduction steps that are deterministic and do not depend on the state.
-
-\paragraph{Abstract protocols}
-\RefTirName{SimApplyProtocol} is the reasoning rule for external transitions specified by the protocol parameter $\iProt$. The protocol is a relation that axiomatizes the ability of certain pairs of expression $\datalangExpr_s$ and $\datalangExpr_t$ to evolve in an abstract way specified by a relational postcondition $\iPredTwo$ -- they may reduce to arbitrary expressions $\datalangExpr_s'$ and $\datalangExpr_t'$ related by $\iPredTwo$. To conclude that $\datalangExpr_s$ and $\datalangExpr_t$ are related, one must prove that any such $\datalangExpr_s'$ and $\datalangExpr_t'$ remain related.
-
-Here is a simple protocol to relate calls to the same functions in the source and target expressions:
-
-\begin{center}
-\begin{tabular}{rcl}
-        $\iProt_\mathrm{dir} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
-        & $\coloneqq$ &
-        $\exists \datalangFn, \datalangVal_s, \datalangVal_t \ldotp$
-    \\
-        &&
-        $\datalangFn \in \dom{\datalangProg_s} \iSep
-        \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \iSep
-        \datalangExpr_t = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_t} \iSep
-        \datalangVal_s \iSimilar \datalangVal_t \iSep {}$
-    \\
-        &&
-        $\forall \datalangVal_s', \datalangVal_t' \ldotp
-        \datalangVal_s' \iSimilar \datalangVal_t' \iSepImp
-        \iPredTwo (\datalangVal_s', \datalangVal_t')$
-\end{tabular}
-\end{center}
-
-This protocol relates two calls of the same function $\datalangFnptr{\datalangFn}$
-with related arguments $\datalangVal_s \iSimilar \datalangVal_t$. Informally, it then
-guarantees that the results of the calls will be related values
-$\datalangVal_s' \iSimilar \datalangVal_t'$; precisely, it accepts any choice of post-condition $\iPredTwo$ contains the similarity relation on values.
-
-If we use this protocol in the reasoning rule
-\RefTirName{SimApplyProtocol} and instantiate the postcondition $\iPred$ to be the value similarity relation $(\iSimilar)$ itself, we get the following specialized rule:
-\begin{mathpar}
-\infer
-{
-  f \in \dom{\datalangProg_s}
-  \and
-  \datalangVal_s \iSimilar \datalangVal_t
-}{
-  \iSim[\iProt]{\iSimilar}
-    {\datalangCall{\datalangFnptr{f}}{\datalangVal_s}}
-    {\datalangCall{\datalangFnptr{f}}{\datalangVal_t}}
-}
-\end{mathpar}
-This is exactly the \TirName{Sim-Call} rule of \Simuliris~\citep*{TODO-simuliris}. Our generalized rule \RefTirName{SimApplyProtocol} is a contribution of our work, inspired by \citet*{TODO-paulo}. The extra expressivity is required to support program transformations such as TMC that change function calling conventions.
-
-\paragraph{Language-specific rules: non-determinism}
-%
-Our relation $\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ asserts that the target expression $\datalangExpr_t$ refines the source expression $\datalangExpr_s$: any behavior of $\datalangExpr_t$ is a valid behavior of $\datalangExpr_s$, all reductions of $\datalangExpr_t$ can be matched by some reduction of $\datalangExpr_s$. Consequently, non-determinism is treated differently in the source and target: we treat non-determinism as \emph{angelic} in source reductions and \emph{demonic} in target reductions.
-
-Our operational semantics uses non-deterministic rule for reduction of constructors: the non-deterministic constructor $\datalangBlock{c}{\datalangExpr_1}{\datalangExpr_2}$ reduces to a deterministic constructor $\datalangBlockDet{c}{\datalangVar_1}{\datalangVar_2}$, where the $\datalangVar_1$ and $\datalangVar_2$ are bound to $\datalangExpr_1$ and $\datalangExpr_2$ in some non-determistic order.
-%
-In the program logic, the user may \emph{choose} an order for the source reduction, by using one of the rules \RefTirName{SimSrcConstr1} or \RefTirName{SimSrcConstr2}, and it has to prove that the expressions are related against \emph{any} target order, by proving the two premises of the rule \RefTirName{SimTgtConstr}.
-
-Once we have a deterministic constructor $\datalangBlockDet{c}{\datalangVal_1}{\datalangVal_2}$, the source and target reasoning rules \RefTirName{SimSrcConstrDet} and \RefTirName{SimTgtConstrDet} are symmetric.
-%
-They allocate the block at a new location in the source or target state; the user can assume a points-to predicate and has to prove that the location is related to the other expression.
-
-\paragraph{Language-specific rules: private locations}
-%
-If the user owns a points-to assertion $(\datalangLoc + \datalangIdx) \iPointsto \datalangVal$ on the source or target side, they can use it to reason about loads and stores on the location $\datalangLoc$ at index $\datalangIdx$. The rules \RefTirName{SimSrcLoad} and \RefTirName{SimTgtLoad} let us replace the load expression $\datalangLoad{\datalangLoc}{\datalangIdx}$ by the pointed value $\datalangVal$, and the rules \RefTirName{SimSrcStore} and \RefTirName{SimTgtStore} let us store a new value $\datalangVal'$, replacing the points-to assertion by $(\datalangLoc + \datalangIdx) \iPointsto \datalangVal'$.
-
-\paragraph{Language-specific rules: locations in the bijection}
-%
-In addition to points-to predicate on source and target locations, we maintain a heap bijection formed by the resource assertions $\datalangLoc_s \iInBij \datalangLoc_t$.
-
-At any point the user can add two locations to the heap bijection using the rule \RefTirName{SimBijInsert}. They need to provide private points-to predicates $\datalangLoc_s \iPointsto_s \datalangVal_s$ and $\datalangLoc_t \iPointsto_t \datalangVal_t$, and prove that the content of the locations are related: $\datalangVal_s \iSimilar \datalangVal_t$.
-%
-In exchange they receive a heap bijection assertion $\datalangLoc_s \iInBij \datalangLoc_t$. These locations will remain in the heap bijection forever ($\datalangLoc_s \iInBij \datalangLoc_t$ is a persistent assertion), and we will preserve the invariant that their values are related.
-
-To add locations $\datalangLoc_s, \datalangLoc_t$ to the bijections, we \emph{consume} their points-to assertions. At this point we cannot use the one-sided reasoning rules for load and store: we lost ownership of $\datalangLoc_s \iPointsto_s \datalangVal_s$, $\datalangLoc_t \iPointsto_t \datalangVal_t$.
-%
-The user must instead use the synchronized rules \RefTirName{SimLoad} and \RefTirName{SimStore}, which relate two loads or two stores on $\datalangLoc_s$ and $\datalangLoc_t$.
-%
-\RefTirName{SimLoad} proves that two loads $\datalangLoad{\datalangLoc_s}{\datalangIdx}$ and $\datalangLoad{\datalangLoc_t}{\datalangIdx}$ are related. The user must prove that $\datalangLoc_s \iSimilar \datalangLoc_t$, that is, that all three pairs of fields $(\datalangLoc_s + \datalangIdx), (\datalangLoc_t + \datalangIdx)$ are in the bijection; it knows nothing of the current values $\datalangVal_s, \datalangVal_t$ at these locations, except that they are related by the bijection invariant.
-%
-\RefTirName{SimStore} proves that two stores $\datalangStore{\datalangLoc_s}{\datalangIdx}{\datalangVal_s}$ and $\datalangStore{\datalangLoc_t}{\datalangIdx}{\datalangVal_t}$ are related. The user must show that $\datalangLoc_s, \datalangLoc_t$ are in the bijection, and preserve the bijection invariant by proving that the values to be stored are related.
-
 \subsection{Runtime relation}
 
 \input{figures/csim}
@@ -129,11 +19,6 @@ The assertion $\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ relates 
 To bridge the gap between the two sorts of terms, we define in Figure~\ref{fig:csim} a \emph{runtime relation} $\iCsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ that closes over all bisubstitutions $\datalangBisubst$ of related values for free variables. This sort of definition is standard (considering our simulation as an untyped logical relation), it is simply called the ``logical relation'' in \Simuliris.
 
 Our theorems state that terms related by the TMC transformation are in the runtime relation $\iCsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$, and their proofs expand its definition to introduce an arbitrary bisubstitution $\datalangBisubst$ and work directly on $\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ using our reasoning rules.
-
-\section{Reasoning about TMC: protocols and specifications}
-\label{sec:TMC_protocols_and_specs}
-
-TODO (see sketch)
 
 \section{Adequacy}
 \label{sec:soundness}
@@ -198,83 +83,6 @@ The key ingredients are two specifications for the direct and DPS transformation
 \end{enumerate}
 
 The rest of this section expands each step of the proof, providing the necessary technical details to follow the Coq formalization.
-
-\subsection{End goal: behaviour refinement}
-
-The TMC transformation preserves the behaviour of programs in a strong sense.
-%
-We expect terminating programs to remain terminating, diverging programs to remain diverging and failing programs (those that get stuck) to remain failing.
-
-Our definitions of behaviours and behaviour refinement are given in \cref{fig:refinement}.
-%
-Our notion of behaviours follows the definitions of Simuliris~\citep*{TODO-simuliris}.
-%
-We define the set $\mathrm{behaviours}_{\datalangProg} (\datalangExpr)$ of behaviours of an expression $\datalangExpr$ within a program $\datalangProg$, starting from an empty store.
-%
-The behaviour $\constr{Conv}(\datalangVal_s)$ indicates that $\datalangExpr$ can evaluate to $\datalangVal_s$.
-%
-The behaviour $\constr{Conv}(\datalangExpr')$, when $\datalangExpr'$ is not a value, indicates that $\datalangExpr$ can reduce to a stuck configuration $(\datalangExpr', \datalangState)$.
-%
-Finally, $\constr{Div}$ indicates that $\datalangProg$ can diverge.
-
-The refinement relation on behaviours $b_s \refined b_t$ then follows in a natural way: divergence refines divergence, any stuck expression refines any other stuck expression, and a value $\datalangVal_t$ refines $\datalangVal_s$ when they are related for a ground equivalence $\datalangVal_s \similar \datalangVal_t$, which is the equality for all value kinds, except for locations where it gives no information, as done in Simuliris.
-%
-This equivalence of ground values could be used, for example, to argue for the correctness of a \texttt{main} function that takes and returns integer arguments.
-
-Note a difference to Simuliris: our refinement between stuck/failing behaviours is $\constr{Div} \refined \constr{Div}$, whereas Simuliris uses $\constr{Div} \refined b_t$: the Simuliris relation assumes that the input program is safe, never gets stuck, and the behaviour refinement thus allows a stuck source term to be refined by any target program. With our definition, a source program that only gets stuck must be transformed into a target program that only gets stuck.
-%
-This property would not be desirable for C compilers that want to optimize aggressively assuming the absence of undefined behaviors, but it does capture a finer-grained property of our program transformation.
-
-Finally, an expression $\datalangExpr_t$ refines $\datalangExpr_s$ when all its behaviours are refined by a behaviour of $\datalangExpr_s$, and a program $\datalangProg_t$ refines $\datalangProg_s$ when calls to source functions on equivalent inputs are in the refinement relation.
-
-\input{figures/similar}
-\input{figures/refinement}
-
-We can now state the main soundness theorem of our work, whose proof is spread over the rest of the present \cref{sec:soundness}.
-
-\begin{theorem}[Soundness]
-    $
-        \wf{\datalangProg_s} \wedge \datalangProg_s \tmc \datalangProg_t \implies
-        \datalangProg_s \refined \datalangProg_t
-    $
-\end{theorem}
-
-The condition $\wf{\datalangProg_s}$ guarantees that the input program $\datalangProg_s$ is well-scoped. Under this condition, we can consider the target programs $\datalangProg_t$ that are TMC transformations $\datalangProg_s \tmc \datalangProg_s$, and our theorem states that they refine $\datalangProg_s$ as expected.
-
-\subsection{Proof technique: Simuliris with protocols}
-
-Simuliris~\citep*{TODO-simuliris} suggests a definition of simulation relations in Iris. As we explained in \cref{sec:howto-relation}, it carefully avoids using the ``later'' modality by using Coq's native notion of coinduction. Simuliris has several desirable properties for us: it can be defined in the un-modified Iris base logic (unlike Transfite Iris~\citep*{transfinite-iris}), it is defined in a way that makes it easy to specialize to other programming languages, and it supports showing the preservation of termination. On the other hand, the original definition is complex as it supports concurrency and notions of fairness. We reused the definition of Simuliris, simplified for the sequential setting. We then extended the resulting definition to support our treatment of stuck states as failures, and generalize the notion of external calls to abstract protocols $\iProt$. Most of the ideas below come from the Simuliris work directly, we will explicitly point out the parts that differ.
-
-\paragraph{Relating states} The \emph{state interpertation} $I(\datalangState_s, \datalangState_t)$ relates source and target states. It extends the unary notion of state intereptation predicate $I(\datalangState)$. Recall that in separation logic, formulas contain both pure propositions and ressources, which include in particular logical points-to assertions $\datalangLoc \iPointsto v$. $I(\datalangState)$ enforces the consistency between those logical assertions and the physical state $\datalangState$.
-
-In the relational setting, the state interpretation becomes a relation $I(\datalangState_s, \datalangState_t)$ tracking points-to predicates on either states $\datalangLoc_s \iPointsto_s \datalangVal_s$ and $\datalangLoc_t \iPointsto_t \datalangVal_t$. It is additionally in charge of maintaing the heap bijection mentioned in \cref{TODO} by tracking predicates $\datalangLoc_s \iInBij \datalangLoc_t$. This assertion is persistent: one cannot remove locations from the bijection.
-
-\paragraph{Relating values} TODO relation between values.
-
-\paragraph{Relating expressions} The definition of the expression relation $\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ is shown in \cref{fig:sim}; it reads as ``$\datalangExpr_s$ simulates $\datalangExpr_t$ under the postcondition $\iPred$ and protocol $\iProt$''. It expresses that the source $\datalangExpr_s$ can simulate any computation of the target $\datalangExpr_t$ until they both get stuck, both diverge, or reach two expressions in the relational post-condition $\iPred$. The parameter $\iProt$ is the relational protocol that must be followed by function calls in $\datalangExpr_s$ and $\datalangExpr_t$ -- generalizing the Simuliris rule for external calls.
-
-\paragraph{Mixed induction and coinduction}
-The definition of the relation itself starts with a double fixpoint, a greatest fixpoint $\nuAbs sim .$ (coinduction) of smallest fixpoint $\muAbs {sim \mathhyphen inner} .$ (induction) of a relation $\mathrm{sim \mathhyphen body}_\iProt$. Inside the relation definition, the cases that use the inductive $sim \mathhyphen inner$ in their recursive occurrence can only be repeated finitely many times, while the cases that use the coinductive $sim$ in their recursive occurrence can be repeated infinitely, but can only do so under a form of guardedness condition.
-
-\clearpage
-\input{figures/sim}
-
-\paragraph{Simulation clauses} The relation between $\datalangExpr_s$ and $\datalangExpr_t$, at a given post-condition $\iPred$, must be parametric over all physical states in the state interpretation relation $I(\datalangState_s, \datalangState_t)$. It is established by one of the following clauses:
-
-\begin{enumerate}
-\item[\circled{1}] Halting clause: $\datalangExpr_s$, $\datalangExpr_t$ can stop if they are already in the post-condition $\iPred$ -- and the states are still related.
-\item[\circled{2}]
-\item[\circled{3}]
-\item[\circled{4}]
-\item[\circled{5}]
-\end{enumerate}
-
-% sim-body:
-% cas 1, 2, 3, 4: on raconte
-% "ouverte" comprend un autre cas.
-% cas 5: les appels externes, protocoles (on raconte)
-
-
 
 TODO
 
@@ -451,13 +259,3 @@ proof
 %   (with a bisubstitution (x mapsto (vs, vt)) applied) are in the relation.
 
 \input{figures/protocol}
-
-% François: the relational separation logic captures the right
-% specification for functions. This is key to compositionality. We
-% cannot do this with just a refinement relation. We should emphasize
-% that this is a good approach.
-
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: "main"
-%%% End:

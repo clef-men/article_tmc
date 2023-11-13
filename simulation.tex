@@ -1,3 +1,31 @@
 \section{Simulation}
 
+Simuliris~\citep*{TODO-simuliris} suggests a definition of simulation relations in Iris. As we explained in \cref{sec:howto-relation}, it carefully avoids using the ``later'' modality by using Coq's native notion of coinduction. Simuliris has several desirable properties for us: it can be defined in the un-modified Iris base logic (unlike Transfite Iris~\citep*{transfinite-iris}), it is defined in a way that makes it easy to specialize to other programming languages, and it supports showing the preservation of termination. On the other hand, the original definition is complex as it supports concurrency and notions of fairness. We reused the definition of Simuliris, simplified for the sequential setting. We then extended the resulting definition to support our treatment of stuck states as failures, and generalize the notion of external calls to abstract protocols $\iProt$. Most of the ideas below come from the Simuliris work directly, we will explicitly point out the parts that differ.
+
+\paragraph{Relating states} The \emph{state interpertation} $I(\datalangState_s, \datalangState_t)$ relates source and target states. It extends the unary notion of state intereptation predicate $I(\datalangState)$. Recall that in separation logic, formulas contain both pure propositions and ressources, which include in particular logical points-to assertions $\datalangLoc \iPointsto v$. $I(\datalangState)$ enforces the consistency between those logical assertions and the physical state $\datalangState$.
+
+In the relational setting, the state interpretation becomes a relation $I(\datalangState_s, \datalangState_t)$ tracking points-to predicates on either states $\datalangLoc_s \iPointsto_s \datalangVal_s$ and $\datalangLoc_t \iPointsto_t \datalangVal_t$. It is additionally in charge of maintaing the heap bijection mentioned in \cref{TODO} by tracking predicates $\datalangLoc_s \iInBij \datalangLoc_t$. This assertion is persistent: one cannot remove locations from the bijection.
+
+\paragraph{Relating values} TODO relation between values.
+
+\paragraph{Relating expressions} The definition of the expression relation $\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ is shown in \cref{fig:sim}; it reads as ``$\datalangExpr_s$ simulates $\datalangExpr_t$ under the postcondition $\iPred$ and protocol $\iProt$''. It expresses that the source $\datalangExpr_s$ can simulate any computation of the target $\datalangExpr_t$ until they both get stuck, both diverge, or reach two expressions in the relational post-condition $\iPred$. The parameter $\iProt$ is the relational protocol that must be followed by function calls in $\datalangExpr_s$ and $\datalangExpr_t$ -- generalizing the Simuliris rule for external calls.
+
+\paragraph{Mixed induction and coinduction}
+The definition of the relation itself starts with a double fixpoint, a greatest fixpoint $\nuAbs sim .$ (coinduction) of smallest fixpoint $\muAbs {sim \mathhyphen inner} .$ (induction) of a relation $\mathrm{sim \mathhyphen body}_\iProt$. Inside the relation definition, the cases that use the inductive $sim \mathhyphen inner$ in their recursive occurrence can only be repeated finitely many times, while the cases that use the coinductive $sim$ in their recursive occurrence can be repeated infinitely, but can only do so under a form of guardedness condition.
+
+\paragraph{Simulation clauses} The relation between $\datalangExpr_s$ and $\datalangExpr_t$, at a given post-condition $\iPred$, must be parametric over all physical states in the state interpretation relation $I(\datalangState_s, \datalangState_t)$. It is established by one of the following clauses:
+
+\begin{enumerate}
+\item[\circled{1}] Halting clause: $\datalangExpr_s$, $\datalangExpr_t$ can stop if they are already in the post-condition $\iPred$ -- and the states are still related.
+\item[\circled{2}]
+\item[\circled{3}]
+\item[\circled{4}]
+\item[\circled{5}]
+\end{enumerate}
+
+% sim-body:
+% cas 1, 2, 3, 4: on raconte
+% "ouverte" comprend un autre cas.
+% cas 5: les appels externes, protocoles (on raconte)
+
 \input{figures/sim}
