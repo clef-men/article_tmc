@@ -2,7 +2,7 @@
 
 In \OCaml, the natural implementation of the \ocaml|map| function on polymorphic lists is the following:
 
-\begin{OCaml}
+\begin{Ocaml}
 let rec map f xs =
   match xs with
   | [] =>
@@ -10,7 +10,7 @@ let rec map f xs =
   | x :: xs =>
       let y = f x in
       y :: map f xs
-\end{OCaml}
+\end{Ocaml}
 
 Yet, calling \ocaml|map| on a large input list may crash with the dreaded \ocaml|Stack_overflow| exception.
 %
