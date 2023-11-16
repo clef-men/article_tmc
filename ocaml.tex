@@ -1,0 +1,67 @@
+\section{TMC in production: OCaml}
+
+\subsection{Implementation history}
+
+\subsection{Design choices}
+
+\subsection{Implementation}
+
+\subsection{Evaluation: benchmarks}
+
+\subsection{Evaluation: adoption}
+
+% [@tail_mod_cons] usage on Github
+
+% Search URL:
+%   https://github.com/search?q=tail_mod_cons+lang%3Aocaml&type=code
+
+% Results (November 13th 2023):
+%   - in the OCaml stdlib
+%     + Melange
+%       (reused from stdlib)
+%     + janestreet/base
+%       (with manual unfolding)
+%   - in other general utility modules
+%     https://github.com/RedPRL/asai/blob/ac523674579772e5929c8d912d407b8b7db89c74/src/Utils.ml#L33
+%     https://github.com/jonathan-laurent/KaTie/blob/2db0d2cf223fae003b26bdf4c82a9788b5804bc7/src/utils.ml#L95
+%     https://github.com/jamsidedown/ocaml-cll/blob/394effa65b5d3f883e2de8322ed60fb7aa495bec/examples/crab_cups.ml#L61
+%   - in other user code
+%     at list type:
+%       https://github.com/brendanzab/language-garden/blob/9cc21e2f57228556cf0b867ca2874ceb4a4250ec/compile-arith/lib/StackLang.ml#L63
+%       https://github.com/abella-prover/abella/blob/ceee13822001137898ca5de9c76a315da3d1f0e3/src/extensions.ml#L421
+%       https://github.com/bikallem/spring/blob/6d10fef0b21caea3f975ff13132f5994e7c37db5/lib_spring/response.ml#L99
+%       https://github.com/bikallem/spring/blob/6d10fef0b21caea3f975ff13132f5994e7c37db5/lib_spring/headers.ml#L150
+%       https://github.com/polytypic/io/blob/dbe4d37a98ef958178fe18bb4dae396a5537392e/src/io/io.ml#L8
+%       https://github.com/avsm/eeww/blob/5b6c0617306f4c9d8b44bf07ef4d45ec9668dd0c/lib/cohttp/cohttp-eio/src/rwer.ml#L43
+%       https://github.com/just-max/less-power/blob/96f8e88f72275246b6bc175e44c732aa6e08ce7f/src/common/path_util.ml#L18
+%       https://github.com/dalps/ocaml-challenge/blob/8fe115023457b6b4359ef736c78ba980cd871717/3/extract/solve.ml#L4
+%       https://github.com/Octachron/ocaml-changelog-analyzer/blob/d6757b9576b5070ea3cfe6d4f4f79aaa3cc6e5d4/parse/release.ml#L4
+%       https://github.com/Skyb0rg007/PL-Reading-Group/blob/7002ae35ba69fb9010e5049eee88ab475bc79ec3/list-optimizations/lib/adt.ml#L44
+%       https://github.com/jfeser/symetric/blob/f49a57afc90a2c1e38f1097f98bd74725c074b9b/lib/tower.ml#L75
+%       https://github.com/verse-lab/sisyphus/blob/a08addae06bbccb1e6ea68bac3d7f9eeea4197be/lib/dynamic/utils.ml#L65
+%       https://github.com/jaymody/ocaml-tokenizers/blob/06cbce75d2865690cb39017222efff5c284bc721/lib/utils.ml#L18
+%       https://github.com/Bannerets/ocaml-kdl/blob/687c404ebeceef7fd905935c23665294133f99e6/src/lens.ml#L83
+%       https://github.com/OCADml/OCADml/blob/f5dfbf55f9c19ad808daa0df4d76a55e58756e5f/lib/poly3.ml#L33
+%     other type
+%       https://github.com/johnridesabike/acutis/blob/4113fb516d9c5dd6f2dbfd9657f52c5ae7a5dcae/lib/matching.ml#L161
+%         (on-demand stream as a record of functions)
+%       https://github.com/RedPRL/ocaml-bwd/blob/fbf496b29532085b38073eaa62ba3d22ac619d5d/src/BwdNoLabels.ml#L60
+%         (snoc list)
+%       https://github.com/Skyb0rg007/PL-Reading-Group/blob/7002ae35ba69fb9010e5049eee88ab475bc79ec3/effects/lib/free/tseq.ml#L44
+%         (difference list gadt)
+
+%   - Misuse
+%     https://github.com/chengsun/simd-sexp/commit/e714a8205c6df512d920a31a4dd2448975703c55
+%       (already tail-recursive)
+%     https://github.com/gridbugs/llama/blob/96d1c96c31ff136f465b5f37c981fff591bac6fd/src/midi/byte_array_parser.ml#L50
+%       (needless complexity)
+%     https://github.com/LimitEpsilon/lambda-interpreter/blob/ab8e81de7f896aa64eba14e23d964b9705e94161/lib/evaluate.ml#L46
+%       (already tail-recursive)
+
+\subsection{TMC and OCaml 5}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
