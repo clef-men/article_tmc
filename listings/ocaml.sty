@@ -107,12 +107,13 @@
     stringstyle=\ttfamily,
 }
 
-\lstnewenvironment{Ocaml}{%
+\lstnewenvironment{Ocaml}[1][]{%
     \lstset{
         language=Ocaml,
         mathescape=true,
         basicstyle=\ttfamily\normalsize,
         moredelim=[is][\color{red}]{/[}{]/},
+        #1
 }%
 }{}
 

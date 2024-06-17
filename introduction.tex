@@ -1,5 +1,229 @@
 \section{Introduction}
 
+\subsection{Prologue}
+
+``OCaml'', we teach our students, ``is a functional programming language. We can write the beautiful function \ocaml{List.map} as follows:''
+\begin{Ocaml}
+let rec map f = function
+| [] -> []
+| x :: xs -> f x :: map f xs
+\end{Ocaml}
+
+``Well, actually'', we continue, ``OCaml is an effectful language, so we need to be careful about the evaluation order. We want \ocaml{map} to process elements from the beginning to the end of the input list, and the evaluation order of \ocaml{f x :: map f xs} is unspecified. So we write:''
+\begin{Ocaml}
+let rec map f = function
+| [] -> []
+| x :: xs ->
+  let y = f x in
+  y :: map f xs
+\end{Ocaml}
+
+``Well, actually, this version fails with a \ocaml{Stack_overflow}
+exception on large input lists. If you want your \ocaml{map} to behave
+correctly on all inputs, you should write a \emph{tail-recursive}
+version. For this you can use the accumulator-passing style:''
+\begin{Ocaml}
+let map f li =
+  let rec map_ acc = function
+  | [] -> List.rev acc
+  | x :: xs -> map_ (f x :: acc) xs
+  in map_ [] f li
+\end{Ocaml}
+
+``Well, actually, this version works fine on large lists, but it is
+less efficient than the original version. It is noticeably slower on
+small lists, which are the most common inputs for most programs. We
+measured it 35\% slower on lists of size 10. If you want to write
+a robust function for a standard library, you may want to support both
+use-cases as well as possible. One approach is to start with
+a non-tail-recursive version, and switch to a tail-recursive version
+for large inputs; even there you can use some manual optimizations to
+reduce the overhead of the accumulator. For example, the nice
+\href{https://github.com/c-cube/ocaml-containers}{Containers} library
+does it as follows:''.
+
+%\hspace{-3em}
+\begin{minipage}{0.6\linewidth}
+\begin{Ocaml}[basicstyle=\ttfamily\tiny]
+let tail_map f l =
+  (* Unwind the list of tuples, reconstructing the full list front-to-back.
+     @param tail_acc a suffix of the final list; we append tuples' content
+     at the front of it *)
+  let rec rebuild tail_acc = function
+    | [] -> tail_acc
+    | (y0, y1, y2, y3, y4, y5, y6, y7, y8) :: bs ->
+      rebuild (y0 :: y1 :: y2 :: y3 :: y4 :: y5 :: y6 :: y7 :: y8 :: tail_acc) bs
+  in
+  (* Create a compressed reverse-list representation using tuples
+     @param tuple_acc a reverse list of chunks mapped with [f] *)
+  let rec dive tuple_acc = function
+    | x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: xs ->
+      let y0 = f x0 in let y1 = f x1 in let y2 = f x2 in
+      let y3 = f x3 in let y4 = f x4 in let y5 = f x5 in
+      let y6 = f x6 in let y7 = f x7 in let y8 = f x8 in
+      dive ((y0, y1, y2, y3, y4, y5, y6, y7, y8) :: tuple_acc) xs
+    | xs ->
+      (* Reverse direction, finishing off with a direct map *)
+      let tail = List.map f xs in
+      rebuild tail tuple_acc
+  in
+  dive [] l
+\end{Ocaml}
+\end{minipage}
+\hfill
+\begin{minipage}{0.4\linewidth}
+\begin{Ocaml}[basicstyle=\ttfamily\tiny]
+let direct_depth_default_ = 1000
+
+let map f l =
+  let rec direct f i l = match l with
+    | [] -> []
+    | [x] -> [f x]
+    | [x1;x2] -> let y1 = f x1 in [y1; f x2]
+    | [x1;x2;x3] ->
+      let y1 = f x1 in let y2 = f x2 in [y1; y2; f x3]
+    | _ when i=0 -> tail_map f l
+    | x1::x2::x3::x4::l' ->
+      let y1 = f x1 in
+      let y2 = f x2 in
+      let y3 = f x3 in
+      let y4 = f x4 in
+      y1 :: y2 :: y3 :: y4 :: direct f (i-1) l'
+  in
+  direct f direct_depth_default_ l
+\end{Ocaml}
+\end{minipage}
+\lstset{basicstyle=\small\ttfamily}
+
+At this point, unfortunately, some students leave the class and never
+come back.
+
+We propose a new feature for the OCaml compiler, an explicit, opt-in
+``Tail Modulo Cons'' transformation, to retain our students. After the
+first version (or maybe, if we are teaching an advanced class, after
+the second version), we could show them the following version:
+\begin{Ocaml}
+let[@tail_mod_cons] rec map f = function
+| [] -> []
+| x :: xs -> f x :: map f xs
+\end{Ocaml}
+
+This version is as fast as the simple implementation, tail-recursive,
+and easy to write.
+
+The catch, of course, is to teach when this \ocaml{[@tail_mod_cons]}
+annotation can be used. Maybe we would not show it at all, and pretend
+that the direct \ocaml{map} version with \ocaml{let y} is fine. This
+would be a much smaller lie than it currently is,
+a \ocaml{[@tail_mod_cons]}-sized lie.
+
+Finally, experts should be very happy. They know about all these
+versions, but they do not have to write them by hand anymore. Have
+a program perform (some of) the program transformations that they are
+currently doing manually.
+
+\subsection{TMC transformation example}
+
+A function call is in \emph{tail position} within a function
+definition if the definition has ``nothing to do'' after evaluating
+the function call -- the result of the call is the result of the whole
+function at this point of the program. (A precise definition will be
+given in Section~\ref{sec:tcmc}.) A function is \emph{tail recursive}
+if all its recursive calls are tail calls.
+
+In the definition of \ocaml{map}, the recursive call is not in tail
+position: after computing the result of \ocaml{map f xs} we still have
+to compute the final list cell, \ocaml{y ::$\ \hole$}. We say that a call is
+\emph{tail modulo cons} when the work remaining is formed of data
+\emph{constructors} only, such as \ocaml{(::)} here.
+
+\begin{Ocaml}
+let[@tail_mod_cons] rec map f = function
+| [] -> []
+| x :: xs ->
+  let y = f x in
+  y :: map f xs
+\end{Ocaml}
+
+Other datatype constructors may also be used; the following example is
+also tail-recursive \emph{modulo cons}:
+
+\begin{Ocaml}
+let[@tail_mod_cons] rec tree_of_list = function
+| [] -> Empty
+| x :: xs -> Node(Empty, x, tree_of_list xs)
+\end{Ocaml}
+
+The TMC transformation returns an equivalent function in
+\emph{destination-passing} style where the calls in \emph{tail modulo
+  cons} position have been turned into \emph{tail} calls. In
+particular, for \ocaml{map} it gives a tail-recursive function, which
+runs in constant stack space; many other list functions also become
+tail-recursive. The transformed code of \ocaml{map} can be described as
+follows:
+
+\hspace{-1.6em}
+\begin{minipage}{0.5\linewidth}
+\begin{Ocaml}
+let rec map f = function
+| [] -> []
+| x::xs ->
+  let y = f x in
+  let dst = y :: Hole in
+  map_dps dst 1 f xs;
+  dst
+\end{Ocaml}
+\end{minipage}
+\hfill
+\begin{minipage}{0.5\linewidth}
+\begin{Ocaml}
+and map_dps dst i f = function
+| [] ->
+  dst.i <- []
+| x::xs ->
+  let y = f x in
+  let dst' = y :: Hole in
+  dst.i <- dst';
+  map_dps dst' 1 f xs
+\end{Ocaml}
+\end{minipage}
+
+The transformed code has two variants of the \ocaml{map} function. The
+\ocaml{map_dps} variant is in \emph{destination-passing style}, it
+expects additional parameters that specify a memory location,
+a \emph{destination}, and will write its result to this
+\emph{destination} instead of returning it. It is tail-recursive. The
+\ocaml{map} variant provides the same interface as the non-transformed
+function, and internally calls \ocaml{map_dps} on non-empty lists. It
+is not tail-recursive, but it does not call itself recursively, it
+jumps to the tail-recursive \ocaml{map_dps} after one call.
+
+The key idea of the transformation is that the expression \ocaml{y ::
+  map f xs}, which contained a non-tail-recursive call, is transformed
+into first the computation of a \emph{partial} list cell, written %
+\ocaml{y :: Hole}, followed by a call to \ocaml{map_dps} that is asked
+to write its result in the position of the \ocaml{Hole}. The recursive
+call thus happens after the cell creation (instead of before), in
+tail-recursive position in the \ocaml{map_dps} variant. In the direct
+variant, the value of the destination \ocaml{dst} has to be returned
+after the call.
+
+The transformed code is in a pseudo-OCaml, it is not a valid OCaml
+program: we use a magical \ocaml{Hole} constant, and our notation
+\ocaml{dst.i <- ...} to update constructor parameters in-place is also
+invalid in source programs. The transformation is implemented on
+a lower-level, untyped intermediate representation of the OCaml
+compiler (Lambda), where those operations do exist. The OCaml type
+system is not expressive enough to type-check the transformed program:
+the list cell is only partially-initialized at first, each partial
+cell is mutated exactly once, and in the end the whole result is
+returned as an \emph{immutable} list. Some type system are expressive
+enough to represent this transformed code, notably Mezzo
+\citep*{mezzo}.
+
+
+\section{Introduction}
+
 In \OCaml, the natural implementation of the \ocaml|map| function on polymorphic lists is the following:
 
 \begin{Ocaml}
@@ -186,3 +410,8 @@ To sum up, our main contributions are:
     \item a mechanized proof of soundness for a simplified transformation on a small calculus;
     \item a generalization of \Simuliris handling of function calls to reason about different calling conventions.
 \end{enumerate}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
