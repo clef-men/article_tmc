@@ -20,9 +20,10 @@
 + A relational separation logic for Lambda programs
   + introduce the judgment eₛ ≳ eₜ < Χ > { Φ }
     + a relational separation logic
-    + in fact defined as a simulation inspired by Simuliris,
-      details shown in later section
-    + reasoning rules below are simulation lemmas
+    + TODO maybe de-emphasize or omit:
+      + in fact defined as a simulation inspired by Simuliris,
+        details shown in later section
+      + reasoning rules below are simulation lemmas
   + relational assertions
     + source points-to
     + target points-to
@@ -45,12 +46,13 @@
       + rules for non-deterministic and deterministic constructors
       + rules for bijection
 	+ sim-store: can write simultaneously similar values into similar blocks
-  + runtime relation
-    + essentially the same as Simuliris
-    + necessary because source and target compute similar values, not equal values
-    + as source and target expressions are executed, similar values are pushed into the runtime environment Γ
+  + TODO move to later
+    + runtime relation
+      + essentially the same as Simuliris
+      + necessary because source and target compute similar values, not equal values
+      + as source and target expressions are executed, similar values are pushed into the runtime environment Γ
 
-+ TMC protocols and specs
++ TMC protocols, specs, proofs
   + TMC protocol Χ_TMC
     + captures the two calling conventions involved in the transformation: direct and DPS
     + Χ_dir: direct calling convention
@@ -71,6 +73,8 @@
       + specification of DPS transformation
         + body of the direct variants
         + transformed expression computes the same thing and additionally writes it to the destination
+   + Proving the TMC specs
+     + TODO
 
 + Adequacy
   + Behaviours and refinements
@@ -148,7 +152,7 @@
     + adequacy
       + canonical way to leave the logic
       + resulting refinement depends only on the operational semantics
-  + the proof
+  + tying the knot
     + admitting Χ_TMC is valid, we get soundness for free
       + by simulation soundness, we must prove a closed simulation for the direct calling convention
       + applying the closure theorem, we open the simulation with Χ_TMC
