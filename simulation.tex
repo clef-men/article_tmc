@@ -28,4 +28,19 @@ The definition of the relation itself starts with a double fixpoint, a greatest 
 % "ouverte" comprend un autre cas.
 % cas 5: les appels externes, protocoles (on raconte)
 
+\begin{theorem}[Close simulation]
+    \begin{align*}
+            &
+            \iPersistent \left(
+                \forall \iPredTwo, \datalangExpr_s, \datalangExpr_t \ldotp
+                \iProt (\iPredTwo, \datalangExpr_s, \datalangExpr_t) \iSepImp
+                \mathrm{sim \mathhyphen inner}_\bot (\lambdaAbs (\_, \datalangExpr_s', \datalangExpr_t') \ldotp \iSim[\iProt]{\iPredTwo}{\datalangExpr_s'}{\datalangExpr_t'}) (\bot, \datalangExpr_s, \datalangExpr_t)
+            \right) \iSepImp
+        \\
+            &
+            \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t} \iSepImp
+            \iSim[\bot]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
+    \end{align*}
+\end{theorem}
+
 \input{figures/sim}

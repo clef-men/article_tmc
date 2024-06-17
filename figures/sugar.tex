@@ -1,53 +1,56 @@
 \begin{figure}[tp]
-    \begin{align*}
-            \datalangSeq{\datalangExpr_1}{\datalangExpr_2}
-            &\coloneqq
-            \datalangLet{\datalangVar}{\datalangExpr_1}{\datalangExpr_2}
+    \begin{tabular}{rcl}
+            $\datalangSeq{\datalangExpr_1}{\datalangExpr_2}$
+            & $\coloneqq$ &
+            $\datalangLet{\datalangVar}{\datalangExpr_1}{\datalangExpr_2}$
         \\
-            \datalangPair{\datalangExpr_1}{\datalangExpr_2}
-            &\coloneqq
-            \datalangBlock{\mathrm{PAIR}}{\datalangExpr_1}{\datalangExpr_2}
+            $\datalangPair{\datalangExpr_1}{\datalangExpr_2}$
+            & $\coloneqq$ &
+            $\datalangBlock{\mathrm{PAIR}}{\datalangExpr_1}{\datalangExpr_2}$
         \\
-            \datalangLet{\datalangPair{\datalangVar_1}{\datalangVar_2}}{\datalangExpr_1}{\datalangExpr_2}
-            &\coloneqq
-            \begin{array}{l}
-                \datalangLet{\datalangVarTwo}{\datalangExpr_1}{\\
-                \datalangLet{\datalangVar_1}{\datalangLoad{\datalangVarTwo}{1}}{\\
-                \datalangLet{\datalangVar_2}{\datalangLoad{\datalangVarTwo}{2}}{\\
-                \datalangExpr_2}}}
-            \end{array}
+            $\datalangLet{\datalangPair{\datalangVar_1}{\datalangVar_2}}{\datalangExpr_1}{\datalangExpr_2}$
+            & $\coloneqq$ &
+            $\datalangLet{\datalangVarTwo}{\datalangExpr_1}{$
         \\
-            \datalangRec{\datalangPair{\datalangVar_1}{\datalangVar_2}}{\datalangExpr}
-            &\coloneqq
-            \datalangRec{\datalangVarTwo}{
-            \datalangLet{\datalangPair{\datalangVar_1}{\datalangVar_2}}{\datalangVarTwo}{\datalangExpr}}
+            &&
+            $\datalangLet{\datalangVar_1}{\datalangLoad{\datalangVarTwo}{1}}{$
         \\
-            \datalangNil
-            &\coloneqq
-            \datalangBlock{\mathrm{NIL}}{\datalangUnit}{\datalangUnit}
+            &&
+            $\datalangLet{\datalangVar_2}{\datalangLoad{\datalangVarTwo}{2}}{$
         \\
-            \datalangCons{\datalangExpr_1}{\datalangExpr_2}
-            &\coloneqq
-            \datalangBlock{\mathrm{CONS}}{\datalangExpr_1}{\datalangExpr_2}
+            &&
+            $\datalangExpr_2}}}$
         \\
-            \datalangMatch{\datalangExpr_0}{\datalangExpr_1}{\datalangVar}{\mathit{\datalangVar s}}{\datalangExpr_2}
-            &\coloneqq
-            \begin{array}{l}
-                \datalangLet{\datalangVarTwo}{\datalangExpr_0}{\\
-                \datalangIf{
-                    \datalangEq{\datalangLoad{\datalangVarTwo}{0}}{\mathrm{NIL}}
-                }{\\ \ \ \ 
-                    \datalangExpr_1
-                \\}{\\ \ \begin{array}{l}
-                    \datalangLet{\datalangPair{\datalangVar}{\mathit{\datalangVar s}}}{\datalangVarTwo}{\\
-                    \datalangExpr_2}
-                \end{array}}}
-            \end{array}
+            $\datalangRec{\datalangPair{\datalangVar_1}{\datalangVar_2}}{\datalangExpr}$
+            & $\coloneqq$ &
+            $\datalangRec{\datalangVarTwo}{
+            \datalangLet{\datalangPair{\datalangVar_1}{\datalangVar_2}}{\datalangVarTwo}{\datalangExpr}}$
         \\
-            \datalangHole
-            &\coloneqq
-            \datalangUnit
-    \end{align*}
+            $\datalangNil$
+            & $\coloneqq$ &
+            $\datalangUnit$
+        \\
+            $\datalangCons{\datalangExpr_1}{\datalangExpr_2}$
+            & $\coloneqq$ &
+            $\datalangBlock{\mathrm{CONS}}{\datalangExpr_1}{\datalangExpr_2}$
+        \\
+            $\datalangMatchOneline[]{\datalangExpr_0}{\datalangExpr_1}{\datalangVar}{\mathit{\datalangVar s}}{\datalangExpr_2}$
+            & $\coloneqq$ &
+            $\datalangLet{\datalangVarTwo}{\datalangExpr_0}{$
+        \\
+            &&
+            $\datalangIf{\datalangEq{\datalangVarTwo}{\datalangNil}$
+        \\
+            &&
+            $}{\datalangExpr_1$
+        \\
+            &&
+            $}{\datalangLet{\datalangPair{\datalangVar}{\mathit{\datalangVar s}}}{\datalangVarTwo}{\datalangExpr_2}}}$
+        \\
+            $\datalangHole$
+            & $\coloneqq$ &
+            $\datalangUnit$
+    \end{tabular}
     \caption{Syntactic sugar for \DataLang (omitting freshness conditions)}
     \label{fig:sugar}
 \end{figure}

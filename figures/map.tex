@@ -7,7 +7,7 @@ map |-> rec (fn, xs) =
       []
   | x :: xs ==>
       let y = fn x in
-      y :: (@map (fn, xs))
+      y :: @map (fn, xs)
 \end{Datalang}
 \end{tabular}
 \caption{\datalang|map| in direct style (\DataLang)}

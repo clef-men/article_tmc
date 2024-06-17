@@ -9,7 +9,9 @@ The main idea is to use a \emph{relational separation logic} in the style of \Si
 The TMC transformation preserves the behaviours of programs in a strong sense.
 We expect terminating programs to remain terminating, diverging programs to remain diverging and failing programs (those that get stuck) to remain failing.
 
-To formalize it, we define in \cref{fig:refinement} the notions of behaviours and behaviour refinement as in \Simuliris~\cite{DBLP:journals/pacmpl/GaherSSJDKKD22}.
+To formalize it, we first define the notion of behaviour.
+
+we define in \cref{fig:refinement} the notions of behaviours and behaviour refinement as in \Simuliris~\cite{DBLP:journals/pacmpl/GaherSSJDKKD22}.
 TODO
 
 We define the set $\mathrm{behaviours}_{\datalangProg} (\datalangExpr)$ of behaviours of an expression $\datalangExpr$ within a program $\datalangProg$, starting from an empty store.
@@ -64,6 +66,17 @@ On top of these assertions we define a \emph{value similarity} relation $\datala
 
 % ----------
 
+RelBijInsert
+RelLoad
+RelStore
+
+\begin{theorem}[Adequacy]
+    $
+        \left( \vdash \iSimv{\iSimilar}{\datalangExpr_s}{\datalangExpr_t} \right) \implies
+        \datalangExpr_s \refined \datalangExpr_t
+    $
+\end{theorem}
+
 \input{figures/heap_bij}
 \input{figures/isimilar}
 
@@ -71,5 +84,7 @@ On top of these assertions we define a \emph{value similarity} relation $\datala
 
 coinduction pour gérer cas appels (directs et DPS)
 protocoles
+
+RelApplyProtocol
 
 \input{figures/protocol}

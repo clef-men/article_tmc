@@ -56,7 +56,8 @@
         {.}{{\textcolor{datalangKeyword3}{.}}}1
         {:}{{\textcolor{datalangKeyword3}{:}}}1
         {,}{{\textcolor{datalangKeyword3}{,}}}1
-        {<-}{{$\textcolor{datalangKeyword3}{\ \leftarrow\ }$}}1,
+        {<-}{{$\textcolor{datalangKeyword3}{\ \leftarrow\ }$}}1
+        {?}{{$\datalangHole$}}1,
 %
     escapeinside={(*}{*)},
     escapebegin={\ttfamily\color{comment}(*},
@@ -192,6 +193,14 @@
 \newcommand{\datalangCons}[2]{%
     #1\ \term{\color{datalangKeyword3}{::}}\ #2%
 }
+\makeatletter
+\newcommand{\datalangMatchOneline}[6][\@nil]{%
+    \term{\color{datalangKeyword1}{match}}\ #2\ \term{\color{datalangKeyword1}{with}}\ %
+    \def\@tmp{#1}\ifx\@tmp\@nnil \else \term{\color{datalangKeyword1}{|}}\ \fi%
+    \datalangNil\ \textcolor{datalangKeyword1}{\Rightarrow}\ #3\ %
+    \term{\color{datalangKeyword1}{|}}\ \datalangCons{#4}{#5}\ \textcolor{datalangKeyword1}{\Rightarrow}\ #6%
+}
+\makeatother
 \newcommand{\datalangMatch}[5]{%
     \begin{array}{l}
             \term{\color{datalangKeyword1}{match}}\ #1\ \term{\color{datalangKeyword1}{with}}

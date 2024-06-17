@@ -50,7 +50,11 @@
                     \datalangCall{\datalangFnptr{\datalangFn}}{\datalangExpr_s}
                 \right)
                 \tmcDps{\datalangRenaming}
-                \datalangCall{\datalangFnptr{\datalangRenaming [\datalangFn]}}{\datalangExpr_t}
+                \datalangCall{
+                    \datalangFnptr{\datalangRenaming [\datalangFn]}
+                }{
+                    \datalangPair{\datalangPair{\datalangExpr_\mathit{dst}}{\datalangExpr_\mathit{idx}}}{\datalangExpr_t}
+                }
             }
         \and
         \inferrule*[lab=DPSIf]
@@ -74,7 +78,7 @@
             {
                 \datalangExpr_{s1} \tmcDir{\datalangRenaming} \datalangExpr_{t1}
             \and
-                (\datalangVar, \datalangTwo, \datalangExpr_{s2}) \tmcDir{\datalangRenaming} \datalangExpr_{t2}
+                (\datalangVar, \datalangTwo, \datalangExpr_{s2}) \tmcDps{\datalangRenaming} \datalangExpr_{t2}
             }{
                 \left(
                     \datalangExpr_\mathit{dst},
@@ -92,7 +96,7 @@
             {
                 \datalangExpr_{s2} \tmcDir{\datalangRenaming} \datalangExpr_{t2}
             \and
-                (\datalangVar, \datalangOne, \datalangExpr_{s1}) \tmcDir{\datalangRenaming} \datalangExpr_{t1}
+                (\datalangVar, \datalangOne, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}
             }{
                 \left(
                     \datalangExpr_\mathit{dst},

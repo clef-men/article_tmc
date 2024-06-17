@@ -48,6 +48,7 @@ The symmetric rules \RefTirName{DirBlockDPS1} and \RefTirName{DirBlockDPS2} are 
 \medskip
 
 As an example, we can show that the two \DataLang functions defined in \cref{fig:map_tmc} are respectively the direct and DPS transforms of the original \datalang|map| function defined in \cref{fig:map}.
+Thanks to the rules \RefTirName{DirBlockDPS1} and \RefTirName{DPSCall}, the non-tail recursive call is replaced by the allocation of a partially initialized block followed by a call to \datalang|map_dps|.
 
 \input{figures/tmc}
 \input{figures/tmc_dps}

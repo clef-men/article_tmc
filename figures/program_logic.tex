@@ -1,51 +1,60 @@
 \begin{figure}[tp]
     \begin{mathparpagebreakable}
-        \inferrule*[lab=SimPost]
+        \inferrule*[lab=RelPost]
             {
-                \iPred (\datalangExpr_s, \datalangExpr_t)
+                \iPred (\datalangVal_s, \datalangVal_t)
             }{
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangVal_s}{\datalangVal_t}
             }
         \and
-        \inferrule*[lab=SimBind]
+        \inferrule*[lab=RelStuck]
             {
-                \iSim[\iProt]{\lambdaAbs (\datalangExpr_s', \datalangExpr_t') \ldotp \iSim[\iProt]{\iPred}{\datalangEctx_s [\datalangExpr_s']}{\datalangEctx_t [\datalangExpr_t']}}{\datalangExpr_s}{\datalangExpr_t}
+                \mathrm{strongly \mathhyphen stuck}_{\datalangProg_s} (\datalangExpr_s)
+            \and
+                \mathrm{strongly \mathhyphen stuck}_{\datalangProg_t} (\datalangExpr_t)
             }{
-                \iSim[\iProt]{\iPred}{\datalangEctx_s [\datalangExpr_s]}{\datalangEctx_t [\datalangExpr_t]}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
             }
         \\
-        \inferrule*[lab=SimSrcPure]
+        \inferrule*[lab=RelBind]
+            {
+                \iSimv[\iProt]{\lambdaAbs (\datalangVal_s, \datalangVal_t) \ldotp \iSimv[\iProt]{\iPred}{\datalangEctx_s [\datalangVal_s]}{\datalangEctx_t [\datalangVal_t]}}{\datalangExpr_s}{\datalangExpr_t}
+            }{
+                \iSimv[\iProt]{\iPred}{\datalangEctx_s [\datalangExpr_s]}{\datalangEctx_t [\datalangExpr_t]}
+            }
+        \\
+        \inferrule*[lab=RelSrcPure]
             {
                 \datalangExpr_s \pureStep{\datalangProg_s} \datalangExpr_s'
             \and
-                \iSim[\iProt]{\iPred}{\datalangExpr_s'}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s'}{\datalangExpr_t}
             }{
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
             }
         \and
-        \inferrule*[lab=SimTgtPure]
+        \inferrule*[lab=RelTgtPure]
             {
                 \datalangExpr_t \pureStep{\datalangProg_t} \datalangExpr_t'
             \and
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t'}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t'}
             }{
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
             }
         \\
-        \inferrule*[lab=SimApplyProtocol]
+        \inferrule*[lab=RelApplyProtocol]
             {
               \iProt (\iPredTwo, \datalangExpr_s, \datalangExpr_t)
             \and
                \forall \datalangExpr_s', \datalangExpr_t' \ldotp
                \iPredTwo (\datalangExpr_s', \datalangExpr_t') \iSepImp
-               \iSim[\iProt]{\iPred}{\datalangExpr_s'}{\datalangExpr_t'}
+               \iSimv[\iProt]{\iPred}{\datalangExpr_s'}{\datalangExpr_t'}
             }{
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
             }
         \\
-        \inferrule*[lab=SimSrcBlock1]
+        \inferrule*[lab=RelSrcBlock1]
             {
-                \iSim[\iProt]{\iPred}{
+                \iSimv[\iProt]{\iPred}{
                     \begin{array}{l}
                         \datalangLet{\datalangVar_1}{\datalangExpr_{s1}}{\\
                         \datalangLet{\datalangVar_2}{\datalangExpr_{s2}}{\\
@@ -53,12 +62,12 @@
                     \end{array}
                 }{\datalangExpr_t}
             }{
-                \iSim[\iProt]{\iPred}{\datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}}{\datalangExpr_t}
             }
         \and
-        \inferrule*[lab=SimSrcBlock2]
+        \inferrule*[lab=RelSrcBlock2]
             {
-                \iSim[\iProt]{\iPred}{
+                \iSimv[\iProt]{\iPred}{
                     \begin{array}{l}
                         \datalangLet{\datalangVar_2}{\datalangExpr_{s2}}{\\
                         \datalangLet{\datalangVar_1}{\datalangExpr_{s1}}{\\
@@ -66,12 +75,12 @@
                     \end{array}
                 }{\datalangExpr_t}
             }{
-                \iSim[\iProt]{\iPred}{\datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}}{\datalangExpr_t}
             }
         \and
-        \inferrule*[lab=SimTgtBlock]
+        \inferrule*[lab=RelTgtBlock]
             {
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{
                     \begin{array}{l}
                         \datalangLet{\datalangVar_1}{\datalangExpr_{t1}}{\\
                         \datalangLet{\datalangVar_2}{\datalangExpr_{t2}}{\\
@@ -79,7 +88,7 @@
                     \end{array}
                 }
             \and
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{
                     \begin{array}{l}
                         \datalangLet{\datalangVar_2}{\datalangExpr_{t2}}{\\
                         \datalangLet{\datalangVar_1}{\datalangExpr_{t1}}{\\
@@ -87,68 +96,68 @@
                     \end{array}
                 }
             }{
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangBlock{\datalangTag}{\datalangExpr_{t1}}{\datalangExpr_{t2}}}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangBlock{\datalangTag}{\datalangExpr_{t1}}{\datalangExpr_{t2}}}
             }
         \\
-        \inferrule*[lab=SimSrcBlockDet]
+        \inferrule*[lab=RelSrcBlockDet]
             {
                 \forall \datalangLoc_s \ldotp
                 \datalangLoc_s \iPointsto_s (\datalangTag, \datalangVal_{s1}, \datalangVal_{s2}) \iSepImp
-                \iSim[\iProt]{\iPred}{\datalangLoc_s}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangLoc_s}{\datalangExpr_t}
             }{
-                \iSim[\iProt]{\iPred}{\datalangBlockDet{\datalangTag}{\datalangVal_{s1}}{\datalangVal_{s2}}}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangBlockDet{\datalangTag}{\datalangVal_{s1}}{\datalangVal_{s2}}}{\datalangExpr_t}
             }
         \and
-        \inferrule*[lab=SimTgtBlockDet]
+        \inferrule*[lab=RelTgtBlockDet]
             {
                 \forall \datalangLoc_t \ldotp
                 \datalangLoc_t \iPointsto_t (\datalangTag, \datalangVal_{t1}, \datalangVal_{t2}) \iSepImp
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangLoc_t}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangLoc_t}
             }{
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangBlockDet{\datalangTag}{\datalangVal_{t1}}{\datalangVal_{t2}}}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangBlockDet{\datalangTag}{\datalangVal_{t1}}{\datalangVal_{t2}}}
             }
         \\
-        \inferrule*[lab=SimSrcLoad]
+        \inferrule*[lab=RelSrcLoad]
             {
                 (\datalangLoc_s + \datalangIdx) \iPointsto_s \datalangVal_s
             \\\\
                 (\datalangLoc_s + \datalangIdx) \iPointsto_s \datalangVal_s \iSepImp
-                \iSim[\iProt]{\iPred}{\datalangVal_s}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangVal_s}{\datalangExpr_t}
             }{
-                \iSim[\iProt]{\iPred}{\datalangLoad{\datalangLoc_s}{\datalangIdx}}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangLoad{\datalangLoc_s}{\datalangIdx}}{\datalangExpr_t}
             }
         \and
-        \inferrule*[lab=SimSrcStore]
+        \inferrule*[lab=RelSrcStore]
             {
                 (\datalangLoc_s + \datalangIdx) \iPointsto_s \datalangVal_s
             \\\\
                 (\datalangLoc_s + \datalangIdx) \iPointsto_s \datalangVal_s' \iSepImp
-                \iSim[\iProt]{\iPred}{\datalangUnit}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangUnit}{\datalangExpr_t}
             }{
-                \iSim[\iProt]{\iPred}{\datalangStore{\datalangLoc_s}{\datalangIdx}{\datalangVal_s'}}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangStore{\datalangLoc_s}{\datalangIdx}{\datalangVal_s'}}{\datalangExpr_t}
             }
         \\
-        \inferrule*[lab=SimTgtLoad]
+        \inferrule*[lab=RelTgtLoad]
             {
                 (\datalangLoc_t + \datalangIdx) \iPointsto_t \datalangVal_t
             \\\\
                 (\datalangLoc_s + \datalangIdx) \iPointsto_t \datalangVal_t \iSepImp
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangVal_t}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangVal_t}
             }{
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangLoad{\datalangLoc_t}{\datalangIdx}}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangLoad{\datalangLoc_t}{\datalangIdx}}
             }
         \and
-        \inferrule*[lab=SimTgtStore]
+        \inferrule*[lab=RelTgtStore]
             {
                 (\datalangLoc_t + \datalangIdx) \iPointsto_t \datalangVal_t
                 \\\\
                 (\datalangLoc_t + \datalangIdx) \iPointsto_t \datalangVal_t' \iSepImp
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangUnit}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangUnit}
             }{
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangStore{\datalangLoc_t}{\datalangIdx}{\datalangVal_t'}}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangStore{\datalangLoc_t}{\datalangIdx}{\datalangVal_t'}}
             }
         \\
-        \inferrule*[lab=SimBijInsert]
+        \inferrule*[lab=RelBijInsert]
             {
                 \datalangLoc_s \iPointsto_s \datalangVal_s
             \and
@@ -157,12 +166,12 @@
                 \datalangVal_s \iSimilar \datalangVal_t
             \and
                 \datalangLoc_s \iInBij \datalangLoc_t \iSepImp
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
             }{
-                \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
+                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
             }
         \\
-        \inferrule*[lab=SimLoad]
+        \inferrule*[lab=RelLoad]
             {
                 \datalangLoc_s \iSimilar \datalangLoc_t
             \and
@@ -171,10 +180,10 @@
                 \iSepImp
                 \iPred (\datalangVal_s, \datalangVal_t)
             }{
-                \iSim[\iProt]{\iPred}{\datalangLoad{\datalangLoc_s}{\datalangIdx}}{\datalangLoad{\datalangLoc_t}{\datalangIdx}}
+                \iSimv[\iProt]{\iPred}{\datalangLoad{\datalangLoc_s}{\datalangIdx}}{\datalangLoad{\datalangLoc_t}{\datalangIdx}}
             }
         \and
-        \inferrule*[lab=SimStore]
+        \inferrule*[lab=RelStore]
             {
                 \datalangLoc_s \iSimilar \datalangLoc_t
             \and
@@ -182,7 +191,7 @@
             \and
                 \iPred (\datalangUnit, \datalangUnit)
             }{
-                \iSim[\iProt]{\iPred}{\datalangStore{\datalangLoc_s}{\datalangIdx}{\datalangVal_s}}{\datalangStore{\datalangLoc_t}{\datalangIdx}{\datalangVal_t}}
+                \iSimv[\iProt]{\iPred}{\datalangStore{\datalangLoc_s}{\datalangIdx}{\datalangVal_s}}{\datalangStore{\datalangLoc_t}{\datalangIdx}{\datalangVal_t}}
             }
     \end{mathparpagebreakable}
     \caption{Reasoning rules for simulation (excerpt, omitting freshness conditions)}

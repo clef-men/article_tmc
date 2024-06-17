@@ -10,16 +10,6 @@ Traditionally this quadruple would be a judgment in a bespoke system of inferenc
 
 We defer the definition of the assertion as a simulation to \cref{sec:adequacy}, where it will also be proved adequate with respect to a notion of behavior refinement expressed outside Iris.
 
-\subsection{Runtime relation}
-
-\input{figures/csim}
-
-The assertion $\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ relates closed terms that may contain locations, as may be produced by our operational semantics. To prove the correctness of a program transformation, we proceed by induction on its definition on well-formed source terms, that do not contain locations and contain free variables.
-
-To bridge the gap between the two sorts of terms, we define in Figure~\ref{fig:csim} a \emph{runtime relation} $\iCsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ that closes over all bisubstitutions $\datalangBisubst$ of related values for free variables. This sort of definition is standard (considering our simulation as an untyped logical relation), it is simply called the ``logical relation'' in \Simuliris.
-
-Our theorems state that terms related by the TMC transformation are in the runtime relation $\iCsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$, and their proofs expand its definition to introduce an arbitrary bisubstitution $\datalangBisubst$ and work directly on $\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ using our reasoning rules.
-
 \section{Adequacy}
 \label{sec:soundness}
 \label{sec:adequacy}
@@ -83,32 +73,6 @@ The key ingredients are two specifications for the direct and DPS transformation
 \end{enumerate}
 
 The rest of this section expands each step of the proof, providing the necessary technical details to follow the Coq formalization.
-
-TODO
-
-\clearpage
-
-\begin{theorem}[Close simulation]
-    \begin{align*}
-            &
-            \iPersistent \left(
-                \forall \iPredTwo, \datalangExpr_s, \datalangExpr_t \ldotp
-                \iProt (\iPredTwo, \datalangExpr_s, \datalangExpr_t) \iSepImp
-                \mathrm{sim \mathhyphen inner}_\bot (\lambdaAbs (\_, \datalangExpr_s', \datalangExpr_t') \ldotp \iSim[\iProt]{\iPredTwo}{\datalangExpr_s'}{\datalangExpr_t'}) (\bot, \datalangExpr_s, \datalangExpr_t)
-            \right) \iSepImp
-        \\
-            &
-            \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t} \iSepImp
-            \iSim[\bot]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
-    \end{align*}
-\end{theorem}
-
-\begin{theorem}[Adequacy]
-    $
-        \left( \vdash \iSimv{\iSimilar}{\datalangExpr_s}{\datalangExpr_t} \right) \implies
-        \datalangExpr_s \refined \datalangExpr_t
-    $
-\end{theorem}
 
 relational separation logic = simulation
 
@@ -201,7 +165,7 @@ proof
 
 \begin{theorem}[Specification of direct transformation]
     \[
-        \iCsimvHoare{
+        \iRsimvHoare{
             \wf{\datalangExpr_s} \iSep
             \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
         }{
@@ -216,7 +180,7 @@ proof
 
 \begin{theorem}[Specification of DPS transformation]
     \[
-        \iCsimvHoare{
+        \iRsimvHoare{
             \wf{\datalangExpr_s} \iSep
             (\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t \iSep
             (\datalangLoc + \datalangIdx) \iPointsto \datalangHole
@@ -257,5 +221,3 @@ proof
 % - in the direct case, we have a function application on both sides,
 %   so we make a pure step on both sides and we have to show that the function bodies
 %   (with a bisubstitution (x mapsto (vs, vt)) applied) are in the relation.
-
-\input{figures/protocol}

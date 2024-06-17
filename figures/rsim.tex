@@ -7,16 +7,16 @@
     		\datalangBisubst (\datalangVar) = (\datalangVal_s, \datalangVal_t) \iSep
     		\datalangVal_s \iSimilar \datalangVal_t
     	\\
-    		\iCsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
+    		\iRsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
     		&\coloneqq
     		\forall \datalangBisubst \ldotp
     		\wf{\datalangBisubst} \iSepImp
     		\iSimv[\iProt]{\iPred}{\datalangBisubst_s (\datalangExpr_s)}{\datalangBisubst_t (\datalangExpr_t)}
     	\\
-    	   \iCsimvHoare[\iProt]{P}{\iPred}{\datalangExpr_s}{\datalangExpr_t}
+    	   \iRsimvHoare[\iProt]{P}{\iPred}{\datalangExpr_s}{\datalangExpr_t}
     	   &\coloneqq
-    	   \iPersistent \left( P \iSepImp \iCsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t} \right)
+    	   \iPersistent \left( P \iSepImp \iRsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t} \right)
     \end{align*}
-    \caption{Closed simulation}
-    \label{fig:csim}
+    \caption{Logical relation on open expressions}
+    \label{fig:rsim}
 \end{figure}

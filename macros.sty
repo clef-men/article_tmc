@@ -51,7 +51,7 @@
     \stackrel[\scriptscriptstyle\textrm{dir}]{#1}{\tmc}%
 }
 \newcommand{\tmcDps}[1]{%
-    \stackrel[\scriptscriptstyle\textrm{DPS}]{#1}{\tmc}%
+    \stackrel[\scriptscriptstyle\textrm{dps}]{#1}{\tmc}%
 }
 
 \newcommand{\iProp}{%
@@ -99,25 +99,35 @@
 \newcommand{\iTie}{%
     \leftrightarrow%
 }
-
 \newcommand{\iSim}[4][]{%
     #3 \gtrsim #4 \,%
     \ifx #1 \else \langle #1 \rangle \, \fi%
-    \lbrace #2 \rbrace%
+    \left[ #2 \right]%
 }
 \newcommand{\iSimv}[4][]{%
     #3 \gtrsim #4 \,%
     \ifx #1 \else \langle #1 \rangle \, \fi%
-    \left[ #2 \right]%
+    \left\{ #2 \right\}%
+}
+\newcommand{\iSimHoare}[5][]{%
+    \left[ #2 \right] \ \iSim[#1]{#3}{#4}{#5}%
 }
 \newcommand{\iSimvHoare}[5][]{%
-    \left[ #2 \right] \ \iSimv[#1]{#3}{#4}{#5}%
+    \left\{ #2 \right\} \ \iSimv[#1]{#3}{#4}{#5}%
 }
-\newcommand{\iCsimv}[4][]{%
+\newcommand{\iRsim}[4][]{%
     #3 \geq #4 \,%
     \ifx #1 \else \langle #1 \rangle \, \fi%
     \left[ #2 \right]%
 }
-\newcommand{\iCsimvHoare}[5][]{%
-    \left[ #2 \right] \ \iCsimv[#1]{#3}{#4}{#5}%
+\newcommand{\iRsimv}[4][]{%
+    #3 \geq #4 \,%
+    \ifx #1 \else \langle #1 \rangle \, \fi%
+    \left\{ #2 \right\}%
+}
+\newcommand{\iRsimHoare}[5][]{%
+    \left[ #2 \right] \ \iRsim[#1]{#3}{#4}{#5}%
+}
+\newcommand{\iRsimvHoare}[5][]{%
+    \left\{ #2 \right\} \ \iRsimv[#1]{#3}{#4}{#5}%
 }

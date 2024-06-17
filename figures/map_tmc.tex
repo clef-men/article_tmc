@@ -7,23 +7,23 @@ map |-> rec (fn, xs) =
       []
   | x :: xs ==>
       let y = fn x in
-      let dst = y :: () in
-      @map_dps ((dst, 2), (fn, xs)) ;
+      let dst = y :: ? in
+      @map_dps ((dst, 2), fn, xs) ;
       dst
 \end{Datalang}
 \end{minipage}
 \hfill
 \begin{minipage}{.52\columnwidth}
 \begin{Datalang}
-map_dps |-> rec ((dst, idx), (fn, xs)) =
+map_dps |-> rec ((dst, idx), fn, xs) =
   match xs with
   | [] ==> 
       dst.(idx) <- []
   | x :: xs ==>
       let y = fn x in
-      let dst' = y :: () in
+      let dst' = y :: ? in
       dst.(idx) <- dst' ;
-      @map_dps ((dst', 2), (fn, xs))
+      @map_dps ((dst', 2), fn, xs)
 \end{Datalang}
 \end{minipage}
 \caption{Direct and DPS transforms of \datalang|map| (\DataLang)}

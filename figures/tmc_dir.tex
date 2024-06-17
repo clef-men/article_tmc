@@ -39,13 +39,13 @@
             {
                 \datalangExpr_{s1} \tmcDir{\datalangRenaming} \datalangExpr_{t1}
             \and
-                (\datalangExpr_\mathit{dst}, \datalangTwo, \datalangExpr_{s2}) \tmcDir{\datalangRenaming} \datalangExpr_{t2}
+                (\datalangVar, \datalangTwo, \datalangExpr_{s2}) \tmcDps{\datalangRenaming} \datalangExpr_{t2}
             }{
                 \datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
                 \tmcDir{\datalangRenaming}
                 \begin{array}{l}
-                    \datalangLet{\datalangExpr_\mathit{dst}}{\datalangBlock{\datalangTag}{\datalangExpr_{t1}}{\datalangHole}}{\\
-                    \datalangSeq{\datalangExpr_{t2}}{\datalangExpr_\mathit{dst}}}
+                    \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangExpr_{t1}}{\datalangHole}}{\\
+                    \datalangSeq{\datalangExpr_{t2}}{\datalangVar}}
                 \end{array}
             }
         \and
@@ -53,13 +53,13 @@
             {
                 \datalangExpr_{s2} \tmcDir{\datalangRenaming} \datalangExpr_{t2}
             \and
-                (\datalangExpr_\mathit{dst}, \datalangOne, \datalangExpr_{s1}) \tmcDir{\datalangRenaming} \datalangExpr_{t1}
+                (\datalangVar, \datalangOne, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}
             }{
                 \datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
                 \tmcDir{\datalangRenaming}
                 \begin{array}{l}
-                    \datalangLet{\datalangExpr_\mathit{dst}}{\datalangBlock{\datalangTag}{\datalangHole}{\datalangExpr_{t2}}}{\\
-                    \datalangSeq{\datalangExpr_{t1}}{\datalangExpr_\mathit{dst}}}
+                    \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangHole}{\datalangExpr_{t2}}}{\\
+                    \datalangSeq{\datalangExpr_{t1}}{\datalangVar}}
                 \end{array}
             }
         \\
