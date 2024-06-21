@@ -3,9 +3,9 @@
 \begin{Datalang}
 map |-> rec (fn, xs) =
   match xs with
-  | [] ==> 
+  | [] ->
       []
-  | x :: xs ==>
+  | x :: xs ->
       let y = fn x in
       let dst = y :: ? in
       @map_dps ((dst, 2), fn, xs) ;
@@ -17,15 +17,15 @@ map |-> rec (fn, xs) =
 \begin{Datalang}
 map_dps |-> rec ((dst, idx), fn, xs) =
   match xs with
-  | [] ==> 
+  | [] ->
       dst.(idx) <- []
-  | x :: xs ==>
+  | x :: xs ->
       let y = fn x in
       let dst' = y :: ? in
       dst.(idx) <- dst' ;
       @map_dps ((dst', 2), fn, xs)
 \end{Datalang}
 \end{minipage}
-\caption{Direct and DPS transforms of \datalang|map| (\DataLang)}
+\caption{Direct and DPS transforms of \datalang|map| (\cref{fig:map})}
 \label{fig:map_tmc}
 \end{figure}

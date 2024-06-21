@@ -2,15 +2,16 @@
 \settopmatter{printfolios=true,printccs=false,printacmref=false}
 \renewcommand\footnotetextcopyrightpermission[1]{} % removes footnote with conference information in first column
 
-% ------------------------------------------------------------------------------
+% ---------------------------------------------------------
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[scaled=0.8]{beramono}
 
-% ------------------------------------------------------------------------------
+% ---------------------------------------------------------
 
 \usepackage{mathtools}
+
 \usepackage{amsthm}
 
 \usepackage{mathpartir}
@@ -27,29 +28,28 @@
 \DeclareMathOperator{\muAbs}{\mu}
 \DeclareMathOperator{\nuAbs}{\nu}
 
-% ------------------------------------------------------------------------------
-
-\usepackage{macros}
-
-\usepackage{listings}
-\usepackage{listings/ocaml}
-\usepackage{listings/datalang}
-
-% ------------------------------------------------------------------------------
+% ---------------------------------------------------------
 
 \usepackage[nameinlink,noabbrev]{cleveref}
 \crefname{section}{\S\!}{\S}
 \Crefname{section}{Sec.}{Sec.}
 \crefname{figure}{Fig.}{Fig.}
 
-% ------------------------------------------------------------------------------
+% ---------------------------------------------------------
+
+\usepackage{macros}
+
+\usepackage{listings/ocaml}
+\usepackage{listings/datalang}
+
+% ---------------------------------------------------------
 
 %% Journal information
 %% Supplied to authors by publisher for camera-ready submission;
 %% use defaults for review submission.
 \acmJournal{PACMPL}
 \acmVolume{1}
-\acmNumber{PLDI}
+\acmNumber{POPL}
 \acmArticle{1}
 \acmYear{2023}
 \acmMonth{11}
@@ -73,10 +73,12 @@
 %% issue of PACMPL.
 \citestyle{acmnumeric}   %% For author/year citations
 
-% ------------------------------------------------------------------------------
-% ------------------------------------------------------------------------------
+% ---------------------------------------------------------
+% ---------------------------------------------------------
 
 \begin{document}
+
+% ---------------------------------------------------------
 
 \title{Verifying Tail Modulo Cons using Relational Separation Logic}
 
@@ -105,7 +107,7 @@
 \email{gabriel.scherer@inria.fr}
 
 \begin{abstract}
-  \input{abstract}
+    \input{abstract}
 \end{abstract}
 
 \maketitle
@@ -130,27 +132,24 @@
 \ccsdesc[500]{Theory of computation~Separation logic}
 \ccsdesc[500]{Theory of computation~Program verification}
 
-% ------------------------------------------------------------------------------
+% ---------------------------------------------------------
 
 \input{introduction}
 \clearpage
 
-\input{ocaml}
+\input{implementation}
 \clearpage
 
-\input{language}
+\input{formalization}
 \clearpage
 
-\input{transformation}
-\clearpage
-
-\input{sketch}
+\input{specification}
 \clearpage
 
 \input{program_logic}
 \clearpage
 
-\input{soundness}
+\input{proof}
 \clearpage
 
 \input{simulation}
@@ -162,55 +161,7 @@
 \input{conclusion}
 \clearpage
 
-% Missing sections ?
-% TMC in OCaml, for users
-% TMC in OCaml, for implementors
-% TMC in OCaml, evaluation (benchmarks + usage feedback)
-%   note: OCaml 4 vs. OCaml 5
-
-% TODO: decider si on clame "TMC dans OCaml" comme une contribution
-% TODO: décider qui sont les auteurs (Gabriel ? Frédéric ?)
-% TODO: indiquer qui a fait quoi
-% ------------------------------------------------------------------------------
-
-% Propositions sur la grammaire:
-% - les constructeurs sont des valeurs
-% - primitive d'égalité sur les constructeurs
-
-% vu sim. sim-innerX(sim)
-
-
-% unstructured TODO list
-
-% - To give another example of simulation with a different protocol,
-% we could look at accumulator-passing-style transformations
-% (tail-modulo-context for associative arithmetic operators). Prove
-% that `factorial` is equivalent to the tmc-optimized factorial
-% (two versions, one in accumulator-passing-style and the "direct
-% style" version that calls it with accumulator 1).
-%    .. et donc il faut garder les entiers!
-%
-% Clément: j'ai commencé à bosser sur ça. Ça demande de travailler
-% sur des expressions plutôt que des valeurs (l'accumulateur peut
-% être un entier mais aussi une variable). Il faut regénéraliser
-% des bouts du développment Coq qui était spécialisé aux
-% valeurs. Il se passe un truc intéressant sur les échecs si
-% l'accumulateur est une variable qui est substituée par un
-% non-entier (échec pendant le calcul d'un côté, après le calcul
-% de l'autre).
-% La formulation où on accumule des opérations sur des expressions
-% arbitraires et pas juste des constantes entières est un peu plus
-% générale que celle de Daan Leijen (que des constantes). Elle permet
-% de faire une transformation APS sur List.sum.
-
-% Gabriel: should we consider adding a primitive that reduces non-deterministically to any integer?
-% This can be a model of a "read from the standard input" primitive, without having to deal with I/O in the operational semantics.
-% (And: it should be very easy to add as you already support non-determinism.)
-%
-% The context for this suggestion was to consider reducing the correctness of any function (say f : Nat -> Nat) to just
-% "main" functions with no arguments, by reading the argument from the standard input instead.
-
-\hbadness=10000
-\bibliography{english}
+%\hbadness=10000
+%\bibliography{english}
 
 \end{document}

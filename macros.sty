@@ -1,29 +1,85 @@
 \RequirePackage{xspace}
+
 \RequirePackage{stackrel}
 \RequirePackage{scalerel}
 
-\newcommand{\etal}{\textit{et al.}}
-\newcommand{\mathhyphen}{{\hbox{-}}}
-\newcommand{\circled}[1]{\raisebox{.5pt}{\textcircled{\raisebox{-.9pt}{#1}}}}
-\newcommand{\term}[1]{\texttt{#1}}
-\newcommand{\nterm}[1]{\mathrm{#1}}
-\newcommand{\finmap}{\stackrel{\mathrm{fin}}{\rightharpoonup}}
-\newcommand{\constr}[2][]{\bold{#2}\ifx #1 \else (#1)\fi}
+% ---------------------------------------------------------
 
-\newcommand{\dom}[1]{\mathrm{dom} (#1)}
-\newcommand{\codom}[1]{\mathrm{codom} (#1)}
-\newcommand{\fv}[1]{\mathrm{fv} (#1)}
-\newcommand{\Prop}{\mathrm{Prop}}
-\newcommand{\wf}[2][]{\mathrm{wf}\ifx #1 \else _#1 \fi (#2)}
+\newcommand{\etal}{%
+    \textit{et al.}%
+}
+\newcommand{\circled}[1]{%
+    \raisebox{.5pt}{\textcircled{\raisebox{-.9pt}{#1}}}%
+}
 
-\newcommand{\OCaml}{\textsc{OCaml}\xspace}
-\newcommand{\LambdaLang}{\textsc{Lambda}\xspace}
-\newcommand{\Mezzo}{\textsc{Mezzo}\xspace}
-\newcommand{\DataLang}{\textsc{DataLang}\xspace}
-\newcommand{\Coq}{\textsc{Coq}\xspace}
-\newcommand{\Iris}{\textsc{Iris}\xspace}
-\newcommand{\Simuliris}{\textsc{Simuliris}\xspace}
-\newcommand{\Autosubst}{\textsc{Autosubst}\xspace}
+% ---------------------------------------------------------
+
+\newcommand{\mathhyphen}{%
+    {\hbox{-}}%
+}
+
+\newcommand{\term}[1]{%
+    \texttt{#1}%
+}
+\newcommand{\nterm}[1]{%
+    \mathrm{#1}%
+}
+
+\newcommand{\finmap}{%
+    \stackrel{\mathrm{fin}}{\rightharpoonup}%
+}
+
+\newcommand{\constr}[2][]{%
+    \bold{#2}\ifx #1 \else (#1)\fi%
+}
+
+\newcommand{\dom}[1]{%
+    \mathrm{dom} (#1)%
+}
+\newcommand{\codom}[1]{%
+    \mathrm{codom} (#1)%
+}
+
+\newcommand{\fv}[1]{%
+    \mathrm{fv} (#1)%
+}
+
+\newcommand{\Prop}{%
+    \mathrm{Prop}%
+}
+
+\newcommand{\wf}[2][]{%
+    \mathrm{wf}\ifx #1 \else _#1 \fi (#2)%
+}
+
+% ---------------------------------------------------------
+
+\newcommand{\OCaml}{%
+    \textsc{OCaml}\xspace%
+}
+\newcommand{\LambdaLang}{%
+    \textsc{Lambda}\xspace%
+}
+\newcommand{\Mezzo}{%
+    \textsc{Mezzo}\xspace%
+}
+\newcommand{\DataLang}{%
+    \textsc{DataLang}\xspace%
+}
+\newcommand{\Coq}{%
+    \textsc{Coq}\xspace%
+}
+\newcommand{\Iris}{%
+    \textsc{Iris}\xspace%
+}
+\newcommand{\Simuliris}{%
+    \textsc{Simuliris}\xspace%
+}
+\newcommand{\Autosubst}{%
+    \textsc{Autosubst}\xspace%
+}
+
+% ---------------------------------------------------------
 
 \newcommand{\headStep}[1]{%
     \stackrel[\scriptscriptstyle\textrm{head}]{\scriptscriptstyle#1}{\longrightarrow}%
@@ -34,12 +90,15 @@
 \newcommand{\pureStep}[1]{%
     \stackrel[\scriptscriptstyle\textrm{pure}]{#1}{\longrightarrow}%
 }
+
 \newcommand{\diverges}[2]{%
     #2 \Uparrow_{#1}%
 }
+
 \newcommand{\similar}{%
     \sim%
 }
+
 \newcommand{\refined}{%
     \sqsupseteq%
 }
@@ -53,6 +112,8 @@
 \newcommand{\tmcDps}[1]{%
     \stackrel[\scriptscriptstyle\textrm{dps}]{#1}{\tmc}%
 }
+
+% ---------------------------------------------------------
 
 \newcommand{\iProp}{%
     \mathrm{iProp}%
@@ -101,12 +162,12 @@
 }
 \newcommand{\iSim}[4][]{%
     #3 \gtrsim #4 \,%
-    \ifx #1 \else \langle #1 \rangle \, \fi%
+    \ifx #1 \else \langle #1 \rangle \fi%
     \left[ #2 \right]%
 }
 \newcommand{\iSimv}[4][]{%
     #3 \gtrsim #4 \,%
-    \ifx #1 \else \langle #1 \rangle \, \fi%
+    \ifx #1 \else \langle #1 \rangle \fi%
     \left\{ #2 \right\}%
 }
 \newcommand{\iSimHoare}[5][]{%
@@ -117,12 +178,12 @@
 }
 \newcommand{\iRsim}[4][]{%
     #3 \geq #4 \,%
-    \ifx #1 \else \langle #1 \rangle \, \fi%
+    \ifx #1 \else \langle #1 \rangle \fi%
     \left[ #2 \right]%
 }
 \newcommand{\iRsimv}[4][]{%
     #3 \geq #4 \,%
-    \ifx #1 \else \langle #1 \rangle \, \fi%
+    \ifx #1 \else \langle #1 \rangle \fi%
     \left\{ #2 \right\}%
 }
 \newcommand{\iRsimHoare}[5][]{%

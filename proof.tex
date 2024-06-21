@@ -1,0 +1,38 @@
+\section{Proof of the specification}
+\label{sec:proof}
+
+%\subsection{Logical relation on open expressions}
+%
+%The assertion $\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ relates closed terms that may contain locations, as may be produced by our operational semantics. To prove the correctness of a program transformation, we proceed by induction on its definition on well-formed source terms, that do not contain locations and contain free variables.
+%
+%To bridge the gap between the two sorts of terms, we define in Figure~\ref{fig:rsim} a \emph{runtime relation} $\iRsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ that closes over all bisubstitutions $\datalangBisubst$ of related values for free variables. This sort of definition is standard (considering our simulation as an untyped logical relation), it is simply called the ``logical relation'' in \Simuliris.
+%
+%Our theorems state that terms related by the TMC transformation are in the runtime relation $\iRsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$, and their proofs expand its definition to introduce an arbitrary bisubstitution $\datalangBisubst$ and work directly on $\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ using our reasoning rules.
+
+
+% Those two statements are proven together.
+% (First by induction on \datalangExpr_s, then on the two transformation relations mutually-inductively.)
+
+% Note: the \geq here is a "parametric" simulation, we assume that all
+% free variables of \datalangExpr_s, \datalangExpr_t (they must be the same) are replaced by
+% externally-equivalent values.
+
+% Taking a step back: to prove the contextual refinements between programs,
+% we have to check each function,
+%   @f vs refined by @f vt  (for vs externally-equiv. vt)
+% for this we can use the adequacy lemma
+%   f vs simulated by @f vt (for the empty protocol) into internal value equivalence
+% and for this we use the simulation closure theorem
+%   f vs simulated by @f vt (for the Xtmc protocol)
+% assuming the Xtmc protocol is valid/adequate.
+%
+% But then this is trivial, just use case (4) right away.
+% So the meat of the proof is in showing that the Xtmc protocol is valid.
+
+% To prove that the Xtmc propocol is valid:
+% - in the direct case, we have a function application on both sides,
+%   so we make a pure step on both sides and we have to show that the function bodies
+%   (with a bisubstitution (x mapsto (vs, vt)) applied) are in the relation.
+
+
+\input{figures/rsim}

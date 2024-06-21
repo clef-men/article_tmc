@@ -1,9 +1,7 @@
-doc := main.tex
-
 .PHONY : all
 all :
-	latexmk -pdf $(doc)
+	@ latexmk -pdf -interaction=nonstopmode main.tex
 
 .PHONY : clean
 clean :
-	git clean -fX
+	@ git clean -fX

@@ -1,3 +1,4 @@
+\RequirePackage{listings}
 \RequirePackage{xcolor}
 \RequirePackage{amstext}
 
@@ -43,9 +44,9 @@
     literate=*
         {-}{$-$}1
         {|}{{\textcolor{datalangKeyword1}{|}}}1
-        {|->}{$\mapsto$}2
+        {|->}{$\coloneqq$}2
+        {->}{{$\textcolor{datalangKeyword1}{\rightarrow}$}}2
         {;}{{\textcolor{datalangKeyword1}{;}}}1
-        {==>}{{$\textcolor{datalangKeyword1}{\Rightarrow}$}}2
         {@}{{\textcolor{datalangKeyword2}{@}}}1
         {(}{{\textcolor{datalangKeyword3}{(}}}1
         {)}{{\textcolor{datalangKeyword3}{)}}}1
@@ -82,7 +83,7 @@
 }
 \newcommand{\datalangText}[1]{\text{\datalang|#1|}}
 
-% ------------------------------------------------------------------------------
+% ---------------------------------------------------------
 
 \makeatletter
 \newcommand{\datalangIdx}[1][\@nil]{%
@@ -135,7 +136,7 @@
 }
 \makeatother
 
-% ------------------------------------------------------------------------------
+% ---------------------------------------------------------
 
 \newcommand{\datalangZero}{%
     \term{0}%
@@ -197,17 +198,17 @@
 \newcommand{\datalangMatchOneline}[6][\@nil]{%
     \term{\color{datalangKeyword1}{match}}\ #2\ \term{\color{datalangKeyword1}{with}}\ %
     \def\@tmp{#1}\ifx\@tmp\@nnil \else \term{\color{datalangKeyword1}{|}}\ \fi%
-    \datalangNil\ \textcolor{datalangKeyword1}{\Rightarrow}\ #3\ %
-    \term{\color{datalangKeyword1}{|}}\ \datalangCons{#4}{#5}\ \textcolor{datalangKeyword1}{\Rightarrow}\ #6%
+    \datalangNil\ \textcolor{datalangKeyword1}{\rightarrow}\ #3\ %
+    \term{\color{datalangKeyword1}{|}}\ \datalangCons{#4}{#5}\ \textcolor{datalangKeyword1}{\rightarrow}\ #6%
 }
 \makeatother
 \newcommand{\datalangMatch}[5]{%
     \begin{array}{l}
             \term{\color{datalangKeyword1}{match}}\ #1\ \term{\color{datalangKeyword1}{with}}
         \\
-            \term{\color{datalangKeyword1}{|}}\ \datalangNil\ \textcolor{datalangKeyword1}{\Rightarrow}\ #2
+            \term{\color{datalangKeyword1}{|}}\ \datalangNil\ \textcolor{datalangKeyword1}{\rightarrow}\ #2
         \\
-            \term{\color{datalangKeyword1}{|}}\ \datalangCons{#3}{#4}\ \textcolor{datalangKeyword1}{\Rightarrow}\ #5
+            \term{\color{datalangKeyword1}{|}}\ \datalangCons{#3}{#4}\ \textcolor{datalangKeyword1}{\rightarrow}\ #5
     \end{array}%
 }
 \newcommand{\datalangHole}{%

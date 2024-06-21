@@ -133,7 +133,7 @@ if all its recursive calls are tail calls.
 
 In the definition of \ocaml{map}, the recursive call is not in tail
 position: after computing the result of \ocaml{map f xs} we still have
-to compute the final list cell, \ocaml{y ::$\ \hole$}. We say that a call is
+to compute the final list cell, \ocaml{y :: ?}. We say that a call is
 \emph{tail modulo cons} when the work remaining is formed of data
 \emph{constructors} only, such as \ocaml{(::)} here.
 
@@ -198,18 +198,15 @@ function, and internally calls \ocaml{map_dps} on non-empty lists. It
 is not tail-recursive, but it does not call itself recursively, it
 jumps to the tail-recursive \ocaml{map_dps} after one call.
 
-The key idea of the transformation is that the expression \ocaml{y ::
-  map f xs}, which contained a non-tail-recursive call, is transformed
-into first the computation of a \emph{partial} list cell, written %
-\ocaml{y :: Hole}, followed by a call to \ocaml{map_dps} that is asked
-to write its result in the position of the \ocaml{Hole}. The recursive
+The key idea of the transformation is that the expression \ocaml{y :: map f xs}, which contained a non-tail-recursive call, is transformed into first the computation of a \emph{partial} list cell, written \ocaml{y :: ?}, followed by a call to \ocaml{map_dps} that is asked
+to write its result in the position of the \ocaml{?}. The recursive
 call thus happens after the cell creation (instead of before), in
 tail-recursive position in the \ocaml{map_dps} variant. In the direct
 variant, the value of the destination \ocaml{dst} has to be returned
 after the call.
 
 The transformed code is in a pseudo-OCaml, it is not a valid OCaml
-program: we use a magical \ocaml{Hole} constant, and our notation
+program: we use a magical \ocaml{?} constant, and our notation
 \ocaml{dst.i <- ...} to update constructor parameters in-place is also
 invalid in source programs. The transformation is implemented on
 a lower-level, untyped intermediate representation of the OCaml
@@ -234,9 +231,9 @@ In \OCaml, the natural implementation of the \ocaml|map| function on polymorphic
 \begin{Ocaml}
 let rec map f xs =
   match xs with
-  | [] =>
+  | [] ->
       []
-  | x :: xs =>
+  | x :: xs ->
       let y = f x in
       y :: map f xs
 \end{Ocaml}

@@ -1,3 +1,4 @@
+\RequirePackage{listings}
 \RequirePackage{color}
 \RequirePackage{amstext}
 
@@ -90,7 +91,6 @@
         {-}{$-$}1
         {|}{{\textcolor{ocamlKeyword1}{|}}}1
         {;}{{\textcolor{ocamlKeyword1}{;}}}1
-        {==>}{{$\textcolor{ocamlKeyword1}{\ \Rightarrow}$}}1
         {->}{{$\textcolor{ocamlKeyword1}{\rightarrow}$}}2
         {(}{{\textcolor{ocamlKeyword2}{(}}}1
         {)}{{\textcolor{ocamlKeyword2}{)}}}1
@@ -101,7 +101,8 @@
         {.}{{\textcolor{ocamlKeyword2}{.}}}1
         {:}{{\textcolor{ocamlKeyword2}{:}}}1
         {,}{{\textcolor{ocamlKeyword2}{,}}}1
-        {<-}{{$\textcolor{ocamlKeyword2}{\ \leftarrow\ }$}}1,
+        {<-}{{$\textcolor{ocamlKeyword2}{\ \leftarrow\ }$}}1
+        {?}{{$\blacksquare$}}1,
 %
     morestring=[b]",
     stringstyle=\ttfamily,
@@ -124,4 +125,6 @@
         basicstyle=\ttfamily\small
     ]%
 }
-\newcommand{\ocamlText}[1]{\text{\ocaml|#1|}}
+\newcommand{\ocamlText}[1]{%
+    \text{\ocaml|#1|}%
+}
