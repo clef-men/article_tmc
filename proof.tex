@@ -1,6 +1,41 @@
 \section{Proof of the specification}
 \label{sec:proof}
 
+%\begin{theorem}[Specification of direct transformation]
+%    \[
+%        \iRsimvHoare{
+%            \wf{\datalangExpr_s} \iSep
+%            \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
+%        }{
+%            \iSimilar
+%        }{
+%            \datalangExpr_s
+%        }{
+%            \datalangExpr_t
+%        }
+%    \]
+%\end{theorem}
+
+%\begin{theorem}[Specification of DPS transformation]
+%    \[
+%        \iRsimvHoare{
+%            \wf{\datalangExpr_s} \iSep
+%            (\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t \iSep
+%            (\datalangLoc + \datalangIdx) \iPointsto \datalangHole
+%        }{
+%            \lambdaAbs (\datalangVal_s, \datalangVal_t') \ldotp
+%            \exists \datalangVal_t \ldotp
+%            \datalangVal_t' = \datalangUnit \iSep
+%            (\datalangLoc + \datalangIdx) \iPointsto \datalangVal_t \iSep
+%            \datalangVal_s \iSimilar \datalangVal_t
+%        }{
+%            \datalangExpr_s
+%        }{
+%            \datalangExpr_t
+%        }
+%    \]
+%\end{theorem}
+
 %\subsection{Logical relation on open expressions}
 %
 %The assertion $\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ relates closed terms that may contain locations, as may be produced by our operational semantics. To prove the correctness of a program transformation, we proceed by induction on its definition on well-formed source terms, that do not contain locations and contain free variables.

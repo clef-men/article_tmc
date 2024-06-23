@@ -1,125 +1,88 @@
 \section{Understanding and specifying TMC}
 \label{sec:specification}
 
+Before proving anything about TMC, we have to understand it.
+In this section, we show that there is a simple way to describe the essence of the transformation.
+The core idea is to give intuitive specifications to the direct and DPS sub-transformations using \emph{separation logic}.
+In the next sections, we will unroll the proof of these specifications and extract a soundness theorem that lives outside of separation logic, depending only on the \DataLang semantics.
+
 \subsection{Direct transformation}
+
+Intuitively, the direct transformation $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ preserves the behaviours of the source expression $\datalangExpr_s$.
+Basically, $\datalangExpr_s$ and $\datalangExpr_t$ compute the same thing.
+Using \emph{relational Hoare logic}, an assumed extension of standard Hoare logic relating two expressions, we would just write:
+
+\[
+    \iRsimvHoare{
+        \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
+    }{
+        \lambdaAbs (\datalangVal_s, \datalangVal_t) \ldotp
+        \datalangVal_s \iSimilar \datalangVal_t
+    }{
+        \datalangExpr_s
+    }{
+        \datalangExpr_t
+    }
+\]
+
+The informal meaning of this specification is that 1) any behaviour (converging, diverging or stuck execution) of $\datalangExpr_t$ is also a behaviour of $\datalangExpr_s$ and 2) if $\datalangExpr_t$ converges to value $\datalangVal_t$, $\datalangExpr_s$ also converges to some value $\datalangVal_s$ that is \emph{similar} to $\datalangVal_s$.
+We will formalize the notion of \emph{behaviour} in \cref{sec:simulation} and that of \emph{similarity} later in this section.
+For the time being, the ready may assume similarity is just equality on values.
 
 \subsection{DPS transformation}
 
-% uniquely-owned mutable state.
+The DPS transformation $(\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$ is parameterized by a destination $(\datalangLoc, \datalangIdx)$ pointing to an uninitialized field of some block.
+Intuitively, $\datalangExpr_t$ computes the same thing as $\datalangExpr_s$ but writes it into the destination instead of returning it.
+Using \emph{relational separation logic}, an assumed further extension of relational Hoare logic with the concepts of separation logic, we would write:
+
+\[
+    \iRsimvHoare{
+        (\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t \iSep
+        (\datalangLoc + \datalangIdx) \iPointsto_t \datalangHole
+    }{
+        \lambdaAbs (\datalangVal_s, \datalangUnit) \ldotp
+        \exists \datalangVal_t \ldotp
+        (\datalangLoc + \datalangIdx) \iPointsto_t \datalangVal_t \iSep
+        \datalangVal_s \iSimilar \datalangVal_t
+    }{
+        \datalangExpr_s
+    }{
+        \datalangExpr_t
+    }
+\]
+
+The \emph{points-to assertion} $(\datalangLoc + \datalangIdx) \iPointsto_t -$ expresses that the destination is uniquely owned by the transformed program.
+The specification requires $\datalangExpr_t$ to fill it with some value that is similar to the returned source value.
+In simple terms, this is essentially the specification of destination-passing style.
 
 \subsection{Heap bijection}
 
-% SimBijInsert: \approx^bij: Simuliris calls this the escaped/public
-% locations, those that have been published.
+While we assumed value similarity to be just equality, it is actually not sufficient.
+Indeed, corresponding source and target block locations are not synchronized.
+To see why, consider the \datalang{map} function (\cref{fig:map}) and its DPS transform (\cref{fig:map_tmc}).
+Notice that \datalang{dst'} corresponds with the returned source block \datalang{y :: @map (fn, xs)} but is allocated before the recursive call.
+In other words, the transformed program \emph{allocates ahead} of the source program.
 
-% ---------------------------------------------------------
+To deal with this, we introduce a \emph{heap bijection} as in \Simuliris~\cite{DBLP:journals/pacmpl/GaherSSJDKKD22}.
+Corresponding source and target locations --- pointing to block fields in our semantics --- are logically and permanently registered in this bijection. 
+We can then refer to a registered pair of locations though the assertion $\datalangLoc_s \iInBij \datalangLoc_t$.
+This mechanism is formalized by the \RefTirName{BijInsert} rule:
 
-spécification des deux transformées pour une certaine notion de similarité entre valeurs
+\begin{mathpar}
+    \inferrule*[lab=BijInsert]
+        {
+            \datalangLoc_s \iPointsto_s \datalangVal_s
+        \and
+            \datalangLoc_t \iPointsto_t \datalangVal_t
+        \and
+            \datalangVal_s \iSimilar \datalangVal_t
+        }{
+            \datalangLoc_s \iInBij \datalangLoc_t
+        }
+\end{mathpar}
 
-définition de la similarité entre valeurs (évolution tas)
-
-% ---------------------------------------------------------
-
-%\begin{theorem}[Specification of direct transformation]
-%    \[
-%        \iRsimvHoare{
-%            \wf{\datalangExpr_s} \iSep
-%            \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
-%        }{
-%            \iSimilar
-%        }{
-%            \datalangExpr_s
-%        }{
-%            \datalangExpr_t
-%        }
-%    \]
-%\end{theorem}
-%
-%\begin{theorem}[Specification of DPS transformation]
-%    \[
-%        \iRsimvHoare{
-%            \wf{\datalangExpr_s} \iSep
-%            (\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t \iSep
-%            (\datalangLoc + \datalangIdx) \iPointsto \datalangHole
-%        }{
-%            \lambdaAbs (\datalangVal_s, \datalangVal_t') \ldotp
-%            \exists \datalangVal_t \ldotp
-%            \datalangVal_t' = \datalangUnit \iSep
-%            (\datalangLoc + \datalangIdx) \iPointsto \datalangVal_t \iSep
-%            \datalangVal_s \iSimilar \datalangVal_t
-%        }{
-%            \datalangExpr_s
-%        }{
-%            \datalangExpr_t
-%        }
-%    \]
-%\end{theorem}
-
-% ---------------------------------------------------------
-
-%The separation logic in which our reasoning rules are formulated is relational: it describes resources from a source and target programs and relations between them. We use the following primitive assertions:
-%
-%\begin{itemize}
-%\item $\datalangLoc_s \iPointsto_s \datalangVal_s$, a points-to assertion for the source program
-%\item $\datalangLoc_t \iPointsto_t \datalangVal_t$, for the target program
-%\item $\datalangLoc_s \iInBij \datalangLoc_t$, which asserts that the source location $\datalangLoc_s$ and the target location $\datalangLoc_t$ are in the ``heap bijection''. This assertion is persistent: one cannot remove locations from the bijection.
-%\end{itemize}
-%
-%On top of these assertions we define a \emph{value similarity} relation $\datalangVal_s \iSimilar \datalangVal_t$, given in Figure~\ref{fig:isimilar}.  Except for locations, this is exactly the equality. For locations, notice that locations appearing during the reduction of our programs are locations of valid blocks (always of size 3 in our language). We relate them by asking their field locations to be in the heap bijection.
-
-% ---------------------------------------------------------
-
-%\subsection{The quest for the right notion of simulation}
-%\label{sec:howto-relation}
-%
-%The final theorem we want to establish is a behaviour refinement $\datalangProg_s \refined \datalangProg_t$: the behaviours of the transformed program are included in the behaviour of the source program.
-%%
-%We propose a notion of behaviour refinement that gives a form of total correctness.
-%%
-%It is termination-preserving, but also (this is less common in the body of work around Iris) safety-preserving and divergence-preserving.
-%
-%We prove this using a backward simulation argument for our transformations $\datalangExpr_s \tmc \datalangExpr_t$.
-%%
-%A direct approach, ultimately unsucessful, would be to prove that the relation is in the simulation by induction, on $\datalangExpr_s$ for example.
-%%
-%This works well for all constructions except for function calls $\datalangCall{\datalangFnptr{\datalangFn}}{\datalangExpr}$: to reason on the relation between a call to $\datalangFnptr{\datalangFn}$ and its transformation (in direct or DPS style), we would need to inline the function definition, which is not structurally decreasing.
-%
-%This is a common problem to establish simulations, and the solution is to use a form of co-induction.
-%%
-%In the Iris logic, a natural way to do this would be to use a ``later'' modality.
-%%
-%But defining simulations using a ``later'' modality is in fact non-trivial; simple definitions do not give the excepted notion of simulation, due to non-intuitive aspects of the step-indexing semantics of ``later'' in the Iris model. This problem is discussed in details in the previous work on Transfinite Iris~\citep*{TODO-transfinite-Iris}, an alternative logic with different axioms and models.
-%%
-%Sticking to the main Iris logic, a good definition of simulation has been worked out in Simuliris~\citep*{TODO-Simuliris}.
-%%
-%It avoids using the ``later'' modality by using the notion of coinduction native to Coq. In Simuliris, coinductive reasoning steps correspond to an ``abstract'' case in the simulation relation, used for function applications; an ``open simulation'' allows these abstract steps, while a ``closed simulation'' does not allow them.
-%%
-%The coinduction principle is encapsulated in a ``simulation closure'' theorem, which states if two terms are related in the open simulation, they are in fact also related in the closed simulation if we (coinductively) assume that foreign function bodies are correct.
-%
-%Our proof is heavily inspired by the Simuliris work, but we cannot reuse their results directly because the notion of simulation that they provide is not expressive enough for our proof: we need to support transformations that change the calling conventions between source and target programs.
-%%
-%(Along the way we also simplified the simulation relation by removing proof rules related to concurrency, which we do not consider in this work.)
-%
-%To support different calling conventions, we make our simulation relation $\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ parametric over abstract protocols $\iProt$. This extends the technique of \citet*{TODO-paulo} from the unary setting of safety predicates to the binary setting of a relational separation logic.
-%
-%\subsection{Proof outline}
-%
-%Once we have decided to reuse and extend the Simuliris work, our argument can be split in three separate parts:
-%
-%\begin{enumerate}
-%
-%\item Define our notion of simulation parametric over protocols (calling conventions), prove its adequacy (it implies a behaviour refinement) and establish a ``closure theorem'' as in the Simuliris work.
-%%
-%  This technical contribution is independent of the TMC language or transformation, and could be reused in other works.
-%
-%\item Build a relational program logic for our programming language, as a body of lemmas to establish simulations between expressions.
-%
-%\item Use this program logic to establish the soundness of the TMC transformation.
-%%
-%The key ingredients are two specifications for the direct and DPS transformations that are proved in a mutually-inductive way, and are used to prove the hypothesis of the closure theorem of our simulation.
-%\end{enumerate}
-
-% ---------------------------------------------------------
+Finally, we define value similarity in \cref{fig:isimilar}.
+It coincides with equality except on blocks, for which we require all fields to be registered in the bijection.
 
 \input{figures/isimilar}
 %\input{figures/heap_bij}

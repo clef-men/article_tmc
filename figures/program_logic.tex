@@ -145,20 +145,6 @@
             }{
                 \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangStore{\datalangLoc_t}{\datalangIdx}{\datalangVal_t'}}
             }
-%        \\
-%        \inferrule*[lab=RelBijInsert]
-%            {
-%                \datalangLoc_s \iPointsto_s \datalangVal_s
-%            \and
-%                \datalangLoc_t \iPointsto_t \datalangVal_t
-%            \and
-%                \datalangVal_s \iSimilar \datalangVal_t
-%            \and
-%                \datalangLoc_s \iInBij \datalangLoc_t \iSepImp
-%                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
-%            }{
-%                \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
-%            }
         \\
         \inferrule*[lab=RelLoad]
             {
