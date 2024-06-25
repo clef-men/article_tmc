@@ -12,7 +12,7 @@ Intuitively, the direct transformation $\datalangExpr_s \tmcDir{\datalangRenamin
 Basically, $\datalangExpr_s$ and $\datalangExpr_t$ compute the same thing.
 Using \emph{relational Hoare logic}, an assumed extension of standard Hoare logic relating two expressions, we would write:
 \[
-    \iRsimvHoare{
+    \iSimvHoare{
         \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
     }{
         \datalangVal_s, \datalangVal_t \ldotp
@@ -34,7 +34,7 @@ The DPS transformation $(\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\d
 Intuitively, $\datalangExpr_t$ computes the same thing as $\datalangExpr_s$ but writes it into the destination instead of returning it.
 Using \emph{relational separation logic}, an assumed further extension of relational Hoare logic with the concepts of separation logic, we would write:
 \[
-    \iRsimvHoare{
+    \iSimvHoare{
         (\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t \iSep
         (\datalangLoc + \datalangIdx) \iPointsto_t \datalangHole
     }{
