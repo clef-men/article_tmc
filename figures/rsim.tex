@@ -10,12 +10,12 @@
     		\iRsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
     		&\coloneqq
     		\forall \datalangBisubst \ldotp
-    		\wf{\datalangBisubst} \iSepImp
+    		\wf{\datalangBisubst} \iWand
     		\iSimv[\iProt]{\iPred}{\datalangBisubst_s (\datalangExpr_s)}{\datalangBisubst_t (\datalangExpr_t)}
     	\\
     	   \iRsimvHoare[\iProt]{P}{\iPred}{\datalangExpr_s}{\datalangExpr_t}
     	   &\coloneqq
-    	   \iPersistent \left( P \iSepImp \iRsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t} \right)
+    	   \iPersistent \left( P \iWand \iRsimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t} \right)
     \end{align*}
     \caption{Logical relation on open expressions}
     \label{fig:rsim}

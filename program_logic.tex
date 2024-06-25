@@ -1,20 +1,6 @@
 \section{Relational separation logic}
 \label{sec:program_logic}
 
-% ---------------------------------------------------------
-
-%The proof technique we propose to verify program transformations such
-%as TMC is to capture a relational specification between inputs and
-%outputs of the translation using a relational separation logic.
-%
-%We use a quadruple of the form $\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$, which can be read as ``$\datalangExpr_t$ refines $\datalangExpr_s$ under the postcondition $\iPred$ and protocol $\iProt$''. Intuitively, it states that $\datalangExpr_s$ and $\datalangExpr_t$ behave in a related way, and eventually (both get stuck or) reduce to expressions in the relational post-condition $\iPred$. The parameter $\iProt$ is a \emph{protocol} that specifies ``external'' transitions, typically used to model function calls.
-%
-%Traditionally this quadruple would be a judgment in a bespoke system of inference rules, proved correct by establishing a soundness or adequacy theorem. Our work instead uses the standard Iris approach of defining it directly as an assertion in a separation logic. The inference rules that we will provide are admissible lemmas, and they use separation logic as their meta-logic.
-%
-%We defer the definition of the assertion as a simulation to \cref{sec:adequacy}, where it will also be proved adequate with respect to a notion of behavior refinement expressed outside Iris.
-
-% ---------------------------------------------------------
-
 To prove the specifications of \cref{sec:specification}, we need a relational program logic.
 In this section, we introduce such a logic by giving the reasoning rules that should hold.
 In the next section, we use this logic to prove the specifications.
@@ -22,6 +8,8 @@ In section \cref{sec:simulation}, we show how it is actually defined and what no
 
 The reasoning rules are presented in \cref{fig:program_logic}.
 We omitted some standard rules for brevity.
+Compared to the specifications of \cref{sec:specification}, we introduced an additional parameter $\iProt$.
+We will explain it together with the \RefTirName{RelProtocol} rule.
 
 \paragraph{Language-independent rules}
 The following rules are independent of \DataLang and could be reused as is in further works.
@@ -37,43 +25,39 @@ An expression is strongly stuck when it is stuck for any state.
 Pure steps (omitted for brevity) are the reduction steps that are deterministic and do not depend on the state.
 
 \paragraph{Language-specific rules: non-determinism}
-Our relation $\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ asserts that the target expression $\datalangExpr_t$ refines the source expression $\datalangExpr_s$: any behavior of $\datalangExpr_t$ is a valid behavior of $\datalangExpr_s$, all reductions of $\datalangExpr_t$ can be matched by some reduction of $\datalangExpr_s$.
+$\iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ asserts that $\datalangExpr_t$ refines $\datalangExpr_s$: any behavior of $\datalangExpr_t$ is also a behavior of $\datalangExpr_s$.
 Consequently, non-determinism is treated differently in the source and target: we treat non-determinism as \emph{angelic} in source reductions and \emph{demonic} in target reductions.
 
-Our operational semantics uses non-deterministic rule for reduction of constructors: the non-deterministic constructor $\datalangBlock{c}{\datalangExpr_1}{\datalangExpr_2}$ reduces to a deterministic constructor $\datalangBlockDet{c}{\datalangVar_1}{\datalangVar_2}$, where the $\datalangVar_1$ and $\datalangVar_2$ are bound to $\datalangExpr_1$ and $\datalangExpr_2$ in some non-determistic order.
+Our operational semantics uses non-determinism in the reduction of constructors: $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ reduces to $\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}$, where $\datalangVar_1$ and $\datalangVar_2$ are bound to $\datalangExpr_1$ and $\datalangExpr_2$ in some non-deterministic order.
 In the program logic, the user may \emph{choose} an order for the source reduction, by using one of the rules \RefTirName{RelSrcBlock1} or \RefTirName{RelSrcBlock2}, and it has to prove that the expressions are related against \emph{any} target order, by proving the two premises of the rule \RefTirName{RelTgtBlock}.
 
-Once we have a deterministic constructor $\datalangBlockDet{c}{\datalangVal_1}{\datalangVal_2}$, the source and target reasoning rules \RefTirName{RelSrcBlockDet} and \RefTirName{RelTgtBlockDet} are symmetric.
-They allocate the block at a new location in the source or target state; the user can assume a points-to predicate and has to prove that the location is related to the other expression.
+Once we have a deterministic constructor $\datalangBlockDet{\datalangTag}{\datalangVal_1}{\datalangVal_2}$, we can apply \RefTirName{RelSrcBlockDet} or \RefTirName{RelTgtBlockDet}, yielding a points-to assertion for the allocated block.
 
-\paragraph{Language-specific rules: private locations}
-If the user owns a points-to assertion $(\datalangLoc + \datalangIdx) \iPointsto \datalangVal$ on the source or target side, they can use it to reason about loads and stores on the location $\datalangLoc$ at index $\datalangIdx$.
-The rules \RefTirName{RelSrcLoad} and \RefTirName{RelTgtLoad} let us replace the load expression $\datalangLoad{\datalangLoc}{\datalangIdx}$ by the pointed value $\datalangVal$, and the rules \RefTirName{RelSrcStore} and \RefTirName{RelTgtStore} let us store a new value $\datalangVal'$, replacing the points-to assertion by $(\datalangLoc + \datalangIdx) \iPointsto \datalangVal'$.
+\paragraph{Language-specific rules: private locations.}
+We can reason on points-to assertions --- that we interpret as locations private to the source or target --- in a standard way.
+The rules \RefTirName{RelSrcLoad} and \RefTirName{RelTgtLoad} let us load the pointed value while \RefTirName{RelSrcStore} and \RefTirName{RelTgtStore} let us update it with a new value.
 
-\paragraph{Language-specific rules: locations in the bijection}
-In addition to points-to predicate on source and target locations, we maintain a heap bijection formed by the resource assertions $\datalangLoc_s \iInBij \datalangLoc_t$.
+\paragraph{Language-specific rules: locations in the bijection.}
+Corresponding source and target locations registered in the bijection through \RefTirName{BijInsert} have given up their respective points-to assertions but can still be accessed using the rules \RefTirName{RelLoad} and \RefTirName{RelStore}.
 
-At any point the user can add two locations to the heap bijection using the rule \RefTirName{RelBijInsert}.
-They need to provide private points-to predicates $\datalangLoc_s \iPointsto_s \datalangVal_s$ and $\datalangLoc_t \iPointsto_t \datalangVal_t$, and prove that the content of the locations are related: $\datalangVal_s \iSimilar \datalangVal_t$.
-In exchange they receive a heap bijection assertion $\datalangLoc_s \iInBij \datalangLoc_t$.
-These locations will remain in the heap bijection forever ($\datalangLoc_s \iInBij \datalangLoc_t$ is a persistent assertion), and we will preserve the invariant that their values are related.
+\RefTirName{RelLoad} states that simultaneously loading from two corresponding blocks yields similar values.
 
-To add locations $\datalangLoc_s, \datalangLoc_t$ to the bijections, we \emph{consume} their points-to assertions.
-At this point we cannot use the one-sided reasoning rules for load and store: we lost ownership of $\datalangLoc_s \iPointsto_s \datalangVal_s$, $\datalangLoc_t \iPointsto_t \datalangVal_t$.
-The user must instead use the synchronized rules \RefTirName{RelLoad} and \RefTirName{RelStore}, which relate two loads or two stores on $\datalangLoc_s$ and $\datalangLoc_t$.
-\RefTirName{RelLoad} proves that two loads $\datalangLoad{\datalangLoc_s}{\datalangIdx}$ and $\datalangLoad{\datalangLoc_t}{\datalangIdx}$ are related.
-The user must prove that $\datalangLoc_s \iSimilar \datalangLoc_t$, that is, that all three pairs of fields $(\datalangLoc_s + \datalangIdx), (\datalangLoc_t + \datalangIdx)$ are in the bijection; it knows nothing of the current values $\datalangVal_s, \datalangVal_t$ at these locations, except that they are related by the bijection invariant.
-\RefTirName{RelStore} proves that two stores $\datalangStore{\datalangLoc_s}{\datalangIdx}{\datalangVal_s}$ and $\datalangStore{\datalangLoc_t}{\datalangIdx}{\datalangVal_t}$ are related.
-The user must show that $\datalangLoc_s, \datalangLoc_t$ are in the bijection, and preserve the bijection invariant by proving that the values to be stored are related.
+\RefTirName{RelStore} let us simultaneously store similar values into the same field of two corresponding blocks.
+
+Together, these two rules enforce the bijection invariant: the contents of corresponding blocks are always similar.
 
 \paragraph{Abstract protocols}
-\RefTirName{RelApplyProtocol} is the reasoning rule for external transitions specified by the protocol parameter $\iProt$.
-The protocol is a relation that axiomatizes the ability of certain pairs of expression $\datalangExpr_s$ and $\datalangExpr_t$ to evolve in an abstract way specified by a relational postcondition $\iPredTwo$ -- they may reduce to arbitrary expressions $\datalangExpr_s'$ and $\datalangExpr_t'$ related by $\iPredTwo$.
+In \cref{sec:simulation}, we will see that our relation is defined coinductively and the first step of the proof essentially amounts to coinduction.
+To internalize the coinduction hypothesis into the program logic, we introduce an additional parameter $\iProt$ that we interpret as a \emph{protocol}~\cite{DBLP:journals/pacmpl/VilhenaP21}.
+
+The function of the protocol is reflected in the $\RefTirName{RelProtocol}$ rule.
+It gives some authorized pairs of expressions $\datalangExpr_s$ and $\datalangExpr_t$ the ability to evolve in an abstract way to arbitrary expressions $\datalangExpr_s'$ and $\datalangExpr_t'$ related by some postcondition $\iPredTwo$.
 To conclude that $\datalangExpr_s$ and $\datalangExpr_t$ are related, one must prove that any such $\datalangExpr_s'$ and $\datalangExpr_t'$ remain related.
 
-Here is a simple protocol to relate calls to the same functions in the source and target expressions:
+Our coinduction hypothesis assumes toplevel function calls to be compatible with the direct and DPS specifications that we want to prove.
+Therefore, we instantiate the program logic with the $\iProt_\mathrm{TMC}$ protocol combining two sub-protocols $\iProt_\mathrm{dir}$ and $\iProt_\mathrm{DPS}$:
 
-\begin{center}
+\medskip
 \begin{tabular}{rcl}
         $\iProt_\mathrm{dir} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
         & $\coloneqq$ &
@@ -82,56 +66,194 @@ Here is a simple protocol to relate calls to the same functions in the source an
         &&
         $\datalangFn \in \dom{\datalangProg_s} \iSep
         \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \iSep
-        \datalangExpr_t = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_t} \iSep
-        \datalangVal_s \iSimilar \datalangVal_t \iSep {}$
+        \datalangExpr_t = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_t} \iSep {}$
     \\
         &&
-        $\forall \datalangVal_s', \datalangVal_t' \ldotp
-        \datalangVal_s' \iSimilar \datalangVal_t' \iSepImp
-        \iPredTwo (\datalangVal_s', \datalangVal_t')$
+        $\datalangVal_s \iSimilar \datalangVal_t \iSep {}$
+    \\
+        &&
+        $\forall \datalangValTwo_s, \datalangValTwo_t \ldotp
+        \datalangValTwo_s \iSimilar \datalangValTwo_t \iWand
+        \iPredTwo (\datalangValTwo_s, \datalangValTwo_t)$
+    \\
+        $\iProt_\mathrm{DPS} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
+        & $\coloneqq$ &
+        $\exists \datalangFn, \datalangFn_\mathit{dps}, \datalangVal_s, \datalangLoc, \datalangIdx, \datalangVal_t \ldotp$
+    \\
+        &&
+        $\datalangFn \in \dom{\datalangProg_s} \iSep
+        \datalangRenaming [\datalangFn] = \datalangFn_\mathit{dps} \iSep
+        \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \iSep
+        \datalangExpr_t = \datalangCall{\datalangFnptr{\datalangFn_\mathit{dps}}}{\datalangPair{\datalangPair{\datalangLoc}{\datalangIdx}}{\datalangVal_t}} \iSep {}$
+    \\
+        &&
+        $\datalangVal_s \iSimilar \datalangVal_t \iSep {}
+        (\datalangLoc + \datalangIdx) \iPointsto \datalangHole \iSep {}$
+    \\
+        &&
+        $\forall \datalangValTwo_s, \datalangValTwo_t \ldotp
+        (\datalangLoc + \datalangIdx) \iPointsto \datalangValTwo_t \iSep
+        \datalangValTwo_s \iSimilar \datalangValTwo_t \iWand
+        \iPredTwo (\datalangValTwo_s, \datalangUnit)$
+    \\
+        $\iProt_\mathrm{TMC}$
+        & $\coloneqq$ &
+        $\iProt_\mathrm{dir} \sqcup \iProt_\mathrm{DPS}
+        =
+        \lambdaAbs (\iPredTwo, \datalangExpr_s, \datalangExpr_t) \ldotp \iProt_\mathrm{dir} (\iPredTwo, \datalangExpr_s, \datalangExpr_t) \iOr \iProt_\mathrm{DPS} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
+    \\\\
+        $\iSim{
+            \iPred
+        }{
+            \datalangExpr_s
+        }{
+            \datalangExpr_t
+        }$
+        & $\coloneqq$ &
+        $\iSim[
+            \iProt_\mathrm{TMC}
+        ]{
+            \iPred
+        }{
+            \datalangExpr_s
+        }{
+            \datalangExpr_t
+        }$
+    \\
+        $\iSimv{
+            \iPred
+        }{
+            \datalangExpr_s
+        }{
+            \datalangExpr_t
+        }$
+        & $\coloneqq$ &
+        $\iSim{
+            \datalangExpr_s', \datalangExpr_t' \ldotp
+            \exists \datalangVal_s, \datalangVal_t \ldotp
+            \datalangExpr_s' = \datalangVal_s \iSep
+            \datalangExpr_t' = \datalangVal_t \iSep
+            \iPred (\datalangVal_s, \datalangVal_t)
+        }{
+            \datalangExpr_s
+        }{
+            \datalangExpr_t
+        }$
 \end{tabular}
-\end{center}
+\medskip
 
-This protocol relates two calls of the same function $\datalangFnptr{\datalangFn}$ with related arguments $\datalangVal_s \iSimilar \datalangVal_t$.
-Informally, it then guarantees that the results of the calls will be related values $\datalangVal_s' \iSimilar \datalangVal_t'$; precisely, it accepts any choice of post-condition $\iPredTwo$ contains the similarity relation on values.
+Abstractly, $\iProt_\mathrm{dir}$ and $\iProt_\mathrm{DPS}$ formalize the two \emph{calling conventions} of the transformed program.
 
-If we use this protocol in the reasoning rule \RefTirName{RelApplyProtocol} and instantiate the postcondition $\iPred$ to be the value similarity relation $(\iSimilar)$ itself, we get the following specialized rule:
+$\iProt_\mathrm{dir}$ specifies the \emph{direct calling convention} induced by the direct transformation.
+It requires $\datalangExpr_s$ and $\datalangExpr_t$ to be function calls to the same function with similar arguments.
+To apply it, users can choose any postcondition implied by value similarity.
+
+$\iProt_\mathrm{DPS}$ specifies the \emph{DPS calling convention} induced by the DPS transformation.
+It requires $\datalangExpr_s$ to be a function call to a TMC-transformed function $\datalangFn$ and $\datalangExpr_t$ to be a function call to the DPS transform of $\datalangFn$.
+As in the DPS specification, ownership of the destination must be passed to the protocol.
+To apply it, users can choose any postcondition implied by the postcondition of the DPS specification, including the recovered ownership of the modified destination.
+
+In the instantiated program logic, the application of the $\iProt_\mathrm{TMC}$ protocol yields the following rules:
 \begin{mathpar}
-    \infer
-    {
-        f \in \dom{\datalangProg_s}
-        \and
-        \datalangVal_s \iSimilar \datalangVal_t
-    }{
-        \iSim[\iProt]{\iSimilar}
-        {\datalangCall{\datalangFnptr{f}}{\datalangVal_s}}
-        {\datalangCall{\datalangFnptr{f}}{\datalangVal_t}}
-    }
+    \inferrule*[lab=RelDir]
+        {
+            \datalangFn \in \dom{\datalangProg_s}
+        \\\\
+            \datalangVal_s \iSimilar \datalangVal_t
+        \\\\
+            \forall \datalangValTwo_s, \datalangValTwo_t \ldotp
+            \datalangValTwo_s \iSimilar \datalangValTwo_t \iWand
+            \iPred (\datalangValTwo_s, \datalangValTwo_t)
+        }{
+            \iSim{
+                \iPred
+            }{
+                \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s}
+            }{
+                \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_t}
+            }
+        }
+    \and
+    \inferrule*[lab=RelDPS]
+        {
+            \datalangRenaming [\datalangFn] = \datalangFn_\mathit{dps}
+        \\\\
+            \datalangVal_s \iSimilar \datalangVal_t
+        \\\\
+            (\datalangLoc + \datalangIdx) \iPointsto_t \datalangHole
+        \\\\
+            \forall \datalangValTwo_s, \datalangValTwo_t \ldotp
+            (\datalangLoc + \datalangIdx) \iPointsto_t \datalangValTwo_t \iWand
+            \datalangValTwo_s \iSimilar \datalangValTwo_t \iWand
+            \iPred (\datalangValTwo_s, \datalangUnit)
+        }{
+            \iSim{
+                \iPred
+            }{
+                \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s}
+            }{
+                \datalangCall{\datalangFnptr{\datalangFn_\mathit{dps}}}{\datalangPair{\datalangPair{\datalangLoc}{\datalangIdx}}{\datalangVal_t}}
+            }
+        }
 \end{mathpar}
 
-This is exactly the \TirName{Rel-Call} rule of \Simuliris~\citep*{TODO-simuliris}.
-Our generalized rule \RefTirName{RelApplyProtocol} is a contribution of our work, inspired by \citet*{TODO-paulo}.
-The extra expressivity is required to support program transformations such as TMC that change function calling conventions.
+More generally, the technique of parameterizing the program logic by a protocol can be applied to other transformations.
+As a matter of fact, we have also verified an inlining and an APS transformation --- both included in our mechanization.
 
-% ---------------------------------------------------------
+For the APS transformation, we use a protocol similar to $\iProt_\mathrm{DPS}$ (combined with $\iProt_\mathrm{dir}$) that allows calling the APS transform of a source function with an integer accumulator --- assuming we extended \DataLang with integers:
 
-% problem: direct calling convention in Simuliris, we need two calling conventions (direct + DPS)
+\medskip
+\begin{tabular}{rcl}
+        $\iProt_\mathrm{APS} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
+        & $\coloneqq$ &
+        $\exists \datalangFn, \datalangFn_\mathit{aps}, \datalangVal_s, acc, \datalangVal_t \ldotp$
+    \\
+        &&
+        $\datalangFn \in \dom{\datalangProg_s} \iSep
+        \datalangRenaming [\datalangFn] = \datalangFn_\mathit{aps} \iSep
+        \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \iSep
+        \datalangExpr_t = \datalangCall{\datalangFnptr{\datalangFn_\mathit{aps}}}{\datalangPair{acc}{\datalangVal_t}} \iSep {}$
+    \\
+        &&
+        $\datalangVal_s \iSimilar \datalangVal_t \iSep {}$
+    \\
+        &&
+        $\forall \datalangVal_s', \datalangExpr_t' \ldotp$
+    \\
+        &&
+        $\bm{\mathrm{match}}\ \datalangVal_s'\ \bm{\mathrm{with}}\ \datalangNat \Rightarrow \datalangExpr_t' = acc + \datalangNat \mid \_ \Rightarrow \mathrm{strongly \mathhyphen stuck}_{\datalangProg_t} (\datalangExpr_t')\ \bm{\mathrm{end}} \iWand$
+    \\
+        &&
+        $\iPredTwo (\datalangVal_s', \datalangExpr_t')$
+\end{tabular}
+\medskip
 
+For the inlining transformation, we use a fairly simple protocol (combined with $\iProt_\mathrm{dir}$) relating a source function and its body:
 
-% Clément: this theorem is a sort of coinduction principle. You can
-% prove an open simulation by induction (no coinduction
-% apparently required), and then applying this theorem gives a result
-% for which a direct proof would require a coinduction.
+\medskip
+\begin{tabular}{rcl}
+        $\iProt_\mathrm{inline} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
+        & $\coloneqq$ &
+        $\exists \datalangFn, \datalangVar, \datalangExpr_s', \datalangExpr_t' \datalangVal_s, \datalangVal_t \ldotp$
+    \\
+        &&
+        $\datalangProg_s [\datalangFn] = \datalangRec{\datalangVar}{\datalangExpr_s'} \iSep
+        \datalangExpr_s' \rightsquigarrow \datalangExpr_t' \iSep
+        \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \iSep
+        \datalangExpr_t = \datalangLet{\datalangVar}{\datalangVal_t}{\datalangExpr_t'} \iSep {}$
+    \\
+        &&
+        $\datalangVal_s \iSimilar \datalangVal_t \iSep {}$
+    \\
+        &&
+        $\forall \datalangValTwo_s, \datalangValTwo_t \ldotp
+        \datalangValTwo_s \iSimilar \datalangValTwo_t \iWand
+        \iPredTwo (\datalangValTwo_s, \datalangValTwo_t)$
+\end{tabular}
+\medskip
 
-% The X for TMC is essentially a relation/first-order rephrasing of
-% the relation specs for direct-style and destination-passing-style
-% transformations.
-
-% ---------------------------------------------------------
-
-mentionner les autres instanciations du protocole (inlining, APS)
-
-% ---------------------------------------------------------
+Here, the relation $\datalangExpr_s \rightsquigarrow \datalangExpr_t$ allows $\datalangExpr_t$ to recursively inline functions in $\datalangExpr_s$.
+As with TMC, it captures all possible inlining strategies.
+In practice, the inlining depth would obviously be bounded.
 
 \input{figures/program_logic}
-\input{figures/protocol}

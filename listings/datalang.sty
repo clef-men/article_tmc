@@ -110,6 +110,9 @@
 \newcommand{\datalangVal}[1][\@nil]{%
     \def\@tmp{#1}\ifx\@tmp\@nnil v \else \nterm{Val} \fi%
 }
+\newcommand{\datalangValTwo}{%
+    w%
+}
 \newcommand{\datalangExpr}[1][\@nil]{%
     \def\@tmp{#1}\ifx\@tmp\@nnil e \else \nterm{Expr} \fi%
 }
@@ -146,6 +149,9 @@
 }
 \newcommand{\datalangTwo}{%
     \term{2}%
+}
+\newcommand{\datalangNat}{%
+    n%
 }
 \newcommand{\datalangUnit}{%
     \term{\color{datalangKeyword3}{()}}%

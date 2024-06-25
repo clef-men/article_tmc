@@ -394,9 +394,8 @@ For instance, delaying the definition of the simulation relation $\iSimv{\Phi}{e
         \iSimvHoare{
             (\datalangLoc + \datalangIdx) \iPointsto \datalangHole
         }{
-            \lambdaAbs (\datalangVal_s, \datalangVal_t') \ldotp
+            \datalangVal_s, \datalangUnit \ldotp
             \exists \datalangVal_t \ldotp
-            \datalangVal_t' = \datalangUnit \iSep
             (\datalangLoc + \datalangIdx) \iPointsto \datalangVal_t \iSep
             \datalangVal_s \iSimilar \datalangVal_t
         }{

@@ -91,7 +91,7 @@
         \inferrule*[lab=RelSrcBlockDet]
             {
                 \forall \datalangLoc_s \ldotp
-                \datalangLoc_s \iPointsto_s (\datalangTag, \datalangVal_{s1}, \datalangVal_{s2}) \iSepImp
+                \datalangLoc_s \iPointsto_s (\datalangTag, \datalangVal_{s1}, \datalangVal_{s2}) \iWand
                 \iSimv[\iProt]{\iPred}{\datalangLoc_s}{\datalangExpr_t}
             }{
                 \iSimv[\iProt]{\iPred}{\datalangBlockDet{\datalangTag}{\datalangVal_{s1}}{\datalangVal_{s2}}}{\datalangExpr_t}
@@ -100,7 +100,7 @@
         \inferrule*[lab=RelTgtBlockDet]
             {
                 \forall \datalangLoc_t \ldotp
-                \datalangLoc_t \iPointsto_t (\datalangTag, \datalangVal_{t1}, \datalangVal_{t2}) \iSepImp
+                \datalangLoc_t \iPointsto_t (\datalangTag, \datalangVal_{t1}, \datalangVal_{t2}) \iWand
                 \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangLoc_t}
             }{
                 \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangBlockDet{\datalangTag}{\datalangVal_{t1}}{\datalangVal_{t2}}}
@@ -110,37 +110,37 @@
             {
                 (\datalangLoc_s + \datalangIdx) \iPointsto_s \datalangVal_s
             \\\\
-                (\datalangLoc_s + \datalangIdx) \iPointsto_s \datalangVal_s \iSepImp
+                (\datalangLoc_s + \datalangIdx) \iPointsto_s \datalangVal_s \iWand
                 \iSimv[\iProt]{\iPred}{\datalangVal_s}{\datalangExpr_t}
             }{
                 \iSimv[\iProt]{\iPred}{\datalangLoad{\datalangLoc_s}{\datalangIdx}}{\datalangExpr_t}
             }
         \and
-        \inferrule*[lab=RelSrcStore]
-            {
-                (\datalangLoc_s + \datalangIdx) \iPointsto_s \datalangVal_s
-            \\\\
-                (\datalangLoc_s + \datalangIdx) \iPointsto_s \datalangVal_s' \iSepImp
-                \iSimv[\iProt]{\iPred}{\datalangUnit}{\datalangExpr_t}
-            }{
-                \iSimv[\iProt]{\iPred}{\datalangStore{\datalangLoc_s}{\datalangIdx}{\datalangVal_s'}}{\datalangExpr_t}
-            }
-        \\
         \inferrule*[lab=RelTgtLoad]
             {
                 (\datalangLoc_t + \datalangIdx) \iPointsto_t \datalangVal_t
             \\\\
-                (\datalangLoc_s + \datalangIdx) \iPointsto_t \datalangVal_t \iSepImp
+                (\datalangLoc_s + \datalangIdx) \iPointsto_t \datalangVal_t \iWand
                 \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangVal_t}
             }{
                 \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangLoad{\datalangLoc_t}{\datalangIdx}}
+            }
+        \\
+        \inferrule*[lab=RelSrcStore]
+            {
+                (\datalangLoc_s + \datalangIdx) \iPointsto_s \datalangVal_s
+            \\\\
+                (\datalangLoc_s + \datalangIdx) \iPointsto_s \datalangVal_s' \iWand
+                \iSimv[\iProt]{\iPred}{\datalangUnit}{\datalangExpr_t}
+            }{
+                \iSimv[\iProt]{\iPred}{\datalangStore{\datalangLoc_s}{\datalangIdx}{\datalangVal_s'}}{\datalangExpr_t}
             }
         \and
         \inferrule*[lab=RelTgtStore]
             {
                 (\datalangLoc_t + \datalangIdx) \iPointsto_t \datalangVal_t
                 \\\\
-                (\datalangLoc_t + \datalangIdx) \iPointsto_t \datalangVal_t' \iSepImp
+                (\datalangLoc_t + \datalangIdx) \iPointsto_t \datalangVal_t' \iWand
                 \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangUnit}
             }{
                 \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangStore{\datalangLoc_t}{\datalangIdx}{\datalangVal_t'}}
@@ -152,7 +152,7 @@
             \and
                 \forall \datalangVal_s, \datalangVal_t \ldotp
                 \datalangVal_s \iSimilar \datalangVal_t
-                \iSepImp
+                \iWand
                 \iPred (\datalangVal_s, \datalangVal_t)
             }{
                 \iSimv[\iProt]{\iPred}{\datalangLoad{\datalangLoc_s}{\datalangIdx}}{\datalangLoad{\datalangLoc_t}{\datalangIdx}}
@@ -169,17 +169,17 @@
                 \iSimv[\iProt]{\iPred}{\datalangStore{\datalangLoc_s}{\datalangIdx}{\datalangVal_s}}{\datalangStore{\datalangLoc_t}{\datalangIdx}{\datalangVal_t}}
             }
         \\
-        \inferrule*[lab=RelApplyProtocol]
+        \inferrule*[lab=RelProtocol]
             {
               \iProt (\iPredTwo, \datalangExpr_s, \datalangExpr_t)
             \and
                \forall \datalangExpr_s', \datalangExpr_t' \ldotp
-               \iPredTwo (\datalangExpr_s', \datalangExpr_t') \iSepImp
+               \iPredTwo (\datalangExpr_s', \datalangExpr_t') \iWand
                \iSimv[\iProt]{\iPred}{\datalangExpr_s'}{\datalangExpr_t'}
             }{
                 \iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
             }
     \end{mathparpagebreakable}
-    \caption{Reasoning rules for simulation (excerpt, omitting freshness conditions)}
+    \caption{Relational separation logic (excerpt, omitting freshness conditions)}
     \label{fig:program_logic}
 \end{figure}

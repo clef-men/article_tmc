@@ -11,7 +11,7 @@
     				\lambdaAbs {(\iPred, \datalangExpr_s, \datalangExpr_t)} \ldotp
     				\forall \datalangState_s, \datalangState_s \ldotp
     				\mathrm{I} (\datalangState_s, \datalangState_t)
-    				\iSepImp \iBupd
+    				\iWand \iBupd
     			\\
     				\bigvee \left[ \begin{array}{ll}
     							\circled{1}
@@ -37,7 +37,7 @@
 								\mathrm{reducible}_{\datalangProg_t} (\datalangExpr_t, \datalangState_t) \iSep
 								\forall \datalangExpr_t', \datalangState_t' \ldotp
 								(\datalangExpr_t, \datalangState_t) \step{\datalangProg_t} (\datalangExpr_t', \datalangState_t')
-								\iSepImp \iBupd
+								\iWand \iBupd
 						\\
                             &
 								\bigvee \left[ \begin{array}{ll}
@@ -66,7 +66,7 @@
     					\\
                             &
 								\forall \datalangExpr_s'', \datalangExpr_t'' \ldotp
-								\iPredTwo (\datalangExpr_s'', \datalangExpr_t'') \iSepImp
+								\iPredTwo (\datalangExpr_s'', \datalangExpr_t'') \iWand
 								\textcolor{\iSimLfpColor}{sim \mathhyphen inner} (\iPred, \datalangEctx_s [\datalangExpr_s''], \datalangEctx_t [\datalangExpr_t''])
     				\end{array} \right.
     		\end{array}
