@@ -10,16 +10,11 @@
 
 % ---------------------------------------------------------
 
+\usepackage{enumitem}
+
+% ---------------------------------------------------------
+
 \usepackage{mathtools}
-
-\usepackage{amsthm}
-
-\usepackage{bm}
-
-\usepackage{mathpartir}
-\let\TirName\textsc
-\renewcommand{\DefTirName}[1]{\hypertarget{#1}{\TirName {#1}}}
-\newcommand{\RefTirName}[1]{\hyperlink{#1}{\TirName {#1}}}
 
 \let\oldexists\exists
 \let\exists\relax\DeclareMathOperator{\exists}{\oldexists}
@@ -29,6 +24,27 @@
 \DeclareMathOperator{\lambdaAbs}{\lambda}
 \DeclareMathOperator{\muAbs}{\mu}
 \DeclareMathOperator{\nuAbs}{\nu}
+
+% ---------------------------------------------------------
+
+\usepackage{amsthm}
+
+\newenvironment{myproof}[1][\proofname]{%
+  \begin{proof}[#1]$ $\par\nobreak\ignorespaces
+}{%
+  \end{proof}
+}
+
+% ---------------------------------------------------------
+
+\usepackage{bm}
+
+% ---------------------------------------------------------
+
+\usepackage{mathpartir}
+\let\TirName\textsc
+\renewcommand{\DefTirName}[1]{\hypertarget{#1}{\TirName {#1}}}
+\newcommand{\RefTirName}[1]{\hyperlink{#1}{\TirName {#1}}}
 
 % ---------------------------------------------------------
 

@@ -1,40 +1,68 @@
 \section{Proof of the specification}
 \label{sec:proof}
 
-%\begin{theorem}[Specification of direct transformation]
-%    \[
-%        \iRsimvHoare{
-%            \wf{\datalangExpr_s} \iSep
-%            \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
-%        }{
-%            \iSimilar
-%        }{
-%            \datalangExpr_s
-%        }{
-%            \datalangExpr_t
-%        }
-%    \]
-%\end{theorem}
+In this section, we prove the specifications of \cref{sec:specification}.
 
-%\begin{theorem}[Specification of DPS transformation]
-%    \[
-%        \iRsimvHoare{
-%            \wf{\datalangExpr_s} \iSep
-%            (\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t \iSep
-%            (\datalangLoc + \datalangIdx) \iPointsto \datalangHole
-%        }{
-%            \lambdaAbs (\datalangVal_s, \datalangVal_t') \ldotp
-%            \exists \datalangVal_t \ldotp
-%            \datalangVal_t' = \datalangUnit \iSep
-%            (\datalangLoc + \datalangIdx) \iPointsto \datalangVal_t \iSep
-%            \datalangVal_s \iSimilar \datalangVal_t
-%        }{
-%            \datalangExpr_s
-%        }{
-%            \datalangExpr_t
-%        }
-%    \]
-%\end{theorem}
+So far, we assumed expressions to be \emph{closed}, \ie to have no free variables.
+To carry out the proof, we need to generalize the specifications to \emph{open} expressions that may have some.
+To do so, we introduce a \emph{runtime relation} $\iRsimv{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ in \cref{fig:rsim}.
+It requires $\datalangBisubst_s (\datalangExpr_s)$ and $\datalangBisubst_t (\datalangExpr_t)$ to be related for any \emph{well-formed closing bisubstitution} $\datalangBisubst \in \datalangVar[] \rightarrow \datalangVal[] \times \datalangVal[]$.
+In practice, $\datalangBisubst$ contains let-reduced binders and their substitute source and target values.
+
+In addition, we will only consider \emph{valid source expressions} --- denoted by $\wf{\datalangExpr_s}$ ---, \ie those that do not involve any location nor undefined source function.
+
+\begin{lemma}[Specification of direct transformation] \label{thm:dir}
+    \[
+        \iRsimvHoare{
+            \wf{\datalangExpr_s} \iSep
+            \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
+        }{
+            \datalangVal_s, \datalangVal_t \ldotp
+            \datalangVal_s \iSimilar \datalangVal_t
+        }{
+            \datalangExpr_s
+        }{
+            \datalangExpr_t
+        }
+    \]
+\end{lemma}
+
+\begin{lemma}[Specification of DPS transformation] \label{thm:dps}
+    \[
+        \iRsimvHoare{
+            \wf{\datalangExpr_s} \iSep
+            (\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t \iSep
+            (\datalangLoc + \datalangIdx) \iPointsto_t \datalangHole
+        }{
+            \datalangVal_s, \datalangUnit \ldotp
+            \exists \datalangVal_t \ldotp
+            (\datalangLoc + \datalangIdx) \iPointsto_t \datalangVal_t \iSep
+            \datalangVal_s \iSimilar \datalangVal_t
+        }{
+            \datalangExpr_s
+        }{
+            \datalangExpr_t
+        }
+    \]
+\end{lemma}
+
+\begin{myproof}
+    We prove both specifications by strong induction over $\datalangExpr_s$ and mutual induction over $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ and $(\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$.
+    We only sketch the cases shown in \cref{fig:tmc_dir} and \cref{fig:tmc_dps} and refer to our mechanization for the complete proof.
+    \begin{itemize}[align=left, leftmargin=*]
+        \item[\RefTirName{DirVal}:] Follows from $\wf{\datalangVal}$.
+        \item[\RefTirName{DirVar}:] Follows from well-formedness of $\datalangBisubst$.
+        \item[\RefTirName{DirLet}:] Follows from IH for $\datalangExpr_{s1}$ and IH for $\datalangExpr_{s2}$.
+        \item[\RefTirName{DirBlockDPS1}:] Follows from \RefTirName{RelSrcBlock1}, \RefTirName{RelTgtBlock}, IH for $\datalangExpr_{s1}$, \RefTirName{RelTgtBlockDet}, IH for $\datalangExpr_{s2}$, \RefTirName{RelSrcBlockDet} and \RefTirName{BijInsert}.
+        \item[\RefTirName{DirBlockDPS2}:] Similar to \RefTirName{DirBlockDPS1}.
+        \item[\RefTirName{DPSBase}:] Follows from IH for $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ and \RefTirName{RelTgtStore}.
+        \item[\RefTirName{DPSLet}:] Follows from IH for $\datalangExpr_{s1}$ and IH for $\datalangExpr_{s2}$.
+        \item[\RefTirName{DPSCall}:] Follows from \RefTirName{SimTgtBlock}, \RefTirName{SimTgtBlockDet}, IH for $\datalangExpr_s$ and \RefTirName{RelDPS}.
+        \item[\RefTirName{DPSIf}:] Follows from IH for $\datalangExpr_{s0}$, IH for $\datalangExpr_{s1}$ and IH for $\datalangExpr_{s2}$.
+        \item[\RefTirName{DPSBlock1}:] Follows from \RefTirName{RelSrcBlock1}, \RefTirName{RelTgtBlock}, IH for $\datalangExpr_{s1}$, \RefTirName{RelTgtBlockDet}, \RefTirName{RelTgtStore} IH for $\datalangExpr_{s2}$, \RefTirName{RelSrcBlockDet} and \RefTirName{BijInsert}.
+        \item[\RefTirName{DPSBlock2}:] Similar to \RefTirName{DPSBlock1}. \qedhere
+    \end{itemize}
+\end{myproof}
 
 %\subsection{Logical relation on open expressions}
 %
@@ -68,6 +96,5 @@
 % - in the direct case, we have a function application on both sides,
 %   so we make a pure step on both sides and we have to show that the function bodies
 %   (with a bisubstitution (x mapsto (vs, vt)) applied) are in the relation.
-
 
 \input{figures/rsim}
