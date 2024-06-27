@@ -1,0 +1,50 @@
+\begin{figure}[tp]
+    \begin{tabular}{rcl}
+            $\iProt_\mathrm{dir} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
+            & $\coloneqq$ &
+            $\exists \datalangFn, \datalangVal_s, \datalangVal_t \ldotp$
+        \\
+            &&
+            $\datalangFn \in \dom{\datalangProg_s} \iSep
+            \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \iSep
+            \datalangExpr_t = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_t} \iSep {}$
+        \\
+            &&
+            $\datalangVal_s \iSimilar \datalangVal_t \iSep {}$
+        \\
+            &&
+            $\forall \datalangValTwo_s, \datalangValTwo_t \ldotp
+            \datalangValTwo_s \iSimilar \datalangValTwo_t \iWand
+            \iPredTwo (\datalangValTwo_s, \datalangValTwo_t)$
+        \\
+            $\iProt_\mathrm{DPS} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
+            & $\coloneqq$ &
+            $\exists \datalangFn, \datalangFn_\mathit{dps}, \datalangVal_s, \datalangLoc_1, \datalangLoc_2, \datalangLoc, \datalangIdx, \datalangVal_t \ldotp$
+        \\
+            &&
+            $\datalangFn \in \dom{\datalangProg_s} \iSep
+            \datalangRenaming [\datalangFn] = \datalangFn_\mathit{dps} \iSep
+            \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \iSep
+            \datalangExpr_t = \datalangCall{\datalangFnptr{\datalangFn_\mathit{dps}}}{\datalangLoc_1} \iSep {}$
+        \\
+            &&
+            $(\datalangLoc_1 + 1) \iPointsto_t (\datalangLoc_2, \datalangVal_t) \iSep
+            (\datalangLoc_2 + 1) \iPointsto_t (\datalangLoc, \datalangIdx) \iSep
+            (\datalangLoc + \datalangIdx) \iPointsto \datalangHole \iSep
+            \datalangVal_s \iSimilar \datalangVal_t$
+        \\
+            &&
+            $\forall \datalangValTwo_s, \datalangValTwo_t \ldotp
+            (\datalangLoc + \datalangIdx) \iPointsto \datalangValTwo_t \iSep
+            \datalangValTwo_s \iSimilar \datalangValTwo_t \iWand
+            \iPredTwo (\datalangValTwo_s, \datalangUnit)$
+        \\
+            $\iProt_\mathrm{TMC}$
+            & $\coloneqq$ &
+            $\iProt_\mathrm{dir} \sqcup \iProt_\mathrm{DPS}
+            =
+            \lambdaAbs (\iPredTwo, \datalangExpr_s, \datalangExpr_t) \ldotp \iProt_\mathrm{dir} (\iPredTwo, \datalangExpr_s, \datalangExpr_t) \iOr \iProt_\mathrm{DPS} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
+    \end{tabular}
+    \caption{TMC protocol ($\iProt_\mathrm{TMC}$)}
+    \label{fig:protocol}
+\end{figure}
