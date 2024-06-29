@@ -51,7 +51,7 @@ In addition, we will only consider \emph{valid source expressions} --- denoted b
     We only sketch the cases shown in \cref{fig:tmc_dir} and \cref{fig:tmc_dps} and refer to our mechanization for the complete proof.
     \begin{itemize}[align=left, leftmargin=*]
         \item[\RefTirName{DirVal}:] Follows from $\wf{\datalangVal}$.
-        \item[\RefTirName{DirVar}:] Follows from well-formedness of $\datalangBisubst$.
+        \item[\RefTirName{DirVar}:] Follows from $\wf{\datalangBisubst}$.
         \item[\RefTirName{DirLet}:] Follows from IH for $\datalangExpr_{s1}$ and IH for $\datalangExpr_{s2}$.
         \item[\RefTirName{DirBlockDPS1}:] Follows from \RefTirName{RelSrcBlock1}, \RefTirName{RelTgtBlock}, IH for $\datalangExpr_{s1}$, \RefTirName{RelTgtBlockDet}, IH for $\datalangExpr_{s2}$, \RefTirName{RelSrcBlockDet} and \RefTirName{BijInsert}.
         \item[\RefTirName{DirBlockDPS2}:] Similar to \RefTirName{DirBlockDPS1}.
