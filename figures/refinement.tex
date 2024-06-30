@@ -2,6 +2,36 @@
     \centering
     \begin{mathparpagebreakable}
         \inferrule*
+            {}{
+                \datalangUnit \similar \datalangUnit
+            }
+        \and
+        \inferrule*
+            {}{
+                \datalangIdx \similar \datalangIdx
+            }
+        \and
+        \inferrule*
+            {}{
+                \datalangTag \similar \datalangTag
+            }
+        \and
+        \inferrule*
+            {}{
+                \datalangBool \similar \datalangBool
+            }
+        \and
+        \inferrule*
+            {}{
+                \datalangLoc_s \similar \datalangLoc_t
+            }
+        \and
+        \inferrule*
+            {}{
+                \datalangFnptr{\datalangFn} \similar \datalangFnptr{\datalangFn}
+            }
+        \\
+        \inferrule*
             {
                 \datalangVal_s \similar \datalangVal_t
             }{
@@ -39,9 +69,9 @@
         \\
             $\datalangProg_s \refined \datalangProg_t$
             & $\coloneqq$ &
-            $\forall \datalangFn \in \dom{\datalangProg_s}, \datalangVal_s, \datalangVal_t \ldotp
-            \wf{\datalangVal_s} \wedge \datalangVal_s \similar \datalangVal_t \implies
-            \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \refined \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_t}$
+            $\forall \datalangFn \in \dom{\datalangProg_s}, \datalangVal \ldotp
+            \wf{\datalangVal} \implies
+            \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal} \refined \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal}$
     \end{tabular}
     \caption{Program refinement}
     \label{fig:refinement}
