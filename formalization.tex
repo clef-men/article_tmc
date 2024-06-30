@@ -1,8 +1,13 @@
-\section{Formalization}
+\section{TMC on an idealized language}
 
-In this section, we formalize the TMC transformation in a simplified setting.
-More precisely, we define the \DataLang language that is expressive enough to account for the main aspects of TMC but does not support all features of the \LambdaLang intermediate language.
-It is meant to study and verify the core of the transformation.
+In this section, we formalize the ``tail modulo cons'' (TMC) transformation in an idealized language, \DataLang, that is expressive enough to account for the main aspects of TMC but does not support all features of \OCaml.
+
+This serves as a precise presentation of the transformation, and it is those definitions for which we formally prove correctness. We intentionally kept this presentation very close to our Coq development, which can be referred to for full details.
+
+\input{figures/syntax}
+\input{figures/sugar}
+\input{figures/semantics}
+\input{figures/map}
 
 \subsection{Language}
 
@@ -10,24 +15,25 @@ The syntax of \DataLang is given in \cref{fig:syntax} and its semantics in \cref
 We also introduce syntactic sugar in \cref{fig:sugar}, including some for lists.
 Going back to our motivating example, we can define the \datalang|map| function on lists as in \cref{fig:map}.
 
-\DataLang is an untyped sequential post closure conversion calculus with mutable state.
-Therefore, it does not feature lambda expressions, which are already compiled to toplevel closed functions referred to using function pointers ($\datalangFnptr{\datalangFn}$).
-The semantics is parameterized by the set of compiled toplevel functions that constitute the program.
+\DataLang is an untyped sequential calculus with mutable state. A \DataLang program $\datalangProg$ is a finite mapping from function names $\datalangFn \in \datalangFn[]$ to definitions $d$, which are themselves (mutually-)recursive functions whose body is written $\datalangRec \datalangVar \datalangExpr$. Functions have a single parameter for simplicity, with pairs used to pass several values.
 
-There is one noteworthy trait.
-To express constructors and closures, \DataLang features tagged mutable memory blocks with two fields.
+\DataLang has booleans $b \in \{\datalangTrue, \datalangFalse\}$, an if-then-else construct, and a runtime equality test between (untyped) values $\datalangEq{\datalangExpr_1}{\datalangExpr_2}$.
+
+\DataLang does not feature general lambda expressions -- its programs correspond to closure-converted or lambda-lifted source programs. Functions names $\datalangFn$ can be turned into values written $\datalangFnptr{\datalangFn}$, to be used directly in function calls or as parameters to higher-order functions.
+
+To express constructors, \DataLang features mutable memory blocks with an abstract \emph{tag} ($\datalangTag \in \datalangTag[]$), and two \emph{fields} which are arbitrary values ($\datalangExpr_1, \datalangExpr_2$).
 One can allocate a block with $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$, access its fields with $\datalangLoad{\datalangExpr_1}{\datalangExpr_2}$ and modify them with $\datalangStore{\datalangExpr_1}{\datalangExpr_2}{\datalangExpr_3}$.
-As in \OCaml, the evaluation order of subexpressions $\datalangExpr_1$ and $\datalangExpr_2$ in $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ is unspecified.
-To model this in the semantics, such an expression first nondeterministically reduces to either $\datalangLet{\datalangVar_1}{\datalangExpr_1}{\datalangLet{\datalangVar_2}{\datalangExpr_2}{\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}}}$ through \RefTirName{StepBlock1} or $\datalangLet{\datalangVar_2}{\datalangExpr_2}{\datalangLet{\datalangVar_1}{\datalangExpr_1}{\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}}}$ through \RefTirName{StepBlock2} and $\datalangBlockDet{\datalangTag}{\datalangVal_1}{\datalangVal_2}$ performs the allocation  through \RefTirName{StepBlockDet}.
-This $\datalangBlockDet{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ construction cannot appear in source programs.
+Allocation returns a location $\datalangLoc \in \datalangLoc[]$, which may not appear in source programs.
+
+To avoid over-simplifying, the evaluation order of subexpressions $\datalangExpr_1$ and $\datalangExpr_2$ in $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ is unspecified as in \OCaml.
+To model this in the semantics, we introduce a separate, deterministic block construction $\datalangBlockDet{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ construction which cannot appear in source programs. A block expression $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ first nondeterministically reduces to either $\datalangLet{\datalangVar_1}{\datalangExpr_1}{\datalangLet{\datalangVar_2}{\datalangExpr_2}{\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}}}$ through \RefTirName{StepBlock1} or $\datalangLet{\datalangVar_2}{\datalangExpr_2}{\datalangLet{\datalangVar_1}{\datalangExpr_1}{\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}}}$ through \RefTirName{StepBlock2}. $\datalangBlockDet{\datalangTag}{\datalangVal_1}{\datalangVal_2}$ performs the allocation through \RefTirName{StepBlockDet}.
+
+The values in \DataLang are functions $\datalangFnptr{\datalangFn}$, locations $\datalangLoc$ of allocated blocks, booleans $b$, tags $t$ (taken in an arbitrary, denumerable set), the unit value $\datalangUnit$, and indices $i \in \{\datalangZero, \datalangOne, \datalangTwo\}$ inside blocks. (Our transformation never mutates tags in position $\datalangZero$, nor do \OCaml programs, but for example \Mezzo supports it.)
+
+On top of these basic language features, \cref{fig:sugar} introduces syntactic sugar for pairs $\datalangPair {\datalangExpr_1} {\datalangExpr_2}$ as blocks with a specific tag $\mathrm{PAIR}$, for decomposing blocks in $\term{\color{datalangKeyword1}{let}}$-bindings ($\datalangLet {\datalangPair \datalangVar \datalangVarTwo} {\datalangExpr_1} {\datalangExpr_2}$) and in arguments of toplevel functions ($\datalangFn \mapsto \datalangRec {\datalangPair \datalangVar \datalangVarTwo} \datalangExpr$), and for (untyped) lists by defining the empty list $\datalangNil$ as $\datalangUnit$, and for (mutable) cons-cells as blocks with a specific tag $\mathrm{CONS}$. Pattern-matching on lists can be expressed by comparing the list with $\datalangNil$, using our block-deconstructing $\term{\color{datalangKeyword1}{let}}$ (which ignores the tag) to deconstruct cons-cells.
 
 As a side note, we use named expression variables here but the \Coq mechanization actually adopts de Bruijn syntax better suited to define transformations involving binders.
-More precisely, we rely on the \Autosubst library~\cite{DBLP:conf/itp/SchaferTS15}.
-
-\input{figures/syntax}
-\input{figures/sugar}
-\input{figures/semantics}
-\input{figures/map}
+More precisely, our formalisation relies on the \Autosubst library~\cite{DBLP:conf/itp/SchaferTS15}. (The use of blocks of fixed arity $2$ rather than $n$-ary blocks, and unary functions instead of n-ary functions, reflects a small limitation of \Autosubst for our use-case.) Our definitions respect $\alpha$-equivalence on term variables $\datalangVar, \datalangVarTwo$: we implicitly assume any term variable in bound position to be chosen distinct from all other variables in context. Function names $\datalangFn$ are not $\alpha$-renamed, as the transformation relates names in the source and target of the transformation.
 
 \subsection{Transformation}
 
@@ -85,3 +91,8 @@ Thanks to the rules \RefTirName{DirBlockDPS1} and \RefTirName{DPSCall}, the non-
 \input{figures/tmc_dps}
 \input{figures/tmc_dir}
 \input{figures/map_tmc}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
