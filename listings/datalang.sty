@@ -192,7 +192,20 @@
     \term{\color{datalangKeyword2}{rec}}\ #1\ \term{=}\ #2%
 }
 \newcommand{\datalangPair}[2]{%
-    \term{\color{datalangKeyword3}{(}} #1 \term{\color{datalangKeyword3}{,}}\, #2 \term{\color{datalangKeyword3}{)}}%
+    \term{\color{datalangKeyword3}{(}}%
+    #1%
+    \term{\color{datalangKeyword3}{,}}\,%
+    #2%
+    \term{\color{datalangKeyword3}{)}}%
+}
+\newcommand{\datalangTriple}[3]{%
+    \term{\color{datalangKeyword3}{(}}%
+    #1%
+    \term{\color{datalangKeyword3}{,}}\,%
+    #2%
+    \term{\color{datalangKeyword3}{,}}\,%
+    #3%
+    \term{\color{datalangKeyword3}{)}}%
 }
 \newcommand{\datalangNil}{%
     \term{\color{datalangKeyword3}{[]}}%

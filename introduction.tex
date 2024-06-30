@@ -159,9 +159,10 @@ The TMC transformation returns an equivalent function in
   cons} position have been turned into \emph{tail} calls. In
 particular, for \ocaml{map} it gives a tail-recursive function, which
 runs in constant stack space; many other list functions also become
-tail-recursive. The transformed code of \ocaml{map} can be described as
-follows:
+tail-recursive. This works for other datatypes as well, such as binary trees, but in this case some recursive calls may remain non-tail-recursive.
 
+The transformed code of \ocaml{map} can be described as
+follows:\\
 \hspace{-1.6em}
 \begin{minipage}{0.5\linewidth}
 \begin{Ocaml}
@@ -169,7 +170,7 @@ let rec map f = function
 | [] -> []
 | x::xs ->
   let y = f x in
-  let dst = y :: Hole in
+  let dst = y :: ? in
   map_dps dst 1 f xs;
   dst
 \end{Ocaml}
@@ -182,28 +183,15 @@ and map_dps dst i f = function
   dst.i <- []
 | x::xs ->
   let y = f x in
-  let dst' = y :: Hole in
+  let dst' = y :: ? in
   dst.i <- dst';
   map_dps dst' 1 f xs
 \end{Ocaml}
 \end{minipage}
 
-The transformed code has two variants of the \ocaml{map} function. The
-\ocaml{map_dps} variant is in \emph{destination-passing style}, it
-expects additional parameters that specify a memory location,
-a \emph{destination}, and will write its result to this
-\emph{destination} instead of returning it. It is tail-recursive. The
-\ocaml{map} variant provides the same interface as the non-transformed
-function, and internally calls \ocaml{map_dps} on non-empty lists. It
-is not tail-recursive, but it does not call itself recursively, it
-jumps to the tail-recursive \ocaml{map_dps} after one call.
+The transformed code has two variants of the \ocaml{map} function. The \ocaml{map_dps} variant is in \emph{destination-passing style}, it expects additional parameters that specify a memory location, a \emph{destination}, and will write its result to this \emph{destination} instead of returning it. It is tail-recursive, and it performs a single traversal of the list. The \ocaml{map} variant provides the same interface as the non-transformed function, we say that it is in \emph{direct style}. It is not tail-recursive, but it does not call itself recursively, it calls the tail-recursive \ocaml{map_dps} on non-empty lists.
 
-The key idea of the transformation is that the expression \ocaml{y :: map f xs}, which contained a non-tail-recursive call, is transformed into first the computation of a \emph{partial} list cell, written \ocaml{y :: ?}, followed by a call to \ocaml{map_dps} that is asked
-to write its result in the position of the \ocaml{?}. The recursive
-call thus happens after the cell creation (instead of before), in
-tail-recursive position in the \ocaml{map_dps} variant. In the direct
-variant, the value of the destination \ocaml{dst} has to be returned
-after the call.
+The key idea of the transformation is that the expression \ocaml{y :: map f xs}, which contained a non-tail-recursive call, is transformed into first the computation of a \emph{partial} list cell, written \ocaml{y :: ?}, followed by a call to \ocaml{map_dps} that is asked to write its result in the position of the \ocaml{?}. The recursive call thus happens after the cell creation (instead of before), in tail-recursive position in the \ocaml{map_dps} variant. In the direct variant, the value of the destination \ocaml{dst} has to be returned after the call.
 
 The transformed code is in a pseudo-OCaml, it is not a valid OCaml
 program: we use a magical \ocaml{?} constant, and our notation
@@ -215,170 +203,35 @@ system is not expressive enough to type-check the transformed program:
 the list cell is only partially-initialized at first, each partial
 cell is mutated exactly once, and in the end the whole result is
 returned as an \emph{immutable} list. Some type system are expressive
-enough to represent this transformed code, notably Mezzo
-\citep*{mezzo}.
+enough to represent this transformed code, notably \Mezzo~\citep*{DBLP:journals/toplas/BalabonskiPP16}, which is based on a permission system inspired by \emph{separation logic}~\citep*{DBLP:journals/cacm/OHearn19}, or the linear types used in \citet*{minamide-98}.
 
+TMC has been implemented in Lisp~[TODO], Prolog~[TODO] and (simultaneously to our work) Koka~\cite{DBLP:journals/pacmpl/LeijenL23}. A variant of TMC, where constructors are replaced by associative operations and transformed to \emph{accumulator-passing style}, is implemented in \texttt{gcc} and \texttt{clang}.
 
-TODO: what we have above is a re-import of the JFLA introduction.
-What is below is a copy of the previous introduction-in-progress.
-What should reread it, and more importantly include a new subsection on the proof,
-which can be mostly reused from what is below.
-
-\section{Introduction}
-
-In \OCaml, the natural implementation of the \ocaml|map| function on polymorphic lists is the following:
-
-\begin{Ocaml}
-let rec map f xs =
-  match xs with
-  | [] ->
-      []
-  | x :: xs ->
-      let y = f x in
-      y :: map f xs
-\end{Ocaml}
-
-Yet, calling \ocaml|map| on a large input list may crash with the dreaded \ocaml|Stack_overflow| exception.
+The first main contribution of our work is an implementation of TMC in the \OCaml compiler as an on-demand program transformation.
 %
-Indeed, as functions calls consume stack space, the stack usage of this implementation is linear in the size of the input list.
+We describe the non-trivial design choices in terms of user interface, and evaluate performance through microbenchmarks.
 %
-This is the reason why \OCaml programmers have to be careful, when they write recursive functions, to remain in the so-called \emph{tail-recursive} fragment: every recursive call must be in tail position, that is the last thing the function does before returning.
-%
-As there is nothing to do after a tail call, the stack frame can be directly reused.
-%
-Therefore, tail calls do not consume stack space.
-%
-Knowing this, we can provide another tail-recursive implementation of \ocaml|map|:
-
-\begin{minipage}{0.5\linewidth}
-\begin{Ocaml}
-let rec rev_map f ys xs =
-  match xs with
-  | [] ->
-      ys
-  | x :: xs ->
-      let y = f x in
-      rev_map f (y :: ys) xs
-\end{Ocaml}
-\end{minipage}
-\hfill
-\begin{minipage}{0.5\linewidth}
-\begin{Ocaml}
-let map f xs =
-  let ys = rev_map f [] xs in
-  List.rev ys
-\end{Ocaml}
-\end{minipage}
-
-This second version computes the reverse result list with \ocaml|rev_map| in the accumulator-passing style and applies \ocaml|List.rev|.
-%
-As both \ocaml|rev_map| and \ocaml|rev| are tail-recursive, it is stack-safe.
-%
-However, it is not as efficient on small lists since it does two traversals instead of one.
-%
-There is yet another implementation:
-
-\begin{minipage}{0.65\linewidth}
-\begin{Ocaml}
-/* [dst] is a partially initialized list cell. */
-let rec map_dps dst f xs =
-  match xs with
-  | [] ->
-      /* Write result empty list to [dst]. */
-      set_field dst 1 []
-  | x :: xs ->
-      let y = f x in
-      /* New partially initialized list cell. */
-      let dst' = y :: [] in
-      /* Write result [dst'] to [dst]. */
-      set_field dst 1 dst' ;
-      /* Continue with [dst'] as new destination. */
-      map_dps dst' f xs
-\end{Ocaml}
-\end{minipage}
-\hfill
-\begin{minipage}{0.45\linewidth}
-\begin{Ocaml}
-let map f xs =
-  match xs with
-  | [] ->
-      []
-  | x :: xs ->
-      let y = f x in
-      let dst = y :: [] in
-      map_dps dst f xs ;
-      dst
-\end{Ocaml}
-\end{minipage}
-
-This third implementation is much less natural.
-%
-It takes advantage of the memory representation of lists in \OCaml: some constant integer for the empty list and a heap-allocated cell containing one tag followed by two fields for the list constructor.
-%
-The \ocaml|set_field| function allows us to modify these fields.
-%
-It can be implemented using the unsafe \ocaml|Obj| module.
-
-The core of this implementation is the tail-recursive \ocaml|map_dps| auxiliary function.
-%
-It is the \emph{destination-passing style} version of \ocaml|map|: it writes its result to the tail field of destination \ocaml|dst| instead of returning it.
-%
-On the empty list, it just writes the empty list.
-%
-On non-empty lists, it allocates a new partially initialized list cell \ocaml|dst'|, writes \ocaml|dst'| to \ocaml|dst| and calls itself recursively with \ocaml|dst|' as its new destination.
-%
-\ocaml|map| calls \ocaml|map_dps| on non-empty lists.
-
-What happens is \ocaml|map_dps| constructs the final transformed list by modifying the last cell of the current partial transformed list.
-%
-Not only is it stack-safe but it also does only one traversal, as opposed the previous stack-safe implementation.
-%
-Unfortunately, it cannot be implemented using only safe \OCaml features, as list cells are normally immutable.
-%
-In fact, most strongly typed languages reject it.
-%
-A notable exception is \Mezzo \cite{DBLP:journals/toplas/BalabonskiPP16}, which is based on a permission system inspired by \emph{separation logic}~\cite{DBLP:journals/cacm/OHearn19}.
-
-We can do better.
-%
-If we cannot write it, the compiler may be able to do so.
-%
-In fact, the manual transformation of the natural implementation of \ocaml|map| we have performed is an instance of a more general transformation known as \emph{tail call optimization modulo constructor} (TMC)~\cite{risch-73,friedman-wise-75}.
-%
-TMC has been implemented in Lisp~[TODO], Prolog~[TODO] and Koka~\cite{DBLP:journals/pacmpl/LeijenL23}.
-%
-The first main contribution of this work is an implementation of TMC in the \OCaml compiler as an optional optimization.
-%
-Various functions in the standard library and third-party codebases have been rewritten to use it.
-%
-For instance, the efficient stack-safe version of \ocaml|map| is obtained just by annotating the natural definition with the attribute \ocaml|[@tail_mod_cons]|:
-
-\begin{Ocaml}
-let[@tail_mod_cons] rec map f xs =
-  match xs with
-  | [] -> []
-  | x :: xs -> f x :: map f xs
-\end{Ocaml}
+Various functions in the standard library and third-party codebases have been rewritten to use it, to become tail-recursive, gain in performance, or (when an efficient but complex tail-recursive version was used) simplify considerably the implementation.
 
 The second main contribution of this work is a mechanized proof of correctness for the core of this transformation on a small untyped calculus.
 %
-We established a \emph{behavioral refinement} between the source program and the transformed program: any behavior of the transformed program, be it converging, diverging or stuck, is a behavior of the source program.
-%
-Our proof relies on \Simuliris~\cite{DBLP:journals/pacmpl/GaherSSJDKKD22}, a separation logic framework built on top of the \Iris base logic.
-%
-We found that their proof technique, a simulation relation, is not expressive enough to reason about program transformations that introduce new function calling conventions.
+For any input source program, we establish a \emph{behavioral refinement} between the source program and the corresponding transformed program: any behavior of the transformed program, be it converging, diverging or stuck, is a behavior of the source program.
+
+Our proof technique is to establish a relational program logic for our small untyped calculus, to show the correctness of the TMC transformation using this program logic, and to get the behavioral refinement by proving adequacy of our program logic. To do this we rely on \Simuliris~\cite{DBLP:journals/pacmpl/GaherSSJDKKD22}, a framework for simulations in separation logic built on top of the \Iris base logic; the use of separation logic nicely captures certain aspects of the proof argument, in particular the fact that the location passed to the destination-passing-style version is uniquely owned by the transformed program.
+
+We found that the specific definition of simulations in \Simuliris is not expressive enough to reason about program transformations that introduce new function calling conventions.
 %
 We had to generalize the \Simuliris handling of function calls by parameterizing the simulation relation over an abstract protocol inspired by the work of \citeauthor{DBLP:journals/pacmpl/VilhenaP21}~\cite{DBLP:journals/pacmpl/VilhenaP21}.
 %
-This contribution of our work is independent from the TMC transformation and our small calculus.
+This sub-contribution of our work is independent from the TMC transformation and our small calculus.
 %
 It could be reused in future work on verifying compiler transformations.
 
-Interestingly, the core of the soundness proof is the specification of the two variants of each TMC-transformed function --- direct style and destination-passing style.
+The core of the soundness proof is the specification of the two variants of each TMC-transformed function --- direct style and destination-passing style.
 %
-It conveys the essence of destination-passing style: computing the same thing and writing it to an owned destination.
+It concisely conveys the essence of destination-passing style: computing the same thing and writing it to an owned destination.
 %
-For instance, delaying the definition of the simulation relation $\iSimv{\Phi}{e_s}{e_t}$ and the similarity relation $\datalangVal_s \iSimilar \datalangVal_t$, the specification of the variants of \ocaml|map| is:
+For instance, to give a taste of the formalism, the specification of the variants of \ocaml|map| looks as follows:
 %
 \begin{align*}
         \iSimvHoare{
@@ -386,31 +239,45 @@ For instance, delaying the definition of the simulation relation $\iSimv{\Phi}{e
         }{
             \iSimilar
         }{
-            & \datalangCall{\datalangFnptr{\ocamlText{map}}}{\datalangVal_s}
+          & \datalangCall
+              {\datalangFnptr{\ocamlText{map}}}
+              {\datalangPair{f}{\datalangVal_s}}
         }{
-            \datalangCall{\datalangFnptr{\ocamlText{map}}}{\datalangVal_t}
+            \datalangCall
+              {\datalangFnptr{\ocamlText{map}}}
+              {\datalangPair{f}{\datalangVal_t}}
         }
     \\
         \iSimvHoare{
             (\datalangLoc + \datalangIdx) \iPointsto \datalangHole
         }{
-            \datalangVal_s, \datalangUnit \ldotp
-            \exists \datalangVal_t \ldotp
-            (\datalangLoc + \datalangIdx) \iPointsto \datalangVal_t \iSep
-            \datalangVal_s \iSimilar \datalangVal_t
+            \datalangVal'_s, \datalangUnit \ldotp
+            \exists \datalangVal'_t \ldotp\ %
+            (\datalangLoc + \datalangIdx) \iPointsto \datalangVal'_t
+            \ \iSep\ %
+            \datalangVal'_s \iSimilar \datalangVal'_t
         }{
-            & \datalangCall{\datalangFnptr{\ocamlText{map}}}{\datalangVal_s}
+          & \datalangCall
+              {\datalangFnptr{\ocamlText{map}}}
+              {\datalangPair{f}{\datalangVal_s}}
         }{
-            \datalangCall{\datalangFnptr{\ocamlText{map_dps}}}{\datalangPair{\datalangPair{\datalangLoc}{\datalangIdx}}{\datalangVal_t}}
+            \datalangCall
+              {\datalangFnptr{\ocamlText{map_dps}}}
+              {\datalangTriple
+                {\datalangPair{\datalangLoc}{\datalangIdx}}
+                {f}
+                {\datalangVal_t}}
         }
 \end{align*}
 
 To sum up, our main contributions are:
 \begin{enumerate}
-    \item an implementation of the TMC transformation in the \OCaml compiler;
-    \item a mechanized proof of soundness for a simplified transformation on a small calculus;
-    \item a generalization of \Simuliris handling of function calls to reason about different calling conventions.
+    \item an implementation of the TMC transformation in the \OCaml compiler, with a discussion of the user interface, a performance evaluation, and a survey of its early usage;
+    \item a mechanized proof of soundness for a simplified transformation on a small calculus, using a relational separation program logic;
+    \item a generalization of the \Simuliris handling of function calls to reason about different calling conventions.
 \end{enumerate}
+
+To our knowledge, previous works on relational separation program logics~[TODO] have demonstrated its expressiveness of this approach by formalizing the relation between specific pairs of programs; they capture \emph{examples} of interesting optimizations and transformations, but do not demonstrate that a given program \emph{transformation} is valid for all inputs. Our work may be the first proof of correctness of a program transformation, an idealized presentation of a compiler pass, using this approach, providing further evidence that it may scale to compiler verification.
 
 %%% Local Variables:
 %%% mode: latex
