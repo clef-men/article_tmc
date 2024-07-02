@@ -67,18 +67,18 @@ In details, the terms produced by the rules \RefTirName{DirBlockDPS1} and \RefTi
 3)~They return the now fully initialized block.
 
 % Question from Gabriel: in the (map f btree) case
-%   | Node(left, v, right) ->
-%     Node(map f left, f v, map f right)
+%   | Node(left, right) ->
+%     Node(map f left, map f right)
 % we may generate
-%     let dst = (?, f v, map f right) in
+%     let dst = (?, map f right) in
 %     map_dps dst 0 f left;
 %     dst
 % or
-%     let dst = (map f left, f v, ?) in
+%     let dst = (map f left, ?) in
 %     map_dps dst 1 f right;
 %     dst
 % should we consider generating the following code instead?
-%     let dst = (?, f v, ?) in
+%     let dst = (?, ?) in
 %     map_dps dst 0 f left;
 %     map_dps dst 1 f right;
 %     dst
