@@ -2,12 +2,21 @@
     \begin{mathparpagebreakable}
         \inferrule*
             {}{
-                \boxed{- \tmcDir{\datalangRenaming} - : \datalangExpr[] \rightarrow \datalangExpr[] \rightarrow \Prop}
+                \boxed{- \tmcDir{\datalangRenaming} - : \datalangDef[] \rightarrow \datalangDef[] \rightarrow \Prop}
             }
         \and
         \inferrule*
             {}{
-                \boxed{- \tmcDir{\datalangRenaming} - : \datalangDef[] \rightarrow \datalangDef[] \rightarrow \Prop}
+                \boxed{- \tmcDir{\datalangRenaming} - : \datalangExpr[] \rightarrow \datalangExpr[] \rightarrow \Prop}
+            }
+        \\
+        \inferrule*[lab=DirDef]
+            {
+                \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
+            }{
+                \datalangRec{\datalangVar}{\datalangExpr_s}
+                \tmcDir{\datalangRenaming}
+                \datalangRec{\datalangVar}{\datalangExpr_t}
             }
         \\
         \inferrule*[lab=DirVal]
@@ -35,6 +44,28 @@
                 \datalangLet{\datalangVar}{\datalangExpr_{t1}}{\datalangExpr_{t2}}
             }
         \\
+        \inferrule*[lab=DirCall]
+            {
+                \datalangExpr_{s1} \tmcDir{\datalangRenaming} \datalangExpr_{t1}
+            \and
+                \datalangExpr_{s2} \tmcDir{\datalangRenaming} \datalangExpr_{t2}
+            }{
+                \datalangCall {\datalangExpr_{s1}} {\datalangExpr_{s2}}
+                \tmcDir{\datalangRenaming}
+                \datalangCall {\datalangExpr_{t1}} {\datalangExpr_{t2}}
+            }
+        \and
+        \inferrule*[lab=DirBlock]
+            {
+                \datalangExpr_{s1} \tmcDir{\datalangRenaming} \datalangExpr_{t1}
+            \and
+                \datalangExpr_{s2} \tmcDir{\datalangRenaming} \datalangExpr_{t2}
+            }{
+                \datalangBlock \datalangTag {\datalangExpr_{s1}} {\datalangExpr_{s2}}
+                \tmcDir{\datalangRenaming}
+                \datalangBlock \datalangTag {\datalangExpr_{t1}} {\datalangExpr_{t2}}
+            }
+        \\
         \inferrule*[lab=DirBlockDPS1]
             {
                 \datalangExpr_{s1} \tmcDir{\datalangRenaming} \datalangExpr_{t1}
@@ -45,15 +76,15 @@
                 \tmcDir{\datalangRenaming}
                 \begin{array}{l}
                     \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangExpr_{t1}}{\datalangHole}}{\\
-                    \datalangSeq{\datalangExpr_{t2}}{\datalangVar}}
+                  \datalangSeq{\datalangExpr_{t2}}{\datalangVar}}
                 \end{array}
             }
         \and
         \inferrule*[lab=DirBlockDPS2]
             {
-                \datalangExpr_{s2} \tmcDir{\datalangRenaming} \datalangExpr_{t2}
-            \and
                 (\datalangVar, \datalangOne, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}
+            \and
+                \datalangExpr_{s2} \tmcDir{\datalangRenaming} \datalangExpr_{t2}
             }{
                 \datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
                 \tmcDir{\datalangRenaming}
@@ -62,16 +93,12 @@
                     \datalangSeq{\datalangExpr_{t1}}{\datalangVar}}
                 \end{array}
             }
-        \\
-        \inferrule*[lab=DirDef]
-            {
-                \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
-            }{
-                \datalangRec{\datalangVar}{\datalangExpr_s}
-                \tmcDir{\datalangRenaming}
-                \datalangRec{\datalangVar}{\datalangExpr_t}
-            }
     \end{mathparpagebreakable}
-    \caption{Direct TMC transformation (omitting congruence rules similar to \TirName{DirLet} and freshness conditions)}
+    \caption{Direct TMC transformation (omitting congruence rules similar to \TirName{DirCall})}
     \label{fig:tmc_dir}
 \end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End:

@@ -2,27 +2,23 @@
     \begin{mathparpagebreakable}
         \inferrule*
             {}{
-                \boxed{- \tmcDps{\datalangRenaming} - : \datalangExpr[] \times \datalangExpr[] \times \datalangExpr[] \rightarrow \datalangExpr[] \rightarrow \Prop}
+                \boxed{- \tmcDps{\datalangRenaming} - : \datalangDef[] \rightarrow \datalangDef[] \rightarrow \Prop}
             }
         \and
         \inferrule*
             {}{
-                \boxed{- \tmcDps{\datalangRenaming} - : \datalangDef[] \rightarrow \datalangDef[] \rightarrow \Prop}
+                \boxed{- \tmcDps{\datalangRenaming} - : \datalangExpr[] \times \datalangExpr[] \times \datalangExpr[] \rightarrow \datalangExpr[] \rightarrow \Prop}
             }
         \\
-        \inferrule*[lab=DPSBase]
+        \inferrule*[lab=DPSDef]
             {
-                \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
+                (\datalangVar_\mathit{dst}, \datalangVar_\mathit{idx}, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t
             }{
-                \left(
-                    \datalangExpr_\mathit{dst},
-                    \datalangExpr_\mathit{idx},
-                    \datalangExpr_s
-                \right)
+                \datalangRec{\datalangVar}{\datalangExpr_s}
                 \tmcDps{\datalangRenaming}
-                \datalangStore{\datalangExpr_\mathit{dst}}{\datalangIdx}{\datalangExpr_t}
+                \datalangRec{\datalangPair{\datalangPair{\datalangVar_\mathit{dst}}{\datalangVar_\mathit{idx}}}{\datalangVar}}{\datalangExpr_t}
             }
-        \and
+        \\
         \inferrule*[lab=DPSLet]
             {
                 \datalangExpr_{s1} \tmcDir{\datalangRenaming} \datalangExpr_{t1}
@@ -36,25 +32,6 @@
                 \right)
                 \tmcDps{\datalangRenaming}
                 \datalangLet{\datalangVar}{\datalangExpr_{t1}}{\datalangExpr_{t2}}
-            }
-        \and
-        \inferrule*[lab=DPSCall]
-            {
-                \datalangFn \in \dom{\datalangRenaming}
-            \and
-                \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
-            }{
-                \left(
-                    \datalangExpr_\mathit{dst},
-                    \datalangExpr_\mathit{idx},
-                    \datalangCall{\datalangFnptr{\datalangFn}}{\datalangExpr_s}
-                \right)
-                \tmcDps{\datalangRenaming}
-                \datalangCall{
-                    \datalangFnptr{\datalangRenaming [\datalangFn]}
-                }{
-                    \datalangPair{\datalangPair{\datalangExpr_\mathit{dst}}{\datalangExpr_\mathit{idx}}}{\datalangExpr_t}
-                }
             }
         \and
         \inferrule*[lab=DPSIf]
@@ -91,12 +68,12 @@
                     \datalangSeq{\datalangStore{\datalangExpr_\mathit{dst}}{\datalangExpr_\mathit{idx}}{\datalangVar}}{\datalangExpr_{t2}}}
                 \end{array}
             }
-        \and
+        \;
         \inferrule*[lab=DPSBlock2]
             {
-                \datalangExpr_{s2} \tmcDir{\datalangRenaming} \datalangExpr_{t2}
-            \and
                 (\datalangVar, \datalangOne, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}
+            \and
+                \datalangExpr_{s2} \tmcDir{\datalangRenaming} \datalangExpr_{t2}
             }{
                 \left(
                     \datalangExpr_\mathit{dst},
@@ -110,15 +87,43 @@
                 \end{array}
             }
         \\
-        \inferrule*[lab=DPSDef]
+        \inferrule*[lab=DPSCall]
             {
-                (\datalangVar_\mathit{dst}, \datalangVar_\mathit{idx}, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t
+                \datalangFn \in \dom{\datalangRenaming}
+            \and
+                \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
             }{
-                \datalangRec{\datalangVar}{\datalangExpr_s}
+                \left(
+                    \datalangExpr_\mathit{dst},
+                    \datalangExpr_\mathit{idx},
+                    \datalangCall{\datalangFnptr{\datalangFn}}{\datalangExpr_s}
+                \right)
                 \tmcDps{\datalangRenaming}
-                \datalangRec{\datalangPair{\datalangPair{\datalangVar_\mathit{dst}}{\datalangVar_\mathit{idx}}}{\datalangVar}}{\datalangExpr_t}
+                \datalangCall{
+                    \datalangFnptr{\datalangRenaming [\datalangFn]}
+                }{
+                    \datalangPair{\datalangPair{\datalangExpr_\mathit{dst}}{\datalangExpr_\mathit{idx}}}{\datalangExpr_t}
+                }
+            }
+        \and
+        \inferrule*[lab=DPSBase]
+            {
+                \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
+            }{
+                \left(
+                    \datalangExpr_\mathit{dst},
+                    \datalangExpr_\mathit{idx},
+                    \datalangExpr_s
+                \right)
+                \tmcDps{\datalangRenaming}
+                \datalangStore{\datalangExpr_\mathit{dst}}{\datalangIdx}{\datalangExpr_t}
             }
     \end{mathparpagebreakable}
-    \caption{Destination-passing style TMC transformation (omitting freshness conditions)}
+    \caption{Destination-passing style TMC transformation}
     \label{fig:tmc_dps}
 \end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End:
