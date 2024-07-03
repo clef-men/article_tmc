@@ -59,30 +59,12 @@ Intuitively, this means $\datalangExpr_t$ computes the same thing as $\datalangE
 
 The direct-style transform corresponds to the case where we do not have a block available to serve as a destination: this version is used in an arbitrary calling context, not necessarily under a constructor. Most rules are straightforward congruences -- we recursively transform subexpressions and preserve the term constructor. We omit the rules for loads $\datalangLoad{\datalangExpr_1}{\datalangExpr_2}$ and stores $\datalangStore{\datalangExpr_1}{\datalangExpr_2}{\datalangExpr_3}$ which are such simple congruences, just like calls $\datalangCall {\datalangExpr_1} {\datalangExpr_2}$. 
 
-The interesting cases are the relation that apply to a block construct $\datalangBlock \datalangTag {\datalangExpr_1} {\datalangExpr_2}$. At this point, we could use this block as a destination, and switch to the destination-passing-style calling convention. The relation allows a non-deterministic choice: the rule \RefTirName{DirBlock} is a simple congruence where subterms remain in direct-style, while \RefTirName{DirBlockDPS1} and \RefTirName{DirBlockDPS2} allow to choose one of the two arguments of the block to be evaluated in destination-passing style. An implementation will typically determine whether any of the two subexpressions would benefit from destination-passing style, that is, contains function calls $\datalangCall {\datalangFnptr \datalangFn} \datalangExpr$ in tail position (relatively to the subexpression) that have a destination-passing variant $\datalangRenaming [\datalangFn]$, and choose one of the rules depending on whether one, two or none of the subterms are in this situation.
+The interesting cases are the relation that apply to a block construct $\datalangBlock \datalangTag {\datalangExpr_1} {\datalangExpr_2}$. At this point, we could use this block as a destination, and switch to the destination-passing-style calling convention. The relation allows a non-deterministic choice: the rule \RefTirName{DirBlock} is a simple congruence where subterms remain in direct-style, while \RefTirName{DirBlockDPS1}, \RefTirName{DirBlockDPS2}, \RefTirName{DirBlockDPS12} allow to choose a subset of the block arguments to be evaluated in destination-passing style. An implementation would typically determine which subexpression would benefit from destination-passing style, that is, contains function calls $\datalangCall {\datalangFnptr \datalangFn} \datalangExpr$ in tail position (relatively to the subexpression) that have a destination-passing variant $\datalangRenaming [\datalangFn]$. These rules are the only places in the direct-style transformation were destination-passing-style is introduced.
 
 In details, the terms produced by the rules \RefTirName{DirBlockDPS1} and \RefTirName{DirBlockDPS2} proceed as follows:
-1)~They partially initialize a new memory block, with a hole in for one of the arguments.
-2)~They evaluate the DPS transformation of the corresponding subterm, passing the uninitialized field as destination.
+1)~They partially initialize a new memory block, with a hole for some of the arguments.
+2)~They evaluate the DPS transformation of the corresponding subterms, passing the uninitialized field as destination.
 3)~They return the now fully initialized block.
-
-% Question from Gabriel: in the (map f btree) case
-%   | Node(left, right) ->
-%     Node(map f left, map f right)
-% we may generate
-%     let dst = (?, map f right) in
-%     map_dps dst 0 f left;
-%     dst
-% or
-%     let dst = (map f left, ?) in
-%     map_dps dst 1 f right;
-%     dst
-% should we consider generating the following code instead?
-%     let dst = (?, ?) in
-%     map_dps dst 0 f left;
-%     map_dps dst 1 f right;
-%     dst
-
 
 \paragraph{3. For each TMC-transformed function $\datalangFn$, choosing a destination-passing-style transform}
 We introduce in \cref{fig:tmc_dps} the relations $\datalangDef_s \tmcDps{\datalangRenaming} \datalangDef_t$ for definitions and $(\datalangExpr_\mathit{dst}, \datalangExpr_\mathit{idx}, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$ for expressions.
@@ -97,20 +79,24 @@ We will formalize this intuition in \cref{sec:specification}.
 
 Note that the rule \RefTirName{DPSDef}, which relates the two judgments, uses the expression-level relation $(\mathrel{\tmcDps{\datalangRenaming}})$ with a term variable $\datalangVar_\mathit{idx}$ to represent the index, not just a constant index $\datalangOne$ or $\datalangTwo$ as in the rules \RefTirName{DirBlockDPS1} and \RefTirName{DirBlockDPS2}. These are the only two sort of expressions used to represent offsets in the transformation.
 
-Most rules are straightforward.
-Whenever it is possible, we take the direct transformation --- as described next --- of sub-expressions that are not inductively DPS-transformed.
+In the direct-style relation, congruence rules apply the same direct-style transformation to all subexpressions. The congruence-like rule of the DPS relation, for example \RefTirName{DPSLet} and \RefTirName{DPSIf}, are different. They apply the DPS transformation to sub-expressions which are in tail position relative to the expression, and the direct-style transformation to all other subexpressions. (The if-then-else construct can have two different subexpressions in tail position, because at most one of them is evaluated at runtime.)
 
-The essence of the TMC transformation lies in the symmetric \RefTirName{DPSBlock1} and \RefTirName{DPSBlock2} rules:
-1)~We choose a side to evaluate last and partially initialize a new memory block with it.
-2)~We write this block to our current destination $(%
-  \datalangExpr_\mathit{dst},%
-  \datalangExpr_\mathit{idx})$.
-3)~We fill the uninitialized field by passing it as new destination to DPS-transform the corresponding source sub-expression.
+The rules \RefTirName{DPSBlock1} and \RefTirName{DPSBlock2}
+% TODO include a rule DPSBlock12 as well
+correspond to the rules \RefTirName{DirBlockDPS1} and \RefTirName{DirBlockDPS2} in the direct-style transformation, but the behavior of the transformed code is different. Consider the translation of $
+\left(
+  \datalangExpr_\mathit{dst},
+  \datalangExpr_\mathit{idx},
+  \datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
+\right)
+$ into $
+\datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangExpr_{t1}}{\datalangHole}}{
+  \datalangSeq{\datalangStore{\datalangExpr_\mathit{dst}}{\datalangExpr_\mathit{idx}}{\datalangVar}}{\datalangExpr_{t2}}}
+$ by \RefTirName{DirBlockDPS2}. First we create a new destination $\datalangVar$, with a hole in second position. Then, instead of computing the corresponding subterm, we write this new destination $x$ into the \emph{current} destination $({\datalangExpr_\mathit{dst}}, {\datalangExpr_\mathit{idx}})$. Finally we evaluate $\datalangExpr_{t2}$, which is the DPS transform of the subexpression $\datalangExpr_{s2}$, with the destination $(\datalangVar, \datalangTwo)$.
 
-Notice that the \RefTirName{DPSIf} rule transforms both its sub-expressions in DPS form, while the % TODO: not both its sub-expressions; name them?
+The rule \RefTirName{DPSCall} applies only to calls $\datalangCall {\datalangFnptr \datalangFn} {\datalangExpr_s}$ to a known function $\datalangFn$, on the condition that a DPS variant has been generated for $\datalangFn$: $\datalangFn \in \dom{\datalangRenaming}$. In this case, the function call can be compiled to a call to the DPS variant $\datalangRenaming [\datalangFn]$, transferring the responsibility to write to the destination to the callee. This is the case where the DPS transform is beneficial, as this transformation may turn a non-tail-call into a tail-call, as in the recursive case of our \ocaml|map_dps| example.
 
-A DPS transformation is interesting when it ends on the DPSCall
-% explain DPSBase as well.
+TODO
 
 \medskip
 

@@ -68,6 +68,20 @@
         \\
         \inferrule*[lab=DirBlockDPS1]
             {
+                (\datalangVar, \datalangOne, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}
+            \and
+                \datalangExpr_{s2} \tmcDir{\datalangRenaming} \datalangExpr_{t2}
+            }{
+                \datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
+                \tmcDir{\datalangRenaming}
+                \begin{array}{l}
+                    \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangHole}{\datalangExpr_{t2}}}{\\
+                    \datalangSeq{\datalangExpr_{t1}}{\datalangVar}}
+                \end{array}
+            }
+        \and
+        \inferrule*[lab=DirBlockDPS2]
+            {
                 \datalangExpr_{s1} \tmcDir{\datalangRenaming} \datalangExpr_{t1}
             \and
                 (\datalangVar, \datalangTwo, \datalangExpr_{s2}) \tmcDps{\datalangRenaming} \datalangExpr_{t2}
@@ -80,17 +94,19 @@
                 \end{array}
             }
         \and
-        \inferrule*[lab=DirBlockDPS2]
+        \inferrule*[lab=DirBlockDPS12]
             {
                 (\datalangVar, \datalangOne, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}
             \and
-                \datalangExpr_{s2} \tmcDir{\datalangRenaming} \datalangExpr_{t2}
+                (\datalangVar, \datalangTwo, \datalangExpr_{s2}) \tmcDps{\datalangRenaming} \datalangExpr_{t2}
             }{
                 \datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
                 \tmcDir{\datalangRenaming}
                 \begin{array}{l}
-                    \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangHole}{\datalangExpr_{t2}}}{\\
-                    \datalangSeq{\datalangExpr_{t1}}{\datalangVar}}
+                    \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangHole}{\datalangHole}}{\\
+                    \datalangSeq{\datalangExpr_{t1}}{
+                      \datalangSeq{\datalangExpr_{t2}}{
+                        \datalangVar}}}
                 \end{array}
             }
     \end{mathparpagebreakable}

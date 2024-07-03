@@ -26,14 +26,16 @@
                 (\datalangExpr_\mathit{dst}, \datalangExpr_\mathit{idx}, \datalangExpr_{s2}) \tmcDps{\datalangRenaming} \datalangExpr_{t2}
             }{
                 \left(
+                  {\begin{array}{l}
                     \datalangExpr_\mathit{dst},
-                    \datalangExpr_\mathit{idx},
+                    \datalangExpr_\mathit{idx}, \\
                     \datalangLet{\datalangVar}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
+                  \end{array}}
                 \right)
                 \tmcDps{\datalangRenaming}
                 \datalangLet{\datalangVar}{\datalangExpr_{t1}}{\datalangExpr_{t2}}
             }
-        \and
+        \quad
         \inferrule*[lab=DPSIf]
             {
                 \datalangExpr_{s0} \tmcDir{\datalangRenaming} \datalangExpr_{t0}
@@ -43,9 +45,11 @@
                 (\datalangExpr_\mathit{dst}, \datalangExpr_\mathit{idx}, \datalangExpr_{s2}) \tmcDps{\datalangRenaming} \datalangExpr_{t2}
             }{
                 \left(
+                  {\begin{array}{l}
                     \datalangExpr_\mathit{dst},
-                    \datalangExpr_\mathit{idx},
+                    \datalangExpr_\mathit{idx}, \\
                     \datalangIf{\datalangExpr_{s0}}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
+                  \end{array}}
                 \right)
                 \tmcDps{\datalangRenaming}
                 \datalangIf{\datalangExpr_{t0}}{\datalangExpr_{t1}}{\datalangExpr_{t2}}
@@ -53,8 +57,49 @@
         \\
         \inferrule*[lab=DPSBlock1]
             {
+                (\datalangVar, \datalangOne, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}
+            \and
+                \datalangExpr_{s2} \tmcDir{\datalangRenaming} \datalangExpr_{t2}
+            }{
+                \left(
+                  {\begin{array}{l}
+                    \datalangExpr_\mathit{dst},
+                    \datalangExpr_\mathit{idx}, \\
+                    \datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
+                  \end{array}}
+                \right)
+                \tmcDps{\datalangRenaming}
+                \begin{array}{l}
+                    \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangHole}{\datalangExpr_{t2}}}{\\
+                    \datalangSeq{\datalangStore{\datalangExpr_\mathit{dst}}{\datalangExpr_\mathit{idx}}{\datalangVar}}{\datalangExpr_{t1}}}
+                \end{array}
+            }
+        \quad
+        \inferrule*[lab=DPSBlock2]
+            {
                 \datalangExpr_{s1} \tmcDir{\datalangRenaming} \datalangExpr_{t1}
             \and
+                (\datalangVar, \datalangTwo, \datalangExpr_{s2}) \tmcDps{\datalangRenaming} \datalangExpr_{t2}
+            }{
+                \left(
+                  {\begin{array}{l}
+                    \datalangExpr_\mathit{dst},
+                    \datalangExpr_\mathit{idx},
+                    \\
+                    \datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
+                  \end{array}}
+                \right)
+                \tmcDps{\datalangRenaming}
+                \begin{array}{l}
+                    \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangExpr_{t1}}{\datalangHole}}{\\
+                    \datalangSeq{\datalangStore{\datalangExpr_\mathit{dst}}{\datalangExpr_\mathit{idx}}{\datalangVar}}{\datalangExpr_{t2}}}
+                \end{array}
+            }
+        \and
+        \inferrule*[lab=DPSBlock21]
+            {
+                (\datalangVar, \datalangTwo, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}
+            \and\datalangExpr_{t1}
                 (\datalangVar, \datalangTwo, \datalangExpr_{s2}) \tmcDps{\datalangRenaming} \datalangExpr_{t2}
             }{
                 \left(
@@ -64,16 +109,17 @@
                 \right)
                 \tmcDps{\datalangRenaming}
                 \begin{array}{l}
-                    \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangExpr_{t1}}{\datalangHole}}{\\
-                    \datalangSeq{\datalangStore{\datalangExpr_\mathit{dst}}{\datalangExpr_\mathit{idx}}{\datalangVar}}{\datalangExpr_{t2}}}
+                    \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangHole}{\datalangHole}}{\\
+                    \datalangSeq{\datalangStore{\datalangExpr_\mathit{dst}}{\datalangExpr_\mathit{idx}}{\datalangVar}}{\\
+                    \datalangSeq{\datalangExpr_{t2}}{\datalangExpr_{t1}}}}
                 \end{array}
             }
         \;
-        \inferrule*[lab=DPSBlock2]
+        \inferrule*[lab=DPSBlock12]
             {
-                (\datalangVar, \datalangOne, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}
-            \and
-                \datalangExpr_{s2} \tmcDir{\datalangRenaming} \datalangExpr_{t2}
+                (\datalangVar, \datalangTwo, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}
+            \and\datalangExpr_{t1}
+                (\datalangVar, \datalangTwo, \datalangExpr_{s2}) \tmcDps{\datalangRenaming} \datalangExpr_{t2}
             }{
                 \left(
                     \datalangExpr_\mathit{dst},
@@ -82,8 +128,9 @@
                 \right)
                 \tmcDps{\datalangRenaming}
                 \begin{array}{l}
-                    \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangHole}{\datalangExpr_{t2}}}{\\
-                    \datalangSeq{\datalangStore{\datalangExpr_\mathit{dst}}{\datalangExpr_\mathit{idx}}{\datalangVar}}{\datalangExpr_{t1}}}
+                    \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangHole}{\datalangHole}}{\\
+                    \datalangSeq{\datalangStore{\datalangExpr_\mathit{dst}}{\datalangExpr_\mathit{idx}}{\datalangVar}}{\\
+                    \datalangSeq{\datalangExpr_{t1}}{\datalangExpr_{t2}}}}
                 \end{array}
             }
         \\
