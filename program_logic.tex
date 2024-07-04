@@ -48,7 +48,7 @@ Together, these two rules enforce the bijection invariant: the contents of corre
 
 \paragraph{Abstract protocols}
 In \cref{sec:simulation}, we will see that our relation is defined coinductively and the first step of the proof essentially amounts to coinduction.
-To internalize the coinduction hypothesis into the program logic, we introduce an additional parameter $\iProt$ that we interpret as a \emph{protocol}~\cite{DBLP:journals/pacmpl/VilhenaP21}.
+To internalize the coinduction hypothesis into the program logic, we introduce an additional parameter $\iProt$ that we interpret as a \emph{protocol}~\citep*{de-vilhena-2021}.
 
 The function of the protocol is reflected in the $\RefTirName{RelProtocol}$ rule.
 It gives some authorized pairs of expressions $\datalangExpr_s$ and $\datalangExpr_t$ the ability to evolve in an abstract way to arbitrary expressions $\datalangExpr_s'$ and $\datalangExpr_t'$ related by some postcondition $\iPredTwo$.

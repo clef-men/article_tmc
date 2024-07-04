@@ -61,7 +61,7 @@ To see why, consider the \datalang{map} function (\cref{fig:map}) and its DPS tr
 Notice that \datalang{dst'} corresponds with the returned source block \datalang{y :: @map (fn, xs)} but is allocated before the recursive call.
 In other words, the transformed program \emph{allocates ahead} of the source program.
 
-To deal with this, we introduce a \emph{heap bijection} as in \Simuliris~\cite{DBLP:journals/pacmpl/GaherSSJDKKD22}.
+To deal with this, we introduce a \emph{heap bijection} as in \Simuliris~\citep*{simuliris-2022}.
 Corresponding source and target locations --- pointing to block fields in our semantics --- are logically and permanently registered in this bijection. 
 We can then refer to a registered pair of locations though the assertion $\datalangLoc_s \iInBij \datalangLoc_t$.
 This mechanism is formalized by the \RefTirName{BijInsert} rule:
