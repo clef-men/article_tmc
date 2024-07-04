@@ -178,7 +178,7 @@
       syntactic reasoning rules an "axiomatic" step that non-deterministically
       reduces a function call following a (P,Q) pre/post
     + A Separation Logic for Effect Handlers
-      we inspired by Paulo: Χ allows do v { Φ }
+      we were inspired by Paulo: Χ allows do v { Φ }
         + specification of an effect
         + protocol Χ allows the program to perform the effect v and garantees that every permitted reply satisfies postcondition Φ
         + "we would like programmers to think about performing an effect essentially in the same way as they think about calling a function"
