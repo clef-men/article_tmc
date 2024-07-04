@@ -39,7 +39,7 @@ decomposition where all recursive calls are in TMC position. Notable
 functions include \ocaml{map}, as already discussed, but also for
 example:
 
-\begin{lstlisting}
+\begin{Ocaml}
 let[@tail_mod_cons] rec filter p = function
 | [] -> []
 | x :: xs -> if p x then x :: filter p xs else filter p xs
@@ -51,7 +51,7 @@ let[@tail_mod_cons] rec merge cmp l1 l2 =
       if cmp h1 h2 <= 0
       then h1 :: merge cmp t1 l2
       else h2 :: merge cmp l1 t2
-\end{lstlisting}
+\end{Ocaml}
 
 TMC is not useful only for lists or other ``linear'' data types, with
 at most one recursive occurrence of the datatype in each
@@ -59,11 +59,11 @@ constructor.
 
 \paragraph{A non-example} Consider a \ocaml{map} function on binary
 trees:
-\begin{lstlisting}
+\begin{Ocaml}
 let[@tail_mod_cons] rec map f = function
 | Leaf v -> Leaf (f v)
 | Node(t1, t2) -> Node(map f t1, (map[@tailcall]) f t2)
-\end{lstlisting}
+\end{Ocaml}
 In this function, there are two recursive calls, but only one of them
 can be optimized; we used the \ocaml{[@tailcall]} attribute to direct
 our implementation to optimize the call to the right child, as we will
@@ -85,7 +85,7 @@ is likely to contain a deep subtree. The OCaml compiler itself
 contains a number of them; consider for example the following function
 from the \ocaml{Cmm} module, one of its lower-level program
 representations:
-\begin{lstlisting}
+\begin{Ocaml}
 let[@tail_mod_cons] rec map_tail f = function
   | Clet(id, exp, body) ->
       Clet(id, exp, map_tail f body)
@@ -100,7 +100,7 @@ let[@tail_mod_cons] rec map_tail f = function
       cmm
   | Cconst_int _ | Cvar _ | Ctuple _ | Cop _ as c ->
       f c
-\end{lstlisting}
+\end{Ocaml}
 
 This function is traversing the ``tail'' context of an arbitrary
 program term -- a meta-example! The \ocaml{Cifthenelse} node acts as
@@ -117,7 +117,7 @@ overflow in this case.
 
 Another example would be
 \href{https://github.com/ocaml/ocaml/pull/9636}{\#9636}, a patch to
-the OCaml compiler proposed in 2020 by Mark Shinwell, to get
+the OCaml compiler proposed in June 2020 by Mark Shinwell, to get
 a partially-tail-recursive implementation of the ``Common
 Subexpression Elimination'' (CSE) pass through a manual
 contiation-passing-style transform. Xavier Leroy remarked that the
