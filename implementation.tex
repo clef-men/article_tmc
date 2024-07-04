@@ -1,9 +1,131 @@
 \section{\OCaml Implementation}
 \label{sec:implementation}
 
-résolution de l'ambiguïté de la transformation (règles et annotations)
-
 \subsection{Implementation history}
+
+We first proposed adding TMC as an optional program transformation to
+the OCaml compiler in
+May 2015.\footnote{\nonanon{URL}{\url{https://github.com/ocaml/ocaml/pull/181}}}
+The proposal was received favorably, but it never received an in-depth
+review and a detailed performance evaluation and remained unmerged for
+years.
+
+We re-activated the discussion in July 2020 with a modified
+implementation, and a careful performance
+evaluation\footnote{\nonanon{URL}{\url{https://github.com/ocaml/ocaml/pull/9760}}}. The
+new implementation put a larger focus on producing readable code,
+giving more control to the user through annotations. It also removed
+an optimization of the previous implementation that would specialize
+the DPS version, generating a distinct definition for each block
+offset. The new design was carefully reviewed by Basile Clément and
+Pierre Chambart, and was finally merged in November 2021, available to
+users with OCaml 4.14, released in March 2022.
+
+The TMC transformation is that it adds extra parameters to functions
+(two parameters, the block and the offset). At the time the OCaml
+compiler had a limitation on some supported architectures, where it
+would not optimze tail calls above a certain number of arguments
+(enough that they cannot be all passed by registers), breaking the
+tail-call promises of TMC on those systems. Xavier Leroy implemented
+a change to the OCaml calling convention for those architectures in
+May 2021,\footnote{\url{https://github.com/ocaml/ocaml/pull/10595}},
+which was motivated by the TMC work.
+
+\subsection{Examples}
+
+Many functions that consume and produce lists are
+tail-recursive-modulo-cons, in the sense that all they have a TMC
+decomposition where all recursive calls are in TMC position. Notable
+functions include \ocaml{map}, as already discussed, but also for
+example:
+
+\begin{lstlisting}
+let[@tail_mod_cons] rec filter p = function
+| [] -> []
+| x :: xs -> if p x then x :: filter p xs else filter p xs
+
+let[@tail_mod_cons] rec merge cmp l1 l2 =
+  match l1, l2 with
+  | [], l | l, [] -> l
+  | h1 :: t1, h2 :: t2 ->
+      if cmp h1 h2 <= 0
+      then h1 :: merge cmp t1 l2
+      else h2 :: merge cmp l1 t2
+\end{lstlisting}
+
+TMC is not useful only for lists or other ``linear'' data types, with
+at most one recursive occurrence of the datatype in each
+constructor.
+
+\paragraph{A non-example} Consider a \ocaml{map} function on binary
+trees:
+\begin{lstlisting}
+let[@tail_mod_cons] rec map f = function
+| Leaf v -> Leaf (f v)
+| Node(t1, t2) -> Node(map f t1, (map[@tailcall]) f t2)
+\end{lstlisting}
+In this function, there are two recursive calls, but only one of them
+can be optimized; we used the \ocaml{[@tailcall]} attribute to direct
+our implementation to optimize the call to the right child, as we will
+discuss later. This is a \emph{bad} example of TMC usage in most
+cases, given that
+\begin{itemize}
+\item If the tree is arbitrary, there is no reason that it would be
+  right-leaning rather than left-leaning. Making only the right-child
+  calls tail-calls does not protect us from stack overflows.
+\item If the tree is known to be balanced, then in practice the depth
+  is probably very small in both directions, so the TMC transformation
+  is not necessary to have a well-behaved function.
+\end{itemize}
+
+\paragraph{Interesting non-linear examples} There \emph{are} interesting
+examples of TMC-transformation on functions operating on tree-like
+data structures, when there are natural assumptions about which child
+is likely to contain a deep subtree. The OCaml compiler itself
+contains a number of them; consider for example the following function
+from the \ocaml{Cmm} module, one of its lower-level program
+representations:
+\begin{lstlisting}
+let[@tail_mod_cons] rec map_tail f = function
+  | Clet(id, exp, body) ->
+      Clet(id, exp, map_tail f body)
+  | Cifthenelse(cond, ifso, ifnot) ->
+      Cifthenelse(cond, map_tail f ifso, (map_tail[@tailcall]) f ifnot)
+  | Csequence(e1, e2) ->
+      Csequence(e1, map_tail f e2)
+  | Cswitch(e, tbl, el) ->
+      Cswitch(e, tbl, Array.map (map_tail f) el)
+  [...]
+  | Cexit _ | Cop (Craise _, _, _) as cmm ->
+      cmm
+  | Cconst_int _ | Cvar _ | Ctuple _ | Cop _ as c ->
+      f c
+\end{lstlisting}
+
+This function is traversing the ``tail'' context of an arbitrary
+program term -- a meta-example! The \ocaml{Cifthenelse} node acts as
+our binary-node constructor, we do not know which side is likely to be
+larger, so TMC is not so interesting. The recursive calls for
+\ocaml{Cswitch} are not in TMC position. But on the other hand the
+\ocaml{Clet}, \ocaml{Csequence} cases are very beneficial to have in
+TMC: while they have several recursive subtrees, they are in practice
+only deeply nested in the direction that is turned into a tailcall by
+the transformation. The OCaml compiler does sometimes encounter
+machine-generated programs with a unusually long sequence of either
+constructions, and the TMC transformation may very well avoid a stack
+overflow in this case.
+
+Another example would be
+\href{https://github.com/ocaml/ocaml/pull/9636}{\#9636}, a patch to
+the OCaml compiler proposed in 2020 by Mark Shinwell, to get
+a partially-tail-recursive implementation of the ``Common
+Subexpression Elimination'' (CSE) pass through a manual
+contiation-passing-style transform. Xavier Leroy remarked that the
+existing implementation in fact fits the TMC fragment. Not all
+recursive calls become tail-calls (this would require a more powerful
+transformation or a longer, less readable patch), but the behavior of
+TMC on the unchanged code matches the tail-call-ness proposed in the
+human-written patch.
 
 \subsection{Design choices}
 
