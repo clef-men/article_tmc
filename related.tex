@@ -22,6 +22,20 @@ constructor applications. However, this expressivity comes at
 a performance cost, and there is no static checking that the data is
 fully initialized at the end of computation.
 
+Independently of our work, Koka has implemented TMC starting in August
+2020\footnote{https://github.com/koka-lang/koka/commit/f6a343d31f486ea5edd44798dca7bca52d7b450c}~\citep*{tmc-koka-2023}.
+An interesting problem they had to solve, which does not occur in OCaml,
+is how to support TMC in presence of non-linear contibuations. Our
+correctness argument for TMC relies on the fact that the destination
+is uniquely owned, and written exactly once; this property may not
+hold in programs that use multishot continuations (\ocaml|call/cc|,
+\ocaml|let/cc|, \ocaml|delim/cc|). The standard Koka runtime uses its
+reference-counting machinery to determine that a destination is not
+uniquely-owned anymore, and stores extra metadata in
+partially-initialized blocks to be able to copy them on-demand in this
+case. Its Javascript backend instead reverts to a CPS transformation
+when non-linear control flow is detected.
+
 \subsection{Reasoning about destination-passing-style}
 
 In general, if we think of non-tail recursive functions as having an
@@ -36,7 +50,7 @@ directly. (Sometimes it suffices to keep around an abstraction of the
 context; this is a key idea in John Clements' work on stack-based
 security in presence of tail calls.)
 
-\cite*{minamide-98} gives a ``functional'' interface to
+\citet*{minamide-98} gives a ``functional'' interface to
 destination-passing-style program, by presenting a partial
 data-constructor composition \ocaml{Foo(x,Bar(_?))} as a use-once,
 linear-typed function \ocaml{linfun h -> Foo(x,Bar(h))}. Those special
@@ -46,7 +60,7 @@ a linear type discline. This is a beautiful way to represent
 destination-passing style, orthogonal to our work: users of Minamide's
 system would still have to write the transformed version by hand, and
 we could implement a transformation into destination-passing style
-expressed in his system. \citet*{mezzo-2016}
+expressed in his system. Mezzo~\citep*{mezzo-2016}
 supports a more general-purpose type system based on separation logic,
 which can directly express uniquely-owned partially-initialized data,
 and its implicit transformation into immutable, duplicable
@@ -55,7 +69,21 @@ results. (See the
 module of the Mezzo standard library, and in particular \ocaml{cell},
 \ocaml{freeze} and \ocaml{append} in destination-passing-style).
 
-\Xgabriel{TODO: Leijen and Lorenzen}
+\citet*{tmc-koka-2023} provide a (pen-and-paper) correctness argument
+for TMC, or in fact a family of approaches based on optimized
+representations of classes of non-tail contexts, in the style of
+program calculation. The clarity of their exposition is
+remarkable. The implementation they prove correct, which corresponds
+to the approach described in \citet*{minamide-98}, results in
+a slightly different code generation where recursive calls to
+\ocaml{map_dps} are passed \emph{both} the beginning of the list and
+the destination to be written at its end. The beginning of the list
+remains constant over all recursive calls, and it is known to the
+caller, so our DPS version does not propagate it. We were inspired by
+the generality of their presentation and verified that our proof
+technique can also be applied to some over TMC variants, by extending
+our mechanized development with a correctness proof for an
+accumulator-passing-style transformation.
 
 \subsection{Relational reasoning in separation logic}
 
