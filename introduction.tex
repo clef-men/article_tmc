@@ -219,13 +219,16 @@ For any input source program, we establish a \emph{behavioral refinement} betwee
 
 Our proof technique is to establish a relational program logic for our small untyped calculus, to show the correctness of the TMC transformation using this program logic, and to get the behavioral refinement by proving adequacy of our program logic. To do this we rely on \Simuliris~\citep*{simuliris-2022}, a framework for simulations in separation logic built on top of the \Iris base logic; the use of separation logic nicely captures certain aspects of the proof argument, in particular the fact that the location passed to the destination-passing-style version is uniquely owned by the transformed program.
 
-We found that the specific definition of simulations in \Simuliris is not expressive enough to reason about program transformations that introduce new function calling conventions.
+To our knowledge, previous works on Iris-based relational separation program logics have verified \emph{examples} of interesting optimizations and program transformations, by formally proving relations between pairs of programs. Our work may be the first proof of correctness program \emph{transformation} (as a function or relation) using an Iris-based relational separation logic, establishing correctness for all input programs.
+
+At this level of generality, we found that the specific definition of simulations in \Simuliris is not expressive enough to reason about program transformations that introduce new function calling conventions.
 %
-We had to generalize the \Simuliris handling of function calls by parameterizing the simulation relation over an abstract protocol inspired by \citet*{de-vilhena-2021}.
+We generalize the \Simuliris handling of function calls by parameterizing the simulation relation over an \emph{abstract protocol}, inspired by \citet*{de-vilhena-2021}.
 %
-This sub-contribution of our work is independent from the TMC transformation and our small calculus.
+This sub-contribution of our work is independent from the TMC transformation and our small calculus,
+and we tried to express it in general terms, beyond the specific needs of TMC.
 %
-It could be reused in future work on verifying compiler transformations.
+In particular, we believe that Iris-based relational separation logics could be a powerful yet pleasant proof technique for compiler verification.
 
 The core of the soundness proof is the specification of the two variants of each TMC-transformed function --- direct style and destination-passing style.
 %
@@ -273,11 +276,9 @@ For instance, to give a taste of the formalism, the specification of the variant
 To sum up, our main contributions are:
 \begin{enumerate}
     \item an implementation of the TMC transformation in the \OCaml compiler, with a discussion of the user interface, a performance evaluation, and a survey of its early usage;
-    \item a mechanized proof of soundness for a simplified transformation on a small calculus, using a relational separation program logic;
-    \item a generalization of the \Simuliris handling of function calls to reason about different calling conventions.
+    \item a mechanized proof of soundness for an idealized TMC transformation on a small calculus, using a relational separation program logic;
+    \item a generalization of the \Simuliris handling of function calls with abstract \emph{protocols} to reason about different calling conventions.
 \end{enumerate}
-
-To our knowledge, previous works on relational separation program logics~[TODO] have demonstrated its expressiveness of this approach by formalizing the relation between specific pairs of programs; they capture \emph{examples} of interesting optimizations and transformations, but do not demonstrate that a given program \emph{transformation} is valid for all inputs. Our work may be the first proof of correctness of a program transformation, an idealized presentation of a compiler pass, using this approach, providing further evidence that it may scale to compiler verification.
 
 %%% Local Variables:
 %%% mode: latex
