@@ -1,0 +1,128 @@
+\section{Extended republication}
+\label{app:extended-republication}
+
+A preliminary, work-in-progress version of this work was published at
+a national conference -- all talks given in a non-English
+language. This makes the present submission to a PACMPL-published
+conference a partial republication.
+
+This is unusual, so we decided to write this appendix section to
+explain this choice. Our explanation is carefully worded to maintain
+anonymity. (Note: there is overlap between the authors of both
+presentations, but they are not equal sets, so guessing which previous
+version we are talking about would be only partially de-anonimizing.)
+
+\subsection{The letter of the law.}
+
+We believe that partial republication fully satisfies the
+\href{http://www.sigplan.org/Resources/Policies/Republication/}{SIGPLAN
+  Republication Policy}, which we quote below in full
+(with our emphasis):
+
+\begin{quote}
+  \textbf{Prior Publication of Closely Related Work.}  If a closely
+  related paper was previously accepted at a conference or a workshop
+  with proceedings of any kind, the original paper must be cited, its
+  relationship to the current paper explained, and the program chair
+  must be explicitly informed. The second paper will be judged on the
+  additional value of its publication in the new venue. Such value
+  might come from the \textbf{wider audience for the new venue} or
+  from subjecting the work to a \textbf{higher standard of
+    review}. Program committees should consider factors such as the
+  following in deciding whether to publish the second paper:
+    \begin{itemize}
+    \item The call for papers for the first venue clearly states that publication in the venue is not intended to preclude later publication.
+    \item The original proceedings are not easily accessible to the SIGPLAN community.
+    \item The first venue \textbf{targeted a geographically limited audience}.
+    \end{itemize}
+\end{quote}
+
+The present submission will be subject to higher standards
+(the acceptance rate of the national venue is in the
+80-100\% range). If accepted, it would reach a wider audience. The
+past submission targeted a geographically limited audience. (If we
+remember correctly, everyone attending the conference that year was
+working in the same country it was located in.)
+
+\subsection{The spirit of the law.}
+
+We believe that a partial republication mirrors the established
+practice of publishing a first version of a paper in conference
+proceedings, and then an extended version in a journal. Here the
+situation is different but similar, we published a work-in-progress
+presentation of our work in a minor/national conference, and we are
+submitting a full presentation of the same work
+(and additional contributions) to a major/international
+conference-journal hybrid.
+
+Common/accepted conference-to-journal republication typically expect
+``enhanced versions'' with, according to the Journal of Functional
+Programming guidelines for example, ``should contain additional
+discussion, examples, or proofs''. We believe that our new
+presentation of our work is well above this bar, as it includes major
+new scientific contributions.
+
+\subsection{Comparing the two versions.}
+
+The work-in-progress paper was written in October 2020, after we
+implemented TMC for OCaml, but before it was integrated into the OCaml
+compiler. It focuses on the implementation in OCaml, and does not
+contain any correctness argument for the program transformation --
+a major missing piece for a high-quality publication in an
+international conference.
+
+The majority of the presentation in the present paper is new. The
+following parts are reused from the previous paper --
+integrated by the same author who originally wrote them:
+\begin{itemize}
+\item Two thirds of the introduction (the first two pages).
+\item Section 3.2 on examples of TRMC functions in OCaml (1.5 pages).
+\item \Xgabriel{TODO complete}
+\end{itemize}
+We thus estimate the reused content at about 3.5 pages \Xgabriel{TODO
+  update}, the rest of the content was written from scratch for the
+present submission.
+
+The major scientific difference between the two papers is the
+correctness proof in Iris, which is a significant contribution of its
+own. To our knowledge, it is the first mechanized proof of correctness
+for the tail-modulo-constructor program transformation, and the first
+verification of a program transformation (for all inputs) in an
+Iris-based relational separation logic. This constitutes the majority
+of the content of the current presentation.
+
+More minor differences include an analysis of the adoption of TMC in
+OCaml libraries post-upstreaming, and a comparison with the Koka
+work~\citep*{tmc-koka-2023} which was developed simultaneously with
+ours.\Xgabriel{TODO LaTeX references}.
+
+\subsection{Motivating our choice.}
+
+An alternative that we of course considered would be to present only
+the correctness proof for TMC in the present paper, without reusing
+any contributions and presentation from the work-in-progress,
+implementation-focused paper.
+
+This approach would however result in a ``small'' publication about
+the (non-trivial) implementation work in the OCaml compiler, and
+a more prestigious international submission for the correctness proof
+alone. It would deprive from symbolic/academic reward the contributors
+who lead the implementation and upstreaming work, without which none
+of the present work would exist in the first place. (This approach
+would also weaken national conferences, by making researchers think
+twice about submitting implementation-focused work in progress.)
+
+This is in fact a common dynamic in programming-language research that
+combines delicate implementation work with delicate meta-theory
+work. The latter is more easily identified as challenging research,
+easier to evaluate for quality and novelty, and tend to gather more
+scientific credit. The implementation work also typically comes
+before, and it is easy to do the verification work separately, with
+a different (sometimes entirely disjoint) group of contributors. We
+are trying to avoid this dynamic by grouping the two sorts of
+contributions together in a republication.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
