@@ -129,6 +129,84 @@ human-written patch.
 
 \subsection{Design choices}
 
+\subsubsection{Resolving non-determinism}
+
+The main question faced by an implementation is how to resolve the
+inherent non-determinism. We identified fairly different kinds of
+non-determinism.
+
+\paragraph{Choices with an obviously better alternative.} Some choices
+have an obviously better alternative, because they allow to strictly
+improve more programs. For example, some implementations of TMC limit
+themselves to calls that are immediately inside a constructor: they
+would optimize the recursive call to \ocaml|f| in \ocaml|Cons(x, f y)|
+but not, for example, in \ocaml|Cons(x1, Cons(x2, f y))|, or in
+\ocaml|Cons (x, if p then f y else z)|.
+
+Our implementation optimizes calls to functions under an arbitrary
+nesting of tail-recursive contexts and constructor contexts, which is
+the most general approach allowed by our relation. This comes at the
+cost of some implementation complexity, but is otherwise an easy
+choice to make when deciding on a specification.
+
+\paragraph{Choices with a subtly better alternative.} In some cases it
+is possible to put a bit more work in the choice heuristics, to
+generate slightly better code, in terms of performance or
+readability. For example, some natural way to simplify the
+implementation would result in more subterms being transformed in
+destination-passing-style, only to finally use the
+\RefTirName{DPSBase} rule without any DPS function call. The generated
+code is slightly less pleasant to read, and in our experience it can
+be noticeably slower.
+
+Code readability is important in our context of an on-demand program
+transformation used by performance experts: those experts will often
+read the intermediate representations produced by the compiler to
+check that their performance assumptions hold.
+
+\paragraph{Incomparable choices: force the user to decide} The
+remaining choices are between incomparable alternatives, that could
+each be better than the other depending on the specific program or
+programmer intent. Consider again our binary tree example,
+\ocaml|Node(map f left, map f right)|: we could make either the first
+or the second argument a tail-call.
+
+Our policy in such cases is to let the user decide, by providing
+control over the transformation choices using \ocaml{[@tailcall]}
+program annotations, and to force the user to decide by raising an
+error in case of ambiguity:
+\begin{Ocaml}
+  | Cifthenelse(cond, ifso, ifnot) ->
+      Cifthenelse(cond, map_tail f ifso, map_tail f ifnot)
+      /[^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^]/
+/[Error]/: "[@tail_mod_cons]": this constructor application may be TMC-transformed
+       in several different ways. Please disambiguate by adding an explicit
+       "[@tailcall]" attribute to the call that should be made tail-recursive,
+       or a "[@tailcall false]" attribute on calls that should not be
+       transformed.
+\end{Ocaml}
+
+This approach would be incompatible with a view of the TMC
+transformation as an implicit optimization, applied whenever
+possible -- in that case one would rather have the compiler make
+arbitrary choices rather than fail. We rather view TMC as a tool for
+expert users to better reason about program performance. It should be
+predictable and flexible (let the user express
+their intent). Failing on the lack of annotations is an acceptable way
+to drive user interaction.
+
+\subsubsection{First-order implementation} A notable limitation of the
+OCaml implementation is that it is first-order and non-modular in
+nature: only direct calls to known functions can be converted into DPS
+style, and the availability of a DPS variant is not exposed through
+module abstractions.
+
+It would be possible to allow DPS calls through external modules or
+higher-order function parameters, by annotating interfaces and
+function arguments with a \ocaml{[@tail_mod_cons]} annotation, and
+elaborating this into a pair of function, the direct-style and the DPS
+version.
+
 \subsection{Implementation}
 
 \subsection{Evaluation: benchmarks}
