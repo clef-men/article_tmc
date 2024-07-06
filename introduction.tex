@@ -215,20 +215,20 @@ Various functions in the standard library and third-party codebases have been re
 
 The second main contribution of this work is a mechanized proof of correctness for the core of this transformation on a small untyped calculus.
 %
-For any input source program, we establish a \emph{behavioral refinement} between the source program and the corresponding transformed program: any behavior of the transformed program, be it converging, diverging or stuck, is a behavior of the source program.
+For any input source program, we establish a termination-preserving \emph{behavioral refinement} between the source program and the corresponding transformed program: any behavior of the transformed program, be it converging, diverging or stuck, is a behavior of the source program.
 
-Our proof technique is to establish a relational program logic for our small untyped calculus, to show the correctness of the TMC transformation using this program logic, and to get the behavioral refinement by proving adequacy of our program logic. To do this we rely on \Simuliris~\citep*{simuliris-2022}, a framework for simulations in separation logic built on top of the \Iris base logic; the use of separation logic nicely captures certain aspects of the proof argument, in particular the fact that the location passed to the destination-passing-style version is uniquely owned by the transformed program.
+Our proof technique is to define a relational program logic for our small untyped calculus, to show the correctness of the TMC transformation using this program logic, and to get the behavioral refinement by proving adequacy of our program logic. We build on top of \Simuliris~\citep*{simuliris-2022}, a framework for simulations in separation logic over the \Iris base logic. The use of separation logic nicely captures certain aspects of the proof argument, in particular the fact that the the destination-passing-style function uniquely owns the destination location it receives.
 
-To our knowledge, previous works on Iris-based relational separation program logics have verified \emph{examples} of interesting optimizations and program transformations, by formally proving relations between pairs of programs. Our work may be the first proof of correctness program \emph{transformation} (as a function or relation) using an Iris-based relational separation logic, establishing correctness for all input programs.
+To our knowledge, previous works on \Iris-based relational separation program logics have verified \emph{examples} of interesting optimizations and program transformations, by formally proving relations between pairs of concrete programs. Our work may be the first proof of correctness of a \emph{program transformation} (as a function or relation) using an \Iris-based relational separation logic, establishing correctness for all input programs.
 
-At this level of generality, we found that the specific definition of simulations in \Simuliris is not expressive enough to reason about program transformations that introduce new function calling conventions.
+At this level of generality, we found that the \Simuliris simulation is not expressive enough to reason about transformations that introduce new function calling conventions.
 %
 We generalize the \Simuliris handling of function calls by parameterizing the simulation relation over an \emph{abstract protocol}, inspired by \citet*{de-vilhena-2021}.
 %
 This sub-contribution of our work is independent from the TMC transformation and our small calculus,
 and we tried to express it in general terms, beyond the specific needs of TMC.
 %
-In particular, we believe that Iris-based relational separation logics could be a powerful yet pleasant proof technique for compiler verification.
+In particular, we believe that \Iris-based relational separation logics could be a powerful yet pleasant proof technique for compiler verification.
 
 The core of the soundness proof is the specification of the two variants of each TMC-transformed function --- direct style and destination-passing style.
 %
@@ -244,11 +244,11 @@ For instance, to give a taste of the formalism, the specification of the variant
         }{
           & \datalangCall
               {\datalangFnptr{\ocamlText{map}}}
-              {\datalangPair{f}{\datalangVal_s}}
+              {\datalangPair{\datalangFnptr{\datalangFn}}{\datalangVal_s}}
         }{
             \datalangCall
               {\datalangFnptr{\ocamlText{map}}}
-              {\datalangPair{f}{\datalangVal_t}}
+              {\datalangPair{\datalangFnptr{\datalangFn}}{\datalangVal_t}}
         }
     \\
         \iSimvHoare{
@@ -262,13 +262,13 @@ For instance, to give a taste of the formalism, the specification of the variant
         }{
           & \datalangCall
               {\datalangFnptr{\ocamlText{map}}}
-              {\datalangPair{f}{\datalangVal_s}}
+              {\datalangPair{\datalangFnptr{\datalangFn}}{\datalangVal_s}}
         }{
             \datalangCall
               {\datalangFnptr{\ocamlText{map_dps}}}
               {\datalangTriple
                 {\datalangPair{\datalangLoc}{\datalangIdx}}
-                {f}
+                {\datalangFnptr{\datalangFn}}
                 {\datalangVal_t}}
         }
 \end{align*}
