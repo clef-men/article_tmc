@@ -207,7 +207,41 @@ function arguments with a \ocaml{[@tail_mod_cons]} annotation, and
 elaborating them into a pair of functions, the direct-style and the DPS
 version.
 
-\subsection{Constructor compression}
+\subsection{Constructor compression} The translation as we described
+it formally in \cref{subsec:transformation} generates unpleasant
+(and slower) code when many constructors are nested before the
+recursive call. For example, consider this strange function:
+element in a list:
+\begin{Ocaml}
+let rec dup = function [] -> [] | x :: xs -> x :: x :: dup xs
+\end{Ocaml}
+The DPS version, translated naively, would be as follows:
+\begin{Ocaml}
+let rec dup_dps dst ofs = function
+| [] -> dst.(ofs) <- []
+| x :: xs ->
+  let dst1 = x :: ? in
+  dst.(ofs) <- dst1;
+  let dst2 = x :: ? in
+  dst1.(1) <- dst2;
+  dup_dps dst2 1 xs
+\end{Ocaml}
+Such nested constructors are common in compiler codebases, for
+example a desugaring pass that transforms a single term-former into
+a composition of several simpler term-formers, and applies recursively to
+its subterms.
+
+The TMC transformation implemented in OCaml performs ``constructor compression'', an optimization of the generated code that avoids creating intermediary destinations for nested constructors, generating instead the following code directly:
+\begin{Ocaml}
+let rec dup_dps dst ofs = function
+| [] -> dst.(ofs) <- []
+| x :: xs ->
+  let dst2 = x :: ? in
+  dst1.(1) <- x :: dst2;
+  dup_dps dst2 1 xs
+\end{Ocaml}
+
+This is implemented by passing as an extra transformation parameter a stack of ``delayed'' constructor applications, that are in context and must be applied to the result of the subterm. When we encounter the final recursive call, we ``reify'' this stack: the last/innermost constructor in the stack becomes the new destination (\ocaml|dst1| in the example above), and the rest of the stack is applied to the new destination when we write to the old destination. Note that \ocaml|if p then e1 else e2| has two subterms which are transformed in DPS style, and naively passing the stack of delayed constructors to both subterms would duplicate code; instead of also reify the current stack when encountering such constructs.
 
 \subsection{Implementation}
 
