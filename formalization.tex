@@ -1,4 +1,5 @@
 \section{TMC on an idealized language}
+\label{sec:formalization}
 
 In this section, we formalize the ``tail modulo cons'' (TMC) transformation in an idealized language, \DataLang, that is expressive enough to account for the main aspects of TMC but does not support all features of \OCaml.
 
@@ -38,6 +39,7 @@ Our definitions respect $\alpha$-equivalence on term variables $\datalangVar, \d
 Function names $\datalangFn$ are not $\alpha$-renamed, as the transformation relates names in the source and target of the transformation.
 
 \subsection{Transformation}
+\label{subsec:transformation}
 
 We now define the TMC transformation as a relation $\datalangProg_s \tmc \datalangProg_t$ between programs and their transformation. The relation is total, in the sense that any \DataLang program $\datalangProg_s$ can be related to at least one transformed program $\datalangProg_t$, but it not deterministic, for each input program it captures a (finite) set of admissible transformations, which we all prove valid. This non-determinism captures several choices that have to be done by the user through a user interface to control the transformation, or by the compiler implementation, influencing performance and evaluation order of the result. In this section, we do not describe how these choices are resolved -- there is a large design space. We present the choices we made for \OCaml compiler in \cref{sec:implementation}.
 

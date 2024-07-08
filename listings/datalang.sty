@@ -58,6 +58,7 @@
         {:}{{\textcolor{datalangKeyword3}{:}}}1
         {,}{{\textcolor{datalangKeyword3}{,}}}1
         {<-}{{$\textcolor{datalangKeyword3}{\ \leftarrow\ }$}}1
+        {_?}{{$\square$}}1
         {?}{{$\datalangHole$}}1,
 %
     escapeinside={(*}{*)},
@@ -136,6 +137,29 @@
 }
 \newcommand{\datalangRenaming}{%
     \xi%
+}
+\makeatother
+
+% ---------------------------------------------------------
+
+\makeatletter
+\newcommand{\datalangTailFrame}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil T \else \nterm{TailCtxFrame} \fi%
+}
+\newcommand{\datalangConsFrame}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil K \else \nterm{ConsCtxFrame} \fi%
+}
+\newcommand{\datalangTMCFrame}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil U \else \nterm{TMCFrame} \fi%
+}
+\newcommand{\datalangConsCtx}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil K^{*} \else \nterm{ConsCtx} \fi%
+}
+\newcommand{\datalangTailCtx}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil {T^{*}} \else \nterm{TailCtx} \fi%
+}
+\newcommand{\datalangTMCCtx}[1][\@nil]{%
+    \def\@tmp{#1}\ifx\@tmp\@nnil U^{*} \else \nterm{TMCCtx} \fi%
 }
 \makeatother
 
@@ -239,3 +263,4 @@
 \newcommand{\datalangHole}{%
     \blacksquare%
 }
+\newcommand{\datalangCtxHole}{\square}

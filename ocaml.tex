@@ -127,6 +127,64 @@ transformation or a longer, less readable patch), but the behavior of
 TMC on the unchanged code matches the tail-call-ness proposed in the
 human-written patch.
 
+\subsection{Specification} \label{subsec:specification} An easy way to
+give a partial specification to the TMC transformation is to describe
+which function calls in a \ocaml|[@tail_mod_cons]| program can be made
+tail-recursive by the transformation. Informally, they are the calls
+placed under any composition of either tail-recursive or
+constructor contexts.
+
+We formalize this for \DataLang in \cref{fig:contexts}. A tail frame $\datalangTailFrame$ is a single term-former with holes in tail-position. A constructor frame $\datalangConsFrame$ is a single constructor term-former (we omit deterministic blocks, which do not occur in the source). A tail context $\datalangTailCtx$ is an arbitrary composition of tail-frame, and a TMC context $\datalangTMCCtx$ is an arbitrary composition of tail frames and constructor frames.
+
+If a source function can be decomposed in a TMC context $\datalangTMCCtx$ with source expressions in its holes, some of which are calls to TMC-transformed functions, then our relation admits a DPS transformation where all those function calls are tail-calls, and this transformation is reachable in our OCaml implementation, possibly by adding some annotations.
+
+\begin{figure}[tp]
+    \begin{tabular}{lclcl}
+            $\datalangTailFrame[]$
+            & $\ni$ &
+            $\datalangTailFrame$
+            & $\Coloneqq$ &
+            $\datalangLet {\datalangVar} {\datalangExpr} \datalangCtxHole \mid \datalangIf \datalangExpr \datalangCtxHole \datalangCtxHole$
+\\
+            $\datalangConsFrame[]$
+            & $\ni$ &
+            $\datalangConsFrame$
+            & $\Coloneqq$ &
+            $\datalangBlock \datalangTag \datalangExpr \datalangCtxHole
+            \mid \datalangBlock \datalangTag \datalangCtxHole \datalangExpr$
+\\
+            $\datalangTMCFrame[]$
+            & $\ni$ &
+            $\datalangTMCFrame$
+            & $\Coloneqq$ &
+            $\datalangTailFrame
+             \mid
+             \datalangConsFrame$
+\\
+            $\datalangTailCtx[]$
+            & $\ni$ &
+            $\datalangTailCtx$
+            & $\Coloneqq$ &
+            $\datalangCtxHole
+             \mid
+             \datalangTailFrame
+             \mid
+             \datalangTailCtx{[\datalangTailCtx]}$
+\\
+            $\datalangTMCCtx[]$
+            & $\ni$ &
+            $\datalangTMCCtx$
+            & $\Coloneqq$ &
+            $\datalangCtxHole
+             \mid
+             \datalangTMCFrame
+             \mid
+             \datalangTMCCtx{[\datalangTMCCtx]}$
+    \end{tabular}
+    \caption{\DataLang contexts for optimizable calls}
+    \label{fig:contexts}
+\end{figure}
+
 \subsection{Design choices}
 
 \subsubsection{Resolving non-determinism}
@@ -135,19 +193,9 @@ The main question faced by an implementation is how to resolve the
 inherent non-determinism. We identified fairly different kinds of
 non-determinism.
 
-\paragraph{Choices with an obviously better alternative.} Some choices
-have an obviously better alternative, because they allow to strictly
-improve more programs. For example, some implementations of TMC limit
-themselves to calls that are immediately inside a constructor: they
-would optimize the recursive call to \ocaml|f| in \ocaml|Cons(x, f y)|
-but not, for example, in \ocaml|Cons(x1, Cons(x2, f y))|, or in
-\ocaml|Cons (x, if p then f y else z)|.
+\paragraph{Choices with an obviously better alternative.} Some choices have an obviously better alternative, because they allow to strictly improve more programs. For example, some implementations of TMC limit themselves to calls that are immediately inside a constructor: they would optimize the recursive call to \ocaml|f| in \ocaml|Cons(x, f y)| but not, for example, in \ocaml|Cons(x1, Cons(x2, f y))|, or in \ocaml|Cons (x, if p then f y else z)|.
 
-Our implementation optimizes calls to functions under an arbitrary
-nesting of tail-recursive contexts and constructor contexts, which is
-the most general approach allowed by our relation. This comes at the
-cost of some implementation complexity, but is otherwise an easy
-choice to make when deciding on a specification.
+In the terms of \cref{subsec:specification}, some implementations only allow to optimize calling contexts of the form $\datalangTailCtx{[\datalangConsFrame]}$ or $\datalangTailCtx{[\datalangConsCtx]}$. We support a more general situation $\datalangTMCCtx = (\datalangTailFrame | \datalangConsFrame)^{*}$, at the cost of some implementation complexity.
 
 \paragraph{Choices with a subtly better alternative.} In some cases it
 is possible to put a bit more work in the choice heuristics, to
@@ -207,11 +255,7 @@ function arguments with a \ocaml{[@tail_mod_cons]} annotation, and
 elaborating them into a pair of functions, the direct-style and the DPS
 version.
 
-\subsection{Constructor compression} The translation as we described
-it formally in \cref{subsec:transformation} generates unpleasant
-(and slower) code when many constructors are nested before the
-recursive call. For example, consider this strange function:
-element in a list:
+\subsection{Constructor compression} \label{subsec:constructor-compression} The translation as we described it formally in \cref{subsec:transformation} generates unpleasant (and slower) code when many constructors are nested before the recursive call. For example, consider this strange function: element in a list:
 \begin{Ocaml}
 let rec dup = function [] -> [] | x :: xs -> x :: x :: dup xs
 \end{Ocaml}
@@ -243,7 +287,7 @@ let rec dup_dps dst ofs = function
 
 This is implemented by passing as an extra transformation parameter a stack of ``delayed'' constructor applications, that are in context and must be applied to the result of the subterm. When we encounter the final recursive call, we ``reify'' this stack: the last/innermost constructor in the stack becomes the new destination (\ocaml|dst1| in the example above), and the rest of the stack is applied to the new destination when we write to the old destination. Note that \ocaml|if p then e1 else e2| has two subterms which are transformed in DPS style, and naively passing the stack of delayed constructors to both subterms would duplicate code; instead of also reify the current stack when encountering such constructs.
 
-\subsection{Implementation}
+\subsection{Implementation} 
 
 \subsection{Evaluation: benchmarks}
 
