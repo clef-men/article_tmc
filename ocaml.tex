@@ -285,9 +285,70 @@ let rec dup_dps dst ofs = function
   dup_dps dst2 1 xs
 \end{Ocaml}
 
-This is implemented by passing as an extra transformation parameter a stack of ``delayed'' constructor applications, that are in context and must be applied to the result of the subterm. When we encounter the final recursive call, we ``reify'' this stack: the last/innermost constructor in the stack becomes the new destination (\ocaml|dst1| in the example above), and the rest of the stack is applied to the new destination when we write to the old destination. Note that \ocaml|if p then e1 else e2| has two subterms which are transformed in DPS style, and naively passing the stack of delayed constructors to both subterms would duplicate code; instead of also reify the current stack when encountering such constructs.
+This is implemented by passing as an extra transformation parameter a stack of ``delayed'' constructor applications, that are in context and must be applied to the result of the subterm. When we encounter the final recursive call, we ``reify'' this stack: the last/innermost constructor in the stack becomes the new destination (\ocaml|dst1| in the example above), and the rest of the stack is applied to the new destination when we write to the old destination. There are two subtleties:
+\begin{enumerate}
+\item \ocaml|if p then e1 else e2| has two subterms which are transformed in DPS style, and naively passing the stack of delayed constructors to both subterms would duplicate code; instead of also reify the current stack when encountering such constructs.
+\item This transformation may permute constructor applications after effectful subterms. If the constructor application contains effectful arguments, those must be \ocaml|let|-bound at their original position to avoid changing the evaluation order.
+\end{enumerate}
 
-\subsection{Implementation} 
+\subsection{Implementation} \label{subsec:implementation} Implementing the TMC transform is not an obvious top-down or bottom-up traversal, because it relies on two informations flowing in opposite directions: the transformation is \emph{possible} for subterms that are in tail-or-constructor position relative to the root of the function (top-down information), and it is \emph{desirable} for subterms whose leaves contain calls to TMC-transformed functions (bottom-up information). A naive approach is to perform a recursive traversal that tracks the top-down context and, on each subterm, recursively traverses the whole subterm to check desirability; this has quadratic time complexity, which is best avoided in production compilers.
+
+Instead of trying to transform each subterm in a single pass, our implementation computes for each subterm a ``choice'', a summary of all the bottom-up information relevant to choose how to transform it -- once we have the top-down information available. This includes (1) the direct-style transform of the subterm, (2) the DPS-style transform of the subterm, (3) metadata tracking whether the transformation is beneficial (if a TMC-function call was found in tail-modulo-cons position), the list of TMC calls it contains (for error diagnostics), and whether some were explicitly requested by the user (for disambiguation). Computing transformed terms is not compositional, computing choices is compositional. We compute a choice for the whole function body (in one pass), from which we can directly extract the direct-style and DPS-style transformations of the function.
+
+The computation of choices can be expressed elegantly. Instead of a monomorphic type \ocaml|Choice.t| that represents a choice of how to transform a term, we use a polymorphic type \ocaml|'a Choice.t| that represents how to transform zero, one or several subterms that occur in the source; for example transforming two subterms in the same context relies on a choice of type \ocaml|(lambda * lambda) Choice.t|, where \ocaml|lambda| is the type of terms in the intermediate representation we are working on. This \ocaml|'a Choice.t| type can be equipped with an applicative functor interface:
+\begin{Ocaml}
+module Choice : sig
+  type 'a t = {
+    dps : 'a Dps.t;
+    direct : unit -> 'a;
+    tmc_calls : tmc_call_information list;
+    benefits_from_dps : bool;
+    explicit_tailcall_request : bool;
+  }
+
+  (* construct a choice from an arbitrary term *)
+  val lambda : lambda -> lambda t
+
+  (* applicative functor interface *)
+  val unit : unit t
+  val map : ('a -> 'b) -> 'a t -> 'b t
+  val pair : 'a t * 'b t -> ('a * 'b) t
+
+  (* extract the direct-style and DPS transforms *)
+  val direct : lambda t -> lambda
+  val dps : lamdba t -> tail:bool -> dst:offset destination -> 'd
+end
+\end{Ocaml}
+
+With this interface, the easy cases of the transformation can be expressed compactly:
+\begin{Ocaml}
+  let rec choice ctx ~tail t =
+    match t with
+    (* base cases: no TMC call opportunities *)
+    | (Lvar _ | Lmutvar _ | Lconst _ | Lfunction _ | Lsend _
+      | Lassign _ | Lfor _ | Lwhile _) ->
+        let t = traverse ctx t in
+        Choice.lambda t
+
+    (* congruence cases *)
+
+    | Lifthenelse (l1, l2, l3) ->
+        let l1 = traverse ctx l1 in
+        let+ l2 = choice ctx ~tail l2
+        and+ l3 = choice ctx ~tail l3
+        in Lifthenelse (l1, l2, l3)
+
+    | Lletrec (bindings, body) ->
+        let ctx, bindings = traverse_letrec ctx bindings in
+        let+ body = choice ctx ~tail body in
+        Lletrec(bindings, body)
+
+    (* .... *)
+
+    (* hard cases: function and constructor application
+       (omitted)  *)
+\end{Ocaml}
+The binding operators \ocaml|let+|, \ocaml|and+| are standard syntax for applicative-like structures in OCaml: \ocaml|let+| desugars to \ocaml|Choice.map| and \ocaml|and+| desugars to |Choice.pair|. \ocaml|traverse| performs a direct-style translation, and \ocaml|traverse_letrec| may also transform \ocaml|let|-bound functions marked with \ocaml|[@tail_mod_constr]| and add them to the local transformation environment.
 
 \subsection{Evaluation: benchmarks}
 
