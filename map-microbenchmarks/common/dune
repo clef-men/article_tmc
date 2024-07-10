@@ -1,0 +1,5 @@
+(executable
+  (name bench)
+  (modules impls bench)
+  (libraries core_bench core_unix.command_unix) 
+)
