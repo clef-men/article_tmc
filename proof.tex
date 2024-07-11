@@ -47,7 +47,7 @@ In addition, we will only consider \emph{valid source expressions} --- denoted b
 \end{lemma}
 
 \begin{myproof}
-    We prove both specifications by strong induction over $\datalangExpr_s$ and mutual induction over $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ and $(\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$.
+    We prove both specifications by induction over $\datalangExpr_s$ and mutual induction over $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ and $(\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$.
     We only sketch the cases shown in \cref{fig:tmc_dir} and \cref{fig:tmc_dps} and refer to our mechanization for the complete proof.
     \begin{itemize}[align=left, leftmargin=*]
         \item[\RefTirName{DirVal}:] Follows from $\wf{\datalangVal}$.
