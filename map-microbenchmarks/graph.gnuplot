@@ -1,6 +1,6 @@
 set terminal svg \
   background rgb "white" \
-  size 600,500 \
+  size 600,400 \
   font "Helvetica,14"
 
 # # set those through the command-line with -e "source output ..."

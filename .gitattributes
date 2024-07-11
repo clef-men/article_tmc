@@ -1,0 +1,5 @@
+# non-source files, do not show in diffs
+*.svg binary
+*.pdf binary
+*.pdf_tex binary
+

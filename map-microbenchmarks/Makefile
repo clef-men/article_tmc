@@ -1,13 +1,19 @@
+.PHONY: pdf
+pdf: data/plot.4.pdf data/plot.5.pdf
+
 .PHONY: run4 run5
 run4:
-	ulimit -s unlimited
+	set -x
 	(cd ocaml4; dune build --root=. --profile=release)
-	(cd ocaml4; dune exec --root=. --context 4.14.0 --profile=release -- \
-	 ./bench.exe -ascii -quota 500ms) | tee data/core_bench.4.txt
+	# notice that we use 'ulimit -s unlimited' to remove the native call stack limit
+	# without it, the benchmark would crash on a Stack_overflow exception.
+	(cd ocaml4; ulimit -s unlimited; ulimit -s; dune exec --root=. --context 4.14.0 --profile=release -- \
+	 ./bench.exe -ascii -quota 5s) | tee data/core_bench.4.txt
 run5:
+	set -x
 	(cd ocaml5; dune build --root=. --profile=release)
 	(cd ocaml5; dune exec --root=. --context=5.1.0 --profile=release -- \
-	 ./bench.exe -ascii -quota 500ms) | tee data/core_bench.5.txt
+	 ./bench.exe -ascii -quota 5s) | tee data/core_bench.5.txt
 
 data/results.%.txt: data/core_bench.%.txt
 	(cd report; dune exec --root=. -- ./report.exe) < $< > $@
@@ -29,3 +35,4 @@ clean:
 	(cd ocaml4; dune clean)
 	(cd ocaml5; dune clean)
 	(cd report; dune clean)
+	rm -f data/results.[45].txt data/plot.[45].svg
