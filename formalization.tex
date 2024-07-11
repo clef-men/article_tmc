@@ -119,6 +119,10 @@ Thanks to the rules \RefTirName{DirBlockDPS2} and \RefTirName{DPSCall}, the non-
 
 Notice that it is always possible to replace the rule \RefTirName{DirBlockDPS1} by the rule \RefTirName{DirBlockDPS21}, where the first subterm is transformed to immediately use the rule \RefTirName{Base} -- and similarly for \RefTirName{DPSBlock1}, etc.. In our example, \ocaml|y :: map f xs| is transformed into \ocaml|let dst = y :: ? in map_dps dst 2 f xs; dst|, but we could instead produce \ocaml|let dst = ? :: ? in dst.(1) <- y; map_dps dst 2 f xs; dst|, without changing the stack-consumption behavior of the program. This would however produce larger code, with slightly worse constant factors. The performance of the result of the TMC transformation is very sensitive to such constant factors because \ocaml|map| is a very fast function in the first place, so it is important to produce the simplest, best possible code in common scenarios.
 
+\subsection{Realizing the relation as a function}
+
+Our Coq formalization includes a function that takes an input program and outputs a related program, following the one-pass implementation approach that we introduced in the OCaml compiler (\cref{subsec:implementation}).
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "main"
