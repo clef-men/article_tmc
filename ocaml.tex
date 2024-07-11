@@ -1,6 +1,56 @@
 \section{\OCaml Implementation}
 \label{sec:implementation}
 
+\subsection{Alternative approaches}
+
+Before we discuss our implementation of TMC in \OCaml, we mention other approaches than TMC to solve the problem of overflowing the call stack, and explain why they were unsuitable for \OCaml.
+
+\subsubsection{Doing a CPS transformation}
+
+Instead of a program transformation in \emph{destination-passing} style, we could perform a more general program transformation that can make more functions tail-recursive, for example a generic \emph{continuation-passing} style (CPS) transformation.
+
+We have three arguments for implementing the TMC transformation:
+\begin{itemize}
+\item The TMC transformation generates more efficient code, using mutation instead of function calls. On the OCaml runtime, the difference is a large constant factor.\footnote{On a toy benchmark with large-sized lists, the CPS version is 100\% slower and has 130\% more allocations than the non-tail-recursive version.}
+
+\item The CPS transformation can be expressed at the source level, and can be made reasonably nice-looking using some monadic-binding syntactic sugar. TMC can only be done by the compiler, or using safety-breaking features.
+\end{itemize}
+
+\subsection{Lazy data}
+
+Lazy (call-by-need) languages will also often avoid running into stack overflows: as soon as a lazy datastructure is returned, which is the default, functions such as \ocaml{map} will return immediately, with recursive calls frozen in a lazy thunk, waiting to be evaluated on-demand as the user traverses the result structure.
+User still need to worry about tail-recursivity for their strict functions; strict functions are often preferred when writing performant code.
+
+\subsubsection{Unlimiting the system stack}
+
+Some operating systems can provide an unlimited system stack; such as \texttt{ulimit -s unlimited} on Linux systems -- the system stack is then resized on-demand.
+Frustratingly, unlimited stacks are not available on all systems, and not the default on any system in wide use.
+Convincing all users to setup their system in a non-standard way would be \emph{much} harder than performing a program transformation or accepting the CPS overhead for some programs.
+
+\subsubsection{Using another stack}
+
+Using the native system stack is a choice of the OCaml 4 implementation.
+Some other implementations of functional languages, such as SML/NJ, use a different stack (the OCaml bytecode interpreter does this), or directly allocate stack frames on their GC-managed heap.
+This approach can make ``stack overflow'' go away completely, and it also makes it very simple to implement stack-capture control operators, such as continuations, or other stack operations such as continuation marks.
+
+On the other hand, using the native stack brings compatibility benefits (coherent stack traces for mixed OCaml+C programs), and seems to improve the performance of function calls (on benchmarks that are only testing function calls and return, such as Ackermann or the naive Fibonacci, OCaml can be 4x, 5x faster than SML/NJ.)
+
+\paragraph{OCaml 5}
+
+OCaml 5.0.0 was released in December 2022, about a year after we landed our TMC implementation in the OCaml 4 compiler.
+OCaml 5 uses a different runtime to support multicore programming, and a different calling convention to support algebraic effects.
+In particular, it only uses the system stack for C calls, and a ``cactus stack'' for OCaml calls (stored outside the OCaml heap).
+
+OCaml 5 manages its own stack, but the implementors still decided to have a stack limit.
+It is sensibly higher by default (1Gio at the time of writing) than the system stack (8Mio), so many ``small'' can now use non-tail-recursive functions without fears of stack overflows, but overflows remain possible and likely in practice on large inputs.
+The reason to keep a (user-settable) limit for the OCaml call stack is usability in the face of buggy programs.
+When programmers write recursive functions, they occasionally go through incorrect versions with a faulty base case that fail to terminate.
+In this case, we want the system to fail quickly with an error, instead of remaining silent for a few minutes, crashing once all the machine memory has been consumed.
+
+We were curious about whether users would still see a need for TMC in OCaml 5, or whether they would stop using the feature in practice.
+The feedback we got from expert users is that stack overflows is still an issue they worry about.
+We observe that TMC adoption in OCaml codebases keep growing after the transition to OCaml 5.
+
 \subsection{Implementation history}
 
 We first proposed adding TMC as an optional program transformation to
@@ -127,16 +177,20 @@ transformation or a longer, less readable patch), but the behavior of
 TMC on the unchanged code matches the tail-call-ness proposed in the
 human-written patch.
 
-\subsection{Specification} \label{subsec:specification} An easy way to
-give a partial specification to the TMC transformation is to describe
-which function calls in a \ocaml|[@tail_mod_cons]| program can be made
-tail-recursive by the transformation. Informally, they are the calls
-placed under any composition of either tail-recursive or
-constructor contexts.
+\subsection{Specifying which calls are in TMC position} \label{subsec:specification}
+To reason about the stack usage of their programs, users must understand which calls are in tail-modulo-cons position.
+Informally, they are the calls placed under any composition of either tail-recursive or constructor contexts.
 
-We formalize this for \DataLang in \cref{fig:contexts}. A tail frame $\datalangTailFrame$ is a single term-former with holes in tail-position. A constructor frame $\datalangConsFrame$ is a single constructor term-former (we omit deterministic blocks, which do not occur in the source). A tail context $\datalangTailCtx$ is an arbitrary composition of tail-frame, and a TMC context $\datalangTMCCtx$ is an arbitrary composition of tail frames and constructor frames.
+We can in fact give a simple formal description of this intuition, here for \DataLang in \cref{fig:contexts}.
+A tail frame $\datalangTailFrame$ is a single term-former with holes in tail-position.
+A constructor frame $\datalangConsFrame$ is a single constructor term-former (we omit deterministic blocks, which do not occur in the source).
+A tail context $\datalangTailCtx$ is an arbitrary composition of tail-frame, and a TMC context $\datalangTMCCtx$ is an arbitrary composition of tail frames and constructor frames.
 
 If a source function can be decomposed in a TMC context $\datalangTMCCtx$ with source expressions in its holes, some of which are calls to TMC-transformed functions, then our relation admits a DPS transformation where all those function calls are tail-calls, and this transformation is reachable in our OCaml implementation, possibly by adding some annotations.
+
+Note in particular that we do not optimize calls to the same function we are defining, direct calls to arbitrary other functions can be transformed, if those functions have been annotated to be TMC-transformed.
+This is analoguous to how most functional languages support arbitrary \emph{tail calls} and not just tail self-recursion.
+We seamlessly support mutually recursive functions, DPS calls into locally-bound functions, etc.
 
 \begin{figure}[tp]
     \begin{tabular}{lclcl}
@@ -352,8 +406,10 @@ The binding operators \ocaml|let+|, \ocaml|and+| are standard syntax for applica
 
 \subsection{Evaluation: benchmarks}
 
+We measured the performance of \ocaml|List.map| to validate our claims that the TMC transformation preserves program performance, and let us replace complex hand-optimized tail-recursive implementations.
+
 \begin{figure}[tp]
-\def\svgscale{1.}
+\def\svgscale{0.8}
 \graphicspath{{plots/}}
 \input{plots/plot.4.pdf_tex}
 \caption{\ocaml|List.map| benchmark on OCaml 4.14}
@@ -361,12 +417,14 @@ The binding operators \ocaml|let+|, \ocaml|and+| are standard syntax for applica
 \end{figure}
 
 \begin{figure}[tp]
-\def\svgscale{1.}
+\def\svgscale{0.8}
 \graphicspath{{plots/}}
 \input{plots/plot.5.pdf_tex}
 \caption{\ocaml|List.map| benchmark on OCaml 5.1}
 \label{fig:bench5}
 \end{figure}
+
+TODO explain.
 
 \subsection{Evaluation: adoption}
 
@@ -417,6 +475,30 @@ The binding operators \ocaml|let+|, \ocaml|and+| are standard syntax for applica
 %       (needless complexity)
 %     https://github.com/LimitEpsilon/lambda-interpreter/blob/ab8e81de7f896aa64eba14e23d964b9705e94161/lib/evaluate.ml#L46
 %       (already tail-recursive)
+
+The TMC transformation was first made available to users in OCaml 4.14.0, released in March 2022.
+At the time there were no users of the feature.
+Notably, the OCaml standard library had intentionally not been modified to start using it: before the release, we did not want the stdlib codebase to depend on a not-available-yet feature, and after the release we decided not to push for adoption (we may be biased about the benefits/importance of TMC), and let other contributors propose its use, after doing their own evaluation of performance impact and code-clarity benefits.
+
+Over time, \ocaml|[@tail_mod_cons]| was adopted in a few places in the OCaml standard library, either to make some functions tail-recursive that previously were not, or simplify some complex tail-recursive implementations. As of spring 2024, the feature is now used in \ocaml|Hashtbl.find_all| and in \ocaml|List| module (\ocaml|init, map, mapi, map2, find_all, filteri, filter_map, take, take_while, of_seq|). \ocaml|init| and the \ocaml|map*| functions, which are the most heavily used, were unrolled once -- the minimal amount observed to preserve the non-tailrec performance for small lists. Other functions are written in the simplest possible way. (All \texttt{stdlib} uses so far build lists rather than another datatype.)
+
+We performed a systematic search for \ocaml|[@tail_mod_cons]| usage on November 2023, and we found that it was also used
+\begin{itemize}
+\item in a few utility modules (general-purpose functions designed to extend or replace the standard library), notably in Jane Street's \texttt{base} library.
+\item in the middle of domain-specific user code, to build lists, in 14 different projects
+\item in the middle of user code, to build other types than lists, in three projects:
+  \begin{itemize}
+  \item in \texttt{RedPRL}\footnote{\url{https://github.com/RedPRL/ocaml-bwd/blob/fbf496b29532085b38073eaa62ba3d22ac619d5d/src/BwdNoLabels.ml\#L60}},
+    it is used to build snoc lists
+  \item in a project named \texttt{PL-reading-group}\footnote{\url{https://github.com/Skyb0rg007/PL-Reading-Group/blob/7002ae35ba69fb9010e5049eee88ab475bc79ec3/effects/lib/free/tseq.ml\#L44}},
+    it is used to build a GADT of difference lists
+  \item in \texttt{acutis}\footnote{\url{https://github.com/johnridesabike/acutis/blob/4113fb516d9c5dd6f2dbfd9657f52c5ae7a5dcae/lib/matching.ml\#L161}},
+    in a group of mutually-recursive functions that builds a complex AST structure used options and nested records
+  \end{itemize}
+\end{itemize}
+
+We also found three cases where the annotation is (in our opinion) misused: in two cases, the function is already tail-recursive, so there is no need for the annotation, and in a third case\footnote{\url{https://github.com/gridbugs/llama/blob/96d1c96c31ff136f465b5f37c981fff591bac6fd/src/midi/byte_array_parser.ml\#L50}} we consider that the use is gratuitous and can be replaced by already-available standard library functions.
+ 
 
 \subsection{TMC and OCaml 5}
 
