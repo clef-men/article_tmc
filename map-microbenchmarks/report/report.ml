@@ -53,7 +53,11 @@ let read_table_row _list_size : (string * float) option =
 
 let rec read_tables () : unit =
   let list_size = scan_to_table_start () in
-  Printf.printf "%i" list_size;
+  if list_size = 0 then
+    (* hack: 0.1 instead of 0 for convenient placement on logarithmic scale
+       (see graph.gnuplot) *)
+    print_string "0.1" 
+  else Printf.printf "%i" list_size;
 
   let rec read_rows rows_acc =
     match read_table_row list_size with

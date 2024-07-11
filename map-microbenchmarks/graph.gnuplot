@@ -11,9 +11,10 @@ set title "Time elapsed (relative) – lower is better"
 
 set logscale x 10
 set xlabel "List size (no. of elements)"
-set xrange [1:1000000]
+set xrange [0.1:1000000]
+set xtics ("0" 0.1, "1" 1, "10" 10, "100" 100, "1000" 1000, "10000" 10000, "100000" 100000, "1000000" 1000000)
 
-set yrange [0:200]
+set yrange [0:150]
 set ylabel "Time relative to naive tail-recursive version (%)"
 
 unset border

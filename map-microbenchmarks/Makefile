@@ -2,6 +2,23 @@
 pdf: data/plot.4.pdf data/plot.5.pdf
 
 QUOTA=200ms
+VIEWER=ristretto
+
+# This Makefile is intentionally *not* written as a single full
+# pipeline that runs the benchmarks and produces nice output, because
+# the benchmarks are too long to run for this workflow to be pleasant
+# in practice.
+#
+# You should
+# - run `make run4`, `make run5` manually to run the benchs
+#   this will save the benchmark data in readable textual format in
+#   data/core_bench.{4,5}.txt
+# - once you have the benchmark data, run `make svgs` to produce graphs,
+#   and `make view4`, `make view5` to view them
+#
+# Use `make run4 QUOTA=5ms` for longer-running bench, less noise.
+# Use `make view VIEWER=foo` is your svg viewer is the program 'foo'
+
 
 .PHONY: run4 run5
 run4:
@@ -20,17 +37,20 @@ run5:
 data/results.%.txt: data/core_bench.%.txt
 	(cd report; dune exec --root=. -- ./report.exe) < $< > $@
 
-data/plot.%.svg: data/results.%.txt
+data/plot.%.svg: data/results.%.txt graph.gnuplot
 	gnuplot \
 	 -e 'set output "$@"' \
 	 -e 'source="$<"' \
 	 graph.gnuplot
 
+.PHONY: svgs
+svgs: data/plot.4.svg data/plot.5.svg
+
 .PHONY: view4 view5
 view4: data/plot.4.svg
-	ristretto $<
+	$(VIEWER) $<
 view5: data/plot.5.svg
-	ristretto $<
+	$(VIEWER) $<
 
 .PHONY: clean
 clean:

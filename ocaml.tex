@@ -1,7 +1,7 @@
 \section{\OCaml Implementation}
 \label{sec:implementation}
 
-\subsection{Alternative approaches}
+\subsection{Alternatives}
 
 Before we discuss our implementation of TMC in \OCaml, we mention other approaches than TMC to solve the problem of overflowing the call stack, and explain why they were unsuitable for \OCaml.
 
@@ -16,7 +16,7 @@ We have three arguments for implementing the TMC transformation:
 \item The CPS transformation can be expressed at the source level, and can be made reasonably nice-looking using some monadic-binding syntactic sugar. TMC can only be done by the compiler, or using safety-breaking features.
 \end{itemize}
 
-\subsection{Lazy data}
+\subsubsection{Lazy data}
 
 Lazy (call-by-need) languages will also often avoid running into stack overflows: as soon as a lazy datastructure is returned, which is the default, functions such as \ocaml{map} will return immediately, with recursive calls frozen in a lazy thunk, waiting to be evaluated on-demand as the user traverses the result structure.
 User still need to worry about tail-recursivity for their strict functions; strict functions are often preferred when writing performant code.
