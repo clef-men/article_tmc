@@ -56,47 +56,43 @@
     \put(0,0){\includegraphics[width=\unitlength,page=1]{plot.4.pdf}}%
     \put(0.12473333,0.10441667){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}0\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=2]{plot.4.pdf}}%
-    \put(0.12473333,0.1736){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}20\end{tabular}}}}%
+    \put(0.12473333,0.21683333){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}50\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=3]{plot.4.pdf}}%
-    \put(0.12473333,0.24276667){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}40\end{tabular}}}}%
+    \put(0.12473333,0.32925){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}100\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=4]{plot.4.pdf}}%
-    \put(0.12473333,0.31195){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}60\end{tabular}}}}%
+    \put(0.12473333,0.44165){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}150\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=5]{plot.4.pdf}}%
-    \put(0.12473333,0.38111667){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}80\end{tabular}}}}%
+    \put(0.12473333,0.55406667){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}200\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=6]{plot.4.pdf}}%
-    \put(0.12473333,0.4503){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}100\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=7]{plot.4.pdf}}%
-    \put(0.12473333,0.51948333){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}120\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=8]{plot.4.pdf}}%
     \put(0.14105,0.06941667){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}1\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=9]{plot.4.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=7]{plot.4.pdf}}%
     \put(0.27605,0.06941667){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}10\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=10]{plot.4.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=8]{plot.4.pdf}}%
     \put(0.41105,0.06941667){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}100\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=11]{plot.4.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=9]{plot.4.pdf}}%
     \put(0.54605,0.06941667){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}1000\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=12]{plot.4.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=10]{plot.4.pdf}}%
     \put(0.68103333,0.06941667){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}10000\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=13]{plot.4.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=11]{plot.4.pdf}}%
     \put(0.81603333,0.06941667){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}100000\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=14]{plot.4.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=12]{plot.4.pdf}}%
     \put(0.95103333,0.06941667){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$10^6$\end{tabular}}}}%
     \put(0.0373,0.33681666){\rotatebox{90}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Time relative to naive tail-recursive version (\%)\end{tabular}}}}}%
     \put(0.54603333,0.01691667){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}List size (no. of elements)\end{tabular}}}}%
     \put(0.24521667,0.2037){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}nontail\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=15]{plot.4.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=13]{plot.4.pdf}}%
     \put(0.24521667,0.1712){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}tail\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=16]{plot.4.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=14]{plot.4.pdf}}%
     \put(0.24521667,0.1387){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}base\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=17]{plot.4.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=15]{plot.4.pdf}}%
     \put(0.53571667,0.2037){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}containers\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=18]{plot.4.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=16]{plot.4.pdf}}%
     \put(0.53571667,0.1712){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}batteries\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=19]{plot.4.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=17]{plot.4.pdf}}%
     \put(0.53571667,0.1387){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}tmc\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=20]{plot.4.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=18]{plot.4.pdf}}%
     \put(0.82621667,0.2037){\makebox(0,0)[rt]{\lineheight{1.25}\smash{\begin{tabular}[t]{r}tmc-unrolled\end{tabular}}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=21]{plot.4.pdf}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=19]{plot.4.pdf}}%
     \put(0.54603333,0.60656667){\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}Time elapsed (relative) – lower is better\end{tabular}}}}%
   \end{picture}%
 \endgroup%
