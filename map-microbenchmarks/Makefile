@@ -1,6 +1,8 @@
 .PHONY: pdf
 pdf: data/plot.4.pdf data/plot.5.pdf
 
+QUOTA=200ms
+
 .PHONY: run4 run5
 run4:
 	set -x
@@ -8,12 +10,12 @@ run4:
 	# notice that we use 'ulimit -s unlimited' to remove the native call stack limit
 	# without it, the benchmark would crash on a Stack_overflow exception.
 	(cd ocaml4; ulimit -s unlimited; ulimit -s; dune exec --root=. --context 4.14.0 --profile=release -- \
-	 ./bench.exe -ascii -quota 5s) | tee data/core_bench.4.txt
+	 ./bench.exe -ascii -quota $(QUOTA)) | tee data/core_bench.4.txt
 run5:
 	set -x
 	(cd ocaml5; dune build --root=. --profile=release)
 	(cd ocaml5; dune exec --root=. --context=5.1.0 --profile=release -- \
-	 ./bench.exe -ascii -quota 5s) | tee data/core_bench.5.txt
+	 ./bench.exe -ascii -quota $(QUOTA)) | tee data/core_bench.5.txt
 
 data/results.%.txt: data/core_bench.%.txt
 	(cd report; dune exec --root=. -- ./report.exe) < $< > $@

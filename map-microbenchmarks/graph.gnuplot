@@ -13,7 +13,7 @@ set logscale x 10
 set xlabel "List size (no. of elements)"
 set xrange [1:1000000]
 
-set yrange [0:130]
+set yrange [0:200]
 set ylabel "Time relative to naive tail-recursive version (%)"
 
 unset border
