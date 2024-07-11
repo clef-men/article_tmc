@@ -172,31 +172,34 @@
 
 % ---------------------------------------------------------
 
+\newcommand{\separate}{\FALSE}
+
 \input{introduction}
-\clearpage
+\separate{\clearpage}{}
 
 \input{formalization}
-\clearpage
+\separate{\clearpage}{}
 
 \input{ocaml}
-\clearpage
+\separate{\clearpage}{}
 
 \input{specification}
-\clearpage
+\separate{\clearpage}{}
 
 \input{program_logic}
-\clearpage
+\separate{\clearpage}{}
 
 \input{proof}
-\clearpage
+\separate{\clearpage}{}
 
 \input{simulation}
-\clearpage
+\separate{\clearpage}{}
 
 \input{related}
-\clearpage
+\separate{\clearpage}{}
 
 \input{conclusion}
+
 \clearpage
 
 %\hbadness=10000
@@ -206,6 +209,7 @@
 \appendix
 \input{republication}
 
+\clearpage
 \input{ocaml4-appendix}
 
 \end{document}
