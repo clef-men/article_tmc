@@ -221,7 +221,9 @@ end
 module TMC = struct
   let[@tail_mod_cons] rec map f = function
     | [] -> []
-    | x :: xs -> f x :: (map[@tailcall]) f xs
+    | x :: xs ->
+      let y = f x in
+      y :: (map[@tailcall]) f xs
 end
 
 module TMC_unrolled = struct

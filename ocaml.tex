@@ -402,19 +402,11 @@ With this interface, the easy cases of the transformation can be expressed compa
     (* hard cases: function and constructor application
        (omitted)  *)
 \end{Ocaml}
-The binding operators \ocaml|let+|, \ocaml|and+| are standard syntax for applicative-like structures in OCaml: \ocaml|let+| desugars to \ocaml|Choice.map| and \ocaml|and+| desugars to |Choice.pair|. \ocaml|traverse| performs a direct-style translation, and \ocaml|traverse_letrec| may also transform \ocaml|let|-bound functions marked with \ocaml|[@tail_mod_constr]| and add them to the local transformation environment.
+The binding operators \ocaml|let+|, \ocaml|and+| are standard syntax for applicative-like structures in OCaml: \ocaml|let+| desugars to \ocaml|Choice.map| and \ocaml|and+| desugars to \ocaml|Choice.pair|. \ocaml|traverse| performs a direct-style translation, and \ocaml|traverse_letrec| may also transform \ocaml|let|-bound functions marked with \ocaml|[@tail_mod_constr]| and add them to the local transformation environment.
 
 \subsection{Evaluation: benchmarks}
 
-We measured the performance of \ocaml|List.map| to validate our claims that the TMC transformation preserves program performance, and let us replace complex hand-optimized tail-recursive implementations.
-
-\begin{figure}[tp]
-\def\svgscale{0.8}
-\graphicspath{{plots/}}
-\input{plots/plot.4.pdf_tex}
-\caption{\ocaml|List.map| benchmark on OCaml 4.14}
-\label{fig:bench4}
-\end{figure}
+We measured the performance of \ocaml|List.map (fun n -> n + 1)| to validate our claims that the TMC transformation preserves program performance, and let us replace complex hand-optimized tail-recursive implementations.
 
 \begin{figure}[tp]
 \def\svgscale{0.8}
@@ -424,7 +416,53 @@ We measured the performance of \ocaml|List.map| to validate our claims that the 
 \label{fig:bench5}
 \end{figure}
 
-TODO explain.
+\newcommand{\bench}[1]{\textbf{#1}}
+
+The \ocaml{List.map} versions in the graph are the following. We measure the code size (in lines) of each version, as a reasonable approximation of its implementation complexity.
+\begin{description}
+\item[\bench{nontail}] (5 lines of code) The naive, non-tail-recursive implementation.
+\item[\bench{tail}] (9 lines) The naive tail-recursive implementation,
+  \ocaml{List.rev (List.rev_map f xs)}.
+\item[\bench{base}] (78 lines) The implementation of Jane Street's
+  \href{https://github.com/janestreet/base}{Base} library
+  (version 0.14.0). It is heavily hand-optimized to compensate for the costs
+  of being tail-recursive.
+\item[\bench{containers}] (55 lines) Another standard-library extension by Simon
+  Cruanes; it is the hand-optimized tail-recursive implementation we
+  included in the Prologue.
+\item[\bench{batteries}] (29 lines) The implementation of the community-maintained
+  \href{https://github.com/ocaml-batteries-team/batteries-included/}{Batteries}
+  library. It is actually written in destination-passing-style, using
+  an unsafe encoding with \ocaml{Obj.magic} to unsafely cast a mutable
+  record into a list cell. (The trick comes from the older Extlib
+  library, was introduced by Brian Hurt in 2003, and has a comment crediting Jacques
+  Garrigue for the particular encoding used.)
+\item[\bench{tmc}] (5 lines) ``Our'' version, the last version of the Prologue: the
+  result of applying our implementation of the TMC transformation to
+  the simple, non-tail-recursive version.
+\item[\bench{tmc-unrolled}] (18 lines) The result of manually unrolling the \bench{tmc} implementation three times, to be compare with \bench{base} and \bench{containers} that use manual unrolling as well.
+\end{description}
+
+The benchmarks reports the relative performance compared to the naive tail-recursive version as our baseline. They were run on OCaml 5.1 in July 2024, on a Linux machine with an AMD Ryzen processor fixed at a 3Ghz frequency, looping each measurement for 5s (a single \ocaml|List.map| run takes between 7ns, for empty lists, and 89ms on lists with a million element).
+
+Qualitatively we see that there are four groups:
+\begin{itemize}
+\item \bench{tmc}, \bench{batteries} perform very on large lists, but they
+  are slower than the baseline on small lists.
+\item \bench{nontail} performs better than \bench{tmc}, \bench{batteries} on list sizes up to $10^4$, and much worse on larger lists.
+\item \bench{base}, \bench{containers} perform noticeably better than \bench{nontail} at all sizes,
+  but worse than the TMC versions above size $10^4$.
+\item \bench{tmc-unrolled} is the best option, it performs as well as \bench{base} and \bench{containers} before $10^4$, and as well as \bench{tmc}, \bench{batteries} afterwards.
+\end{itemize}
+Our interpretation of the result is that some unrolling makes a noticeable performance difference for such a short function: \bench{tmc} is not good enough on smaller lists, but \bench{tmc-unrolled} is the best-performing, despite much simpler than the \bench{base} and \bench{containers} version.
+
+\paragraph{Comparing \bench{tmc} and \bench{batteries}} It is interesting to compare \bench{tmc} and \bench{batteries} because they are both TMC versions, with a different design choice. The Batteries implementation, as Koka~\citep*{tmc-koka-2023}, only generates the DPS version; the direct-style function is a short wrapper that allocates an extra dummy block to serve a destination, and calls the DPS version. This strategy reduces code size, at the cost of an extra allocation in all cases. The \OCaml implementation instead generates a direct-style version that is similar to the input function, effectively doubling the code size, and only calls the DPS version under block constructors. This choice guarantees that the TMC version does not perform any extra allocation, which some \OCaml users want to be able to reason about. The benchmarks show that this does not affect the performance in practice, in a micro-benchmark scenario.
+
+\paragraph{Asymptotics of \bench{nontail}} The bad behavior of \bench{nontail} on large lists comes from a quadratic behavior on very large call stacks, coming from a repeated scan of the call stack during minor collections. (The OCaml compiler and runtime could be tweaked to avoid this quadratic behavior, at the cost of some small constant overhead on function returns.)
+
+\paragraph{Memory usage} The \bench{tail} version allocates twice as many words as the \bench{tail} or TMC versions. The \bench{base} and \bench{containers} version allocate more as well, once they reach the cutoff where they move to their tail-recursive regime. This probably does not matter for most use-cases, and it does not show in the time measurements in the microbenchmark.
+
+\paragraph{The $10^4$ bump} \Xgabriel{Je ne sais pas si le ``pic'' en $10^4$ est du bruit de mesure ou un effet de promotion / barrière en écriture. À investiguer d'un peu plus près.}
 
 \subsection{Evaluation: adoption}
 

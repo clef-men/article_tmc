@@ -31,11 +31,7 @@ let map f li =
 \end{Ocaml}
 
 ``Well, actually, this version works fine on large lists, but it is
-less efficient than the original version. It is noticeably slower on
-small lists, which are the most common inputs for most programs. We
-measured it 35\% slower on lists of size 10. If you want to write
-a robust function for a standard library, you may want to support both
-use-cases as well as possible. One approach is to start with
+less efficient than the original version. One approach is to start with
 a non-tail-recursive version, and switch to a tail-recursive version
 for large inputs; even there you can use some manual unrolling to
 reduce the overhead of the accumulator. For example, the nice
