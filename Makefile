@@ -2,6 +2,12 @@
 all :
 	@ latexmk -pdf -interaction=nonstopmode main.tex
 
+plots/core_bench.%.txt: map-microbenchmarks/data/core_bench.%.txt
+	cp $< $@
+
+.PHONY: plots-data
+plots-data: plots/core_bench.4.txt plots/core_bench.5.txt
+
 plots/plot.%.svg: map-microbenchmarks/data/plot.%.svg
 	cp $< $@
 

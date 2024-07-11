@@ -498,9 +498,6 @@ We performed a systematic search for \ocaml|[@tail_mod_cons]| usage on November 
 \end{itemize}
 
 We also found three cases where the annotation is (in our opinion) misused: in two cases, the function is already tail-recursive, so there is no need for the annotation, and in a third case\footnote{\url{https://github.com/gridbugs/llama/blob/96d1c96c31ff136f465b5f37c981fff591bac6fd/src/midi/byte_array_parser.ml\#L50}} we consider that the use is gratuitous and can be replaced by already-available standard library functions.
- 
-
-\subsection{TMC and OCaml 5}
 
 %%% Local Variables:
 %%% mode: latex
