@@ -23,7 +23,7 @@ a performance cost, and there is no static checking that the data is
 fully initialized at the end of computation.
 
 Independently of our work, Koka has implemented TMC starting in August
-2020\footnote{https://github.com/koka-lang/koka/commit/f6a343d31f486ea5edd44798dca7bca52d7b450c}~\citep*{tmc-koka-2023}.
+2020\footnote{\url{https://github.com/koka-lang/koka/commit/f6a343d31f486ea5edd44798dca7bca52d7b450c}}~\citep*{tmc-koka-2023}.
 An interesting problem they had to solve, which does not occur in OCaml,
 is how to support TMC in presence of non-linear contibuations. Our
 correctness argument for TMC relies on the fact that the destination
@@ -87,25 +87,17 @@ accumulator-passing-style transformation.
 
 \subsection{Relational reasoning in separation logic}
 
-% + ReLoC Reloaded: A Mechanized Relational Logic for Fine-Grained Concurrency and Logical Atomicity
-% + A Higher-Order Logic for Concurrent Termination-Preserving Refinement
-% + Transfinite Iris: Resolving an Existential Dilemma of Step-Indexed Separation Logic
-% + Simuliris: A Separation Logic Framework for Verifying Concurrent Program Optimizations
+Defining a program logic to capture unary program properties is a typical usage of \Iris; relational properties are rarer. \citet*{tassarotti-2017} use (a linear variant of) \Iris to prove the correctness of a program transformation that implements communication channels using shared references. There is a good discussion of related work in ReLoC Reloaded~\citep*{reloc-2021}.
+
+A relational program logic can be justified in \Iris by interpreting it as a unary relation on the target program, typically involving the \texttt{wp} predicate of the base language. This approach is inspired by CaReSL~\citet*{caresl-2013}. We follow a more direct, traditional approach of interpreting the program logic as a (binary) simulation relation (defined in the \Iris meta-logic) which is shown to be adequate, to imply a refinement between the program behaviors (denotations).
+
+It is in fact surprisingly difficult to define simulations in \Iris, if we expect it to be adequate (to correspond to the usual notion of simulation outside the \Iris world). This is due to meta-theoretical difficulties around the ``later'' modality which led to the Transfinite \Iris variant~\citet*{transfinite-iris-2021}. We started by defining simulations in Transfinite \Iris, but later moved to the \Simuliris approach~\citep*{simuliris-2022}, where simulations are defined in standard \Iris without using the ``later'' modality, using coinduction instead (via its impredicative encoding).
+
+As a minor technical point of comparison to \Simuliris, our definition of behaviors (denotations) includes non-termination, succesfully evaluating to a value, but also failing with an error, and refinement preserves all three kind of behaviors. There are no undefined behaviors.
 
 \subsection{Protocols}
 
-% + Compiler Verification Meets Cross-Language Linking via Data Abstraction
-%   axiomatic semantics are close to protocols in spirit, they include in the
-%   syntactic reasoning rules an "axiomatic" step that non-deterministically
-%   reduces a function call following a (P,Q) pre/post
-% + A Separation Logic for Effect Handlers
-%   we were inspired by Paulo: Χ allows do v { Φ }
-%     + specification of an effect
-%     + protocol Χ allows the program to perform the effect v and garantees that every permitted reply satisfies postcondition Φ
-%     + "we would like programmers to think about performing an effect essentially in the same way as they think about calling a function"
-%     + wp parameterized by protcol: ewp e < Χ > { Φ }
-% + Melocoton: A Program Logic for Verified Interoperability Between OCaml and C
-
+The function-call rule of \Simuliris only relates calls to the same function, so it is unsuitable for program transformations that also transform function definitions. We parametrize our program logic and notion of simulation on a \emph{protocol} $\iProt$, an arbitrary predicate transformer injected into the relation. This approach is reminiscent of the \emph{axiomatic semantics} proposed \citet*{axiomatic-semantics-2014} to reason about foreign function calls. In the \Iris community, we were directly inspired the \emph{protocols} \citet*{protocols-2021}, and this approach was also reused recently, in a unary setting, by \citet*{melocoton-2023}. Our notion of protocol is slightly more general than in those two works, as it can relate arbitrary expressions in evaluation position (not just function calls), and ``return'' after an axiomatic transition with arbitrary expressions (not just values). We use this extra generality to reason about accumulator-passing-style transformation in presence of ill-typed programs -- see \cref{subsec:protocols}.
 
 %%% Local Variables:
 %%% mode: latex

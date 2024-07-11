@@ -169,3 +169,80 @@
   year         = "2017",
   URL          = "https://www.microsoft.com/en-us/research/wp-content/uploads/2016/11/dps-fhpc17.pdf",
 }
+
+@article{reloc-2021,
+   title={ReLoC Reloaded: A Mechanized Relational Logic for Fine-Grained Concurrency and Logical Atomicity},
+   volume={Volume 17, Issue 3},
+   url={http://dx.doi.org/10.46298/lmcs-17(3:9)2021},
+   DOI={10.46298/lmcs-17(3:9)2021},
+   journal={Logical Methods in Computer Science},
+   author={Frumin, Dan and Krebbers, Robbert and Birkedal, Lars},
+   year={2021},
+   month=jul
+}
+
+@inproceedings{caresl-2013,
+author = {Turon, Aaron and Dreyer, Derek and Birkedal, Lars},
+title = {Unifying refinement and hoare-style reasoning in a logic for higher-order concurrency},
+year = {2013},
+booktitle = {ICFP},
+url = {https://people.mpi-sws.org/~dreyer/papers/caresl/paper.pdf},
+}
+
+@inproceedings{tassarotti-2017,
+author = {Tassarotti, Joseph and Jung, Ralf and Harper, Robert},
+title = {A Higher-Order Logic for Concurrent Termination-Preserving Refinement},
+booktitle = {ESOP},
+year = {2017},
+url = {https://arxiv.org/abs/1701.05888}
+}
+
+@inproceedings{transfinite-iris-2021,
+author = {Spies, Simon and G\"{a}her, Lennard and Gratzer, Daniel and Tassarotti, Joseph and Krebbers, Robbert and Dreyer, Derek and Birkedal, Lars},
+title = {Transfinite Iris: resolving an existential dilemma of step-indexed separation logic},
+year = {2021},
+url = {https://iris-project.org/transfinite-iris/},
+booktitle={PLDI}
+}
+
+@inproceedings{10.1145/2660193.2660201,
+author = {Wang, Peng and Cuellar, Santiago and Chlipala, Adam},
+title = {Compiler verification meets cross-language linking via data abstraction},
+year = {2014},
+isbn = {9781450325851},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2660193.2660201},
+doi = {10.1145/2660193.2660201},
+abstract = {Many real programs are written in multiple different programming languages, and supporting this pattern creates challenges for formal compiler verification. We describe our Coq verification of a compiler for a high-level language, such that the compiler correctness theorem allows us to derive partial-correctness Hoare-logic theorems for programs built by linking the assembly code output by our compiler and assembly code produced by other means. Our compiler supports such tricky features as storable cross-language function pointers, without giving up the usual benefits of being able to verify different compiler phases (including, in our case, two classic optimizations) independently. The key technical innovation is a mixed operational and axiomatic semantics for the source language, with a built-in notion of abstract data types, such that compiled code interfaces with other languages only through axiomatically specified methods that mutate encapsulated private data, represented in whatever formats are most natural for those languages.},
+booktitle = {Proceedings of the 2014 ACM International Conference on Object Oriented Programming Systems Languages \&amp; Applications},
+pages = {675–690},
+numpages = {16},
+keywords = {program logics, cross-language linking, compiler verification, abstract data types},
+location = {Portland, Oregon, USA},
+series = {OOPSLA '14}
+}
+
+@inproceedings{axiomatic-semantics-2014,
+author = {Wang, Peng and Cuellar, Santiago and Chlipala, Adam},
+title = {Compiler verification meets cross-language linking via data abstraction},
+year = {2014},
+booktitle={OOPSLA},
+url = {http://adam.chlipala.net/papers/CitoOOPSLA14/},
+}
+
+@inproceedings{protocols-2021,
+author = {de Vilhena, Paulo Em\'{\i}lio and Pottier, Fran\c{c}ois},
+title = {A separation logic for effect handlers},
+year = {2021},
+booktitle = {POPL},
+url = {http://cambium.inria.fr/~fpottier/publis/de-vilhena-pottier-sleh.pdf},
+}
+
+@inproceedings{melocoton-2023,
+author = {Gu\'{e}neau, Arma\"{e}l and Hostert, Johannes and Spies, Simon and Sammler, Michael and Birkedal, Lars and Dreyer, Derek},
+title = {Melocoton: A Program Logic for Verified Interoperability Between OCaml and C},
+year = {2023},
+booktitle={OOPSLA},
+url={https://inria.hal.science/hal-04203298}
+}

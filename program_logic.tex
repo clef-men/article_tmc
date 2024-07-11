@@ -11,7 +11,7 @@ We omitted some standard rules for brevity.
 Compared to the specifications of \cref{sec:specification}, we introduced an additional parameter $\iProt$.
 We will explain it together with the \RefTirName{RelProtocol} rule.
 
-\paragraph{Language-independent rules}
+\subsection{Language-independent rules}
 The following rules are independent of \DataLang and could be reused as is in further works.
 
 \RefTirName{RelPost} states that two expressions are related when they are in the relational postcondition.
@@ -24,7 +24,7 @@ An expression is strongly stuck when it is stuck for any state.
 \RefTirName{RelSrcPure} and \RefTirName{RelTgtPure} let us take pure reduction steps in either the source or target.
 Pure steps (omitted for brevity) are the reduction steps that are deterministic and do not depend on the state.
 
-\paragraph{Language-specific rules: non-determinism}
+\subsection{Language-specific rules: non-determinism}
 $\iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ asserts that $\datalangExpr_t$ refines $\datalangExpr_s$: any behavior of $\datalangExpr_t$ is also a behavior of $\datalangExpr_s$.
 Consequently, non-determinism is treated differently in the source and target: we treat non-determinism as \emph{angelic} in source reductions and \emph{demonic} in target reductions.
 
@@ -33,11 +33,11 @@ In the program logic, the user may \emph{choose} an order for the source reducti
 
 Once we have a deterministic constructor $\datalangBlockDet{\datalangTag}{\datalangVal_1}{\datalangVal_2}$, we can apply \RefTirName{RelSrcBlockDet} or \RefTirName{RelTgtBlockDet}, yielding a points-to assertion for the allocated block.
 
-\paragraph{Language-specific rules: private locations.}
+\subsection{Language-specific rules: private locations.}
 We can reason on points-to assertions --- that we interpret as locations private to the source or target --- in a standard way.
 The rules \RefTirName{RelSrcLoad} and \RefTirName{RelTgtLoad} let us load the pointed value while \RefTirName{RelSrcStore} and \RefTirName{RelTgtStore} let us update it with a new value.
 
-\paragraph{Language-specific rules: locations in the bijection.}
+\subsection{Language-specific rules: locations in the bijection.}
 Corresponding source and target locations registered in the bijection through \RefTirName{BijInsert} have given up their respective points-to assertions but can still be accessed using the rules \RefTirName{RelLoad} and \RefTirName{RelStore}.
 
 \RefTirName{RelLoad} states that simultaneously loading from two corresponding blocks yields similar values.
@@ -46,7 +46,8 @@ Corresponding source and target locations registered in the bijection through \R
 
 Together, these two rules enforce the bijection invariant: the contents of corresponding blocks are always similar.
 
-\paragraph{Abstract protocols}
+\subsection{Abstract protocols} \label{subsec:protocols}
+
 In \cref{sec:simulation}, we will see that our relation is defined coinductively and the first step of the proof essentially amounts to coinduction.
 To internalize the coinduction hypothesis into the program logic, we introduce an additional parameter $\iProt$ that we interpret as a \emph{protocol}~\citep*{de-vilhena-2021}.
 

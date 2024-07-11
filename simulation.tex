@@ -1,6 +1,9 @@
 \section{Simulation}
 \label{sec:simulation}
 
+\input{figures/sim}
+\input{figures/refinement}
+
 So far, we assumed a program logic satisfying a set of reason rules.
 In the section, we define this program logic using an \Iris \emph{simulation} à la \Simuliris~\citep*{simuliris-2022}.
 This simulation comes with an \emph{adequacy theorem} that allows to extract a \emph{behavior refinement} in the meta-logic and thus prove the final soundness theorem for TMC.
@@ -113,9 +116,6 @@ Actually, for the TMC protocol, a less general lemma suffices:
 \begin{proof}[Proof of \cref{thm:soundness}]
     Follows from \cref{thm:adequacy}, \cref{thm:closure}, \RefTirName{RelDir} and \RefTirName{RelDPS}.
 \end{proof}
-
-\input{figures/sim}
-\input{figures/refinement}
 
 %%% Local Variables:
 %%% mode: latex
