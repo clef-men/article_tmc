@@ -460,8 +460,6 @@ Our interpretation of the result is that some unrolling makes a noticeable perfo
 
 \paragraph{Memory usage} The \bench{tail} version allocates twice as many words as the \bench{tail} or TMC versions. The \bench{base} and \bench{containers} version allocate more as well, once they reach the cutoff where they move to their tail-recursive regime. This probably does not matter for most use-cases, and it does not show in the time measurements in the microbenchmark.
 
-\paragraph{The $10^4$ bump} \Xgabriel{Je ne sais pas si le ``pic'' en $10^4$ est du bruit de mesure ou un effet de promotion / barrière en écriture. À investiguer d'un peu plus près.}
-
 \subsection{Evaluation: adoption}
 
 % [@tail_mod_cons] usage on Github
