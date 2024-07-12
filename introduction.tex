@@ -2,14 +2,14 @@
 
 \subsection{Prologue}
 
-``OCaml'', we teach our students, ``is a functional programming language. We can write the beautiful function \ocaml{List.map} as follows:''
+``\OCaml'', we teach our students, ``is a functional programming language. We can write the beautiful function \ocaml{List.map} as follows:''
 \begin{Ocaml}
 let rec map f = function
 | [] -> []
 | x :: xs -> f x :: map f xs
 \end{Ocaml}
 
-``Well, actually'', we continue, ``OCaml is an effectful language, so we need to be careful about the evaluation order. We want \ocaml{map} to process elements from the beginning to the end of the input list, and the evaluation order of \ocaml{f x :: map f xs} is unspecified. So we write:''
+``Well, actually'', we continue, ``\OCaml is an effectful language, so we need to be careful about the evaluation order. We want \ocaml{map} to process elements from the beginning to the end of the input list, and the evaluation order of \ocaml{f x :: map f xs} is unspecified. So we write:''
 \begin{Ocaml}
 let rec map f = function
 | [] -> []
@@ -94,7 +94,7 @@ let map f l =
 At this point, unfortunately, some students leave the class and never
 come back.
 
-We propose a new feature for the OCaml compiler, an explicit, opt-in
+We propose a new feature for the \OCaml compiler, an explicit, opt-in
 ``Tail Modulo Cons'' transformation, to retain our students. After the
 first version (or maybe, if we are teaching an advanced class, after
 the second version), we could show them the following version:
@@ -190,12 +190,12 @@ The transformed code has two variants of the \ocaml{map} function. The \ocaml{ma
 
 The key idea of the transformation is that the expression \ocaml{y :: map f xs}, which contained a non-tail-recursive call, is transformed into first the computation of a \emph{partial} list cell, written \ocaml{y :: ?}, followed by a call to \ocaml{map_dps} that is asked to write its result in the position of the \ocaml{?}. The recursive call thus happens after the cell creation (instead of before), in tail-recursive position in the \ocaml{map_dps} variant. In the direct variant, the value of the destination \ocaml{dst} has to be returned after the call.
 
-The transformed code is pseudo-OCaml, it is not a valid OCaml
+The transformed code is pseudo-\OCaml, it is not a valid \OCaml
 program: we use a magical \ocaml{?} constant, and our notation
 \ocaml{dst.i <- ...} to update constructor parameters in-place is also
 invalid in source programs. The transformation is implemented on
-a lower-level, untyped intermediate representation of the OCaml
-compiler (Lambda), where those operations do exist. The OCaml type
+a lower-level, untyped intermediate representation of the \OCaml
+compiler (Lambda), where those operations do exist. The \OCaml type
 system is not expressive enough to type-check the transformed program:
 the list cell is only partially-initialized at first, each partial
 cell is mutated exactly once, and in the end the whole result is

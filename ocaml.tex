@@ -8,7 +8,7 @@ For reasons of space, we moved some of the content in this section to \cref{app:
 \item \cref{subsec:PR-history} provides a summary of the history of our implementation (started in 2015, restarted in 2020, merged in 2021).
 \item \cref{subsec:applicative-impl} exhibits an applicative functor structure that makes our implementation nicely compact and readable.
 \item \cref{subsec:adoption} surveys the adoption of the TMC transformation in the standard library,
-  and in third-party OCaml codebases, that happened since the feature was released in 2022.
+  and in third-party \OCaml codebases, that happened since the feature was released in 2022.
 \end{itemize}
 
 \subsection{Examples}
@@ -72,7 +72,7 @@ cases, given that
 \paragraph{Interesting non-linear examples} There \emph{are} interesting
 examples of TMC-transformation on functions operating on tree-like
 data structures, when there are natural assumptions about which child
-is likely to contain a deep subtree. The OCaml compiler itself
+is likely to contain a deep subtree. The \OCaml compiler itself
 contains a number of them; consider for example the following function
 from the \ocaml{Cmm} module, one of its lower-level program
 representations:
@@ -98,14 +98,14 @@ larger, so TMC is not so interesting. The recursive calls for
 \ocaml{Clet}, \ocaml{Csequence} cases are very beneficial to have in
 TMC: while they have several recursive subtrees, they are in practice
 only deeply nested in the direction that is turned into a tailcall by
-the transformation. The OCaml compiler does sometimes encounter
+the transformation. The \OCaml compiler does sometimes encounter
 machine-generated programs with a unusually long sequence of either
 constructions, and the TMC transformation may very well avoid a stack
 overflow in this case.
 
 Another example would be
 \href{https://github.com/ocaml/ocaml/pull/9636}{\#9636}, a patch to
-the OCaml compiler proposed in June 2020 by Mark Shinwell, to get
+the \OCaml compiler proposed in June 2020 by Mark Shinwell, to get
 a partially-tail-recursive implementation of the ``Common
 Subexpression Elimination'' (CSE) pass through a manual
 contiation-passing-style transform. Xavier Leroy remarked that the
@@ -124,7 +124,7 @@ A tail frame $\datalangTailFrame$ is a single term-former with holes in tail-pos
 A constructor frame $\datalangConsFrame$ is a single constructor term-former (we omit deterministic blocks, which do not occur in the source).
 A tail context $\datalangTailCtx$ is an arbitrary composition of tail-frame, and a TMC context $\datalangTMCCtx$ is an arbitrary composition of tail frames and constructor frames.
 
-If a source function can be decomposed in a TMC context $\datalangTMCCtx$ with source expressions in its holes, some of which are calls to TMC-transformed functions, then our relation admits a DPS transformation where all those function calls are tail-calls, and this transformation is reachable in our OCaml implementation, possibly by adding some annotations.
+If a source function can be decomposed in a TMC context $\datalangTMCCtx$ with source expressions in its holes, some of which are calls to TMC-transformed functions, then our relation admits a DPS transformation where all those function calls are tail-calls, and this transformation is reachable in our \OCaml implementation, possibly by adding some annotations.
 
 Note in particular that we do not optimize calls to the same function we are defining, direct calls to arbitrary other functions can be transformed, if those functions have been annotated to be TMC-transformed.
 This is analoguous to how most functional languages support arbitrary \emph{tail calls} and not just tail self-recursion.
@@ -236,7 +236,7 @@ their intent). Failing on the lack of annotations is an acceptable way
 to drive user interaction.
 
 \subsubsection{First-order implementation} A notable limitation of the
-OCaml implementation is that it is first-order and non-modular in
+\OCaml implementation is that it is first-order and non-modular in
 nature: only direct calls to known functions can be converted into DPS
 style, and the availability of a DPS variant is not exposed through
 module abstractions.
@@ -301,7 +301,7 @@ We measured the performance of \ocaml|List.map (fun n -> n + 1)| to validate our
 \def\svgscale{0.8}
 \graphicspath{{plots/}}
 \input{plots/plot.5.pdf_tex}
-\caption{\ocaml|List.map| benchmark on OCaml 5.1}
+\caption{\ocaml|List.map| benchmark on \OCaml~5.1}
 \label{fig:bench5}
 \end{figure}
 
@@ -332,7 +332,7 @@ The \ocaml{List.map} versions in the graph are the following. We measure the cod
 \item[\bench{tmc-unrolled}] (18 lines) The result of manually unrolling the \bench{tmc} implementation three times, to be compare with \bench{base} and \bench{containers} that use manual unrolling as well.
 \end{description}
 
-The benchmarks reports the relative performance compared to the naive tail-recursive version as our baseline. They were run on OCaml 5.1 in July 2024, on a Linux machine with an AMD Ryzen processor fixed at a 3Ghz frequency, looping each measurement for 5s (a single \ocaml|List.map| run takes between 7ns, for empty lists, and 89ms on lists with a million element).
+The benchmarks reports the relative performance compared to the naive tail-recursive version as our baseline. They were run on \OCaml~5.1 in July 2024, on a Linux machine with an AMD Ryzen processor fixed at a 3Ghz frequency, looping each measurement for 5s (a single \ocaml|List.map| run takes between 7ns, for empty lists, and 89ms on lists with a million element).
 
 Qualitatively we see that there are four groups:
 \begin{itemize}
@@ -345,7 +345,7 @@ Qualitatively we see that there are four groups:
 \end{itemize}
 Our interpretation of the result is that some unrolling makes a noticeable performance difference for such a short function: \bench{tmc} is not good enough on smaller lists, but \bench{tmc-unrolled} is the best-performing, despite much simpler than the \bench{base} and \bench{containers} version.
 
-\paragraph{Asymptotics of \bench{nontail}} The bad behavior of \bench{nontail} on large lists comes from a quadratic behavior on very large call stacks, coming from a repeated scan of the call stack during minor collections. (The OCaml compiler and runtime could be tweaked to avoid this quadratic behavior, at the cost of some small constant overhead on function returns.)
+\paragraph{Asymptotics of \bench{nontail}} The bad behavior of \bench{nontail} on large lists comes from a quadratic behavior on very large call stacks, coming from a repeated scan of the call stack during minor collections. (The \OCaml compiler and runtime could be tweaked to avoid this quadratic behavior, at the cost of some small constant overhead on function returns.)
 
 % \paragraph{Memory usage} The \bench{tail} version allocates twice as many words as the \bench{tail} or TMC versions. The \bench{base} and \bench{containers} version allocate more as well, once they reach the cutoff where they move to their tail-recursive regime. This probably does not matter for most use-cases, and it does not show in the time measurements in the microbenchmark.
 

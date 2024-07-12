@@ -12,7 +12,7 @@ Instead of a program transformation in \emph{destination-passing} style, we coul
 
 We have three arguments for implementing the TMC transformation:
 \begin{itemize}
-\item The TMC transformation generates more efficient code, using mutation instead of function calls. On the OCaml runtime, the difference is a large constant factor.\footnote{On a toy benchmark with large-sized lists, the CPS version is 100\% slower and has 130\% more allocations than the non-tail-recursive version.}
+\item The TMC transformation generates more efficient code, using mutation instead of function calls. On the \OCaml runtime, the difference is a large constant factor.\footnote{On a toy benchmark with large-sized lists, the CPS version is 100\% slower and has 130\% more allocations than the non-tail-recursive version.}
 
 \item The CPS transformation can be expressed at the source level, and can be made reasonably nice-looking using some monadic-binding syntactic sugar. TMC can only be done by the compiler, or using safety-breaking features.
 \end{itemize}
@@ -30,33 +30,33 @@ Convincing all users to setup their system in a non-standard way would be \emph{
 
 \subsubsection{Using another stack}
 
-Using the native system stack is a choice of the OCaml 4 implementation.
-Some other implementations of functional languages, such as SML/NJ, use a different stack (the OCaml bytecode interpreter does this), or directly allocate stack frames on their GC-managed heap.
+Using the native system stack is a choice of the \OCaml~4 implementation.
+Some other implementations of functional languages, such as SML/NJ, use a different stack (the \OCaml bytecode interpreter does this), or directly allocate stack frames on their GC-managed heap.
 This approach can make ``stack overflow'' go away completely, and it also makes it very simple to implement stack-capture control operators, such as continuations, or other stack operations such as continuation marks.
 
-On the other hand, using the native stack brings compatibility benefits (coherent stack traces for mixed OCaml+C programs), and seems to improve the performance of function calls (on benchmarks that are only testing function calls and return, such as Ackermann or the naive Fibonacci, OCaml can be 4x, 5x faster than SML/NJ.)
+On the other hand, using the native stack brings compatibility benefits (coherent stack traces for mixed \OCaml+C programs), and seems to improve the performance of function calls (on benchmarks that are only testing function calls and return, such as Ackermann or the naive Fibonacci, \OCaml can be 4x, 5x faster than SML/NJ.)
 
-\paragraph{OCaml 5}
+\paragraph{\OCaml~5}
 
-OCaml 5.0.0 was released in December 2022, about a year after we landed our TMC implementation in the OCaml 4 compiler.
-OCaml 5 uses a different runtime to support multicore programming, and a different calling convention to support algebraic effects.
-In particular, it only uses the system stack for C calls, and a ``cactus stack'' for OCaml calls.
+\OCaml~5.0.0 was released in December 2022, about a year after we landed our TMC implementation in the \OCaml~4 compiler.
+\OCaml~5 uses a different runtime to support multicore programming, and a different calling convention to support algebraic effects.
+In particular, it only uses the system stack for C calls, and a ``cactus stack'' for \OCaml calls.
 
-OCaml 5 manages its own stack, but the implementors still decided to have a stack limit.
+\OCaml~5 manages its own stack, but the implementors still decided to have a stack limit.
 It is sensibly higher by default (1Gio at the time of writing) than the system stack (8Mio), so many ``small'' can now use non-tail-recursive functions without fears of stack overflows, but overflows remain possible and likely in practice on large inputs.
-The reason to keep a (user-settable) limit for the OCaml call stack is usability in the face of buggy programs.
+The reason to keep a (user-settable) limit for the \OCaml call stack is usability in the face of buggy programs.
 When programmers write recursive functions, they occasionally go through incorrect versions with a faulty base case that fail to terminate.
 In this case, we want the system to fail quickly with an error, instead of remaining silent for a few minutes, crashing once all the machine memory has been consumed.
 
-We were curious about whether users would still see a need for TMC in OCaml 5, or whether they would stop using the feature in practice.
+We were curious about whether users would still see a need for TMC in \OCaml~5, or whether they would stop using the feature in practice.
 The feedback we got from expert users is that stack overflows is still an issue they worry about.
-We observe that TMC adoption in OCaml codebases keep growing after the transition to OCaml 5.
+We observe that TMC adoption in \OCaml codebases keep growing after the transition to \OCaml~5.
 
 \subsection{Implementation history}
 \label{subsec:PR-history}
 
 We first proposed adding TMC as an optional program transformation to
-the OCaml compiler in
+the \OCaml compiler in
 May 2015.\footnote{\nonanon{URL}{\url{https://github.com/ocaml/ocaml/pull/181}}}
 The proposal was received favorably, but it never received an in-depth
 review and a detailed performance evaluation and remained unmerged for
@@ -70,15 +70,15 @@ an optimization of the previous implementation that would specialize
 the DPS version, generating a distinct definition for each block
 offset. The new design was carefully reviewed by Basile Clément and
 Pierre Chambart, and was finally merged in November 2021, available to
-users with OCaml 4.14, released in March 2022.
+users with \OCaml~4.14, released in March 2022.
 
 The TMC transformation is that it adds extra parameters to functions
-(two parameters, the block and the offset). At the time the OCaml
+(two parameters, the block and the offset). At the time the \OCaml
 compiler had a limitation on some supported architectures, where it
 would not optimze tail calls above a certain number of arguments
 (enough that they cannot be all passed by registers), breaking the
 tail-call promises of TMC on those systems. Xavier Leroy implemented
-a change to the OCaml calling convention for those architectures in
+a change to the \OCaml calling convention for those architectures in
 May 2021,\footnote{\url{https://github.com/ocaml/ocaml/pull/10595}},
 which was motivated by the TMC work.
 
@@ -136,7 +136,7 @@ With this interface, the easy cases of the transformation can be expressed compa
         in Lifthenelse (l1, l2, l3)
     [...]
 \end{Ocaml}
-The binding operators \ocaml|let+|, \ocaml|and+| are standard syntax for applicative-like structures in OCaml: \ocaml|let+| desugars to \ocaml|Choice.map| and \ocaml|and+| desugars to \ocaml|Choice.pair|. \ocaml|traverse| performs a direct-style translation, and \ocaml|traverse_letrec| may also transform \ocaml|let|-bound functions marked with \ocaml|[@tail_mod_constr]| and add them to the local transformation environment.
+The binding operators \ocaml|let+|, \ocaml|and+| are standard syntax for applicative-like structures in \OCaml: \ocaml|let+| desugars to \ocaml|Choice.map| and \ocaml|and+| desugars to \ocaml|Choice.pair|. \ocaml|traverse| performs a direct-style translation, and \ocaml|traverse_letrec| may also transform \ocaml|let|-bound functions marked with \ocaml|[@tail_mod_constr]| and add them to the local transformation environment.
 
 \subsection{Evaluation: adoption}
 \label{subsec:adoption}
@@ -189,11 +189,11 @@ The binding operators \ocaml|let+|, \ocaml|and+| are standard syntax for applica
 %     https://github.com/LimitEpsilon/lambda-interpreter/blob/ab8e81de7f896aa64eba14e23d964b9705e94161/lib/evaluate.ml#L46
 %       (already tail-recursive)
 
-The TMC transformation was first made available to users in OCaml 4.14.0, released in March 2022.
+The TMC transformation was first made available to users in \OCaml~4.14.0, released in March 2022.
 At the time there were no users of the feature.
-Notably, the OCaml standard library had intentionally not been modified to start using it: before the release, we did not want the stdlib codebase to depend on a not-available-yet feature, and after the release we decided not to push for adoption (we may be biased about the benefits/importance of TMC), and let other contributors propose its use, after doing their own evaluation of performance impact and code-clarity benefits.
+Notably, the \OCaml standard library had intentionally not been modified to start using it: before the release, we did not want the stdlib codebase to depend on a not-available-yet feature, and after the release we decided not to push for adoption (we may be biased about the benefits/importance of TMC), and let other contributors propose its use, after doing their own evaluation of performance impact and code-clarity benefits.
 
-Over time, \ocaml|[@tail_mod_cons]| was adopted in a few places in the OCaml standard library, either to make some functions tail-recursive that previously were not, or simplify some complex tail-recursive implementations. As of spring 2024, the feature is now used in \ocaml|Hashtbl.find_all| and in \ocaml|List| module (\ocaml|init, map, mapi, map2, find_all, filteri, filter_map, take, take_while, of_seq|). \ocaml|init| and the \ocaml|map*| functions, which are the most heavily used, were unrolled once -- the minimal amount observed to preserve the non-tailrec performance for small lists. Other functions are written in the simplest possible way. (All \texttt{stdlib} uses so far build lists rather than another datatype.)
+Over time, \ocaml|[@tail_mod_cons]| was adopted in a few places in the \OCaml standard library, either to make some functions tail-recursive that previously were not, or simplify some complex tail-recursive implementations. As of spring 2024, the feature is now used in \ocaml|Hashtbl.find_all| and in \ocaml|List| module (\ocaml|init, map, mapi, map2, find_all, filteri, filter_map, take, take_while, of_seq|). \ocaml|init| and the \ocaml|map*| functions, which are the most heavily used, were unrolled once -- the minimal amount observed to preserve the non-tailrec performance for small lists. Other functions are written in the simplest possible way. (All \texttt{stdlib} uses so far build lists rather than another datatype.)
 
 We performed a systematic search for \ocaml|[@tail_mod_cons]| usage on November 2023, and we found that it was also used
 \begin{itemize}
