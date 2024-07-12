@@ -56,8 +56,8 @@
 
 \usepackage{mathpartir}
 \let\TirName\textsc
-\renewcommand{\DefTirName}[1]{\hypertarget{#1}{\TirName {#1}}}
-\newcommand{\RefTirName}[1]{\hyperlink{#1}{\TirName {#1}}}
+\renewcommand{\TirNameStyle}[1]{\hypertarget{#1}{\TirName{#1}}}
+\newcommand{\RefTirName}[1]{\hyperlink{#1}{\TirName{#1}}\xspace}
 
 \newenvironment{mathline}
    {\abovedisplayskip 0.2em
