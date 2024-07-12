@@ -1,10 +1,8 @@
-\section{Understanding and specifying TMC}
+\section{Specifying TMC}
 \label{sec:specification}
 
-Before proving anything about TMC, we have to understand it.
-In this section, we show that there is a simple way to describe the essence of the transformation.
-The core idea is to give intuitive specifications to the direct and DPS sub-transformations using \emph{separation logic}.
-In the next sections, we will unroll the proof of these specifications and extract a soundness theorem that lives outside of separation logic, depending only on the \DataLang semantics.
+In this section, we gradually introduce aspects of our relational separation logic, by introducing our specifications for the direct-style and destination-passing-style transformations of \cref{sec:formalization} in relational separation logic.
+% In the next sections, we will unroll the proof of these specifications and extract a soundness theorem that lives outside of separation logic, depending only on the \DataLang semantics.
 
 \subsection{Direct transformation}
 
@@ -32,7 +30,7 @@ For the time being, the ready may assume similarity is just equality on values.
 
 The DPS transformation $(\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$ is parameterized by a destination $(\datalangLoc, \datalangIdx)$ pointing to an uninitialized field of some block.
 Intuitively, $\datalangExpr_t$ computes the same thing as $\datalangExpr_s$ but writes it into the destination instead of returning it.
-Using \emph{relational separation logic}, an assumed further extension of relational Hoare logic with the concepts of separation logic, we would write:
+Using \emph{relational separation logic}, an assumed further extension of relational Hoare logic with the concepts of separation logic, we write:
 \[
     \iSimvHoare{
         (\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t \iSep
@@ -51,15 +49,14 @@ Using \emph{relational separation logic}, an assumed further extension of relati
 
 The \emph{points-to assertion} $(\datalangLoc + \datalangIdx) \iPointsto_t -$ expresses that the destination is uniquely owned by the transformed program.
 The specification requires $\datalangExpr_t$ to fill it with some value that is similar to the returned source value.
-In simple terms, this is essentially the specification of destination-passing style.
+This captures destination-passing style in simple terms.
 
 \subsection{Heap bijection}
 
-While we assumed value similarity to be just equality, it is actually not sufficient.
-Indeed, corresponding source and target block locations are not synchronized.
-To see why, consider the \datalang{map} function (\cref{fig:map}) and its DPS transform (\cref{fig:map_tmc}).
-Notice that \datalang{dst'} corresponds with the returned source block \datalang{y :: @map (fn, xs)} but is allocated before the recursive call.
-In other words, the transformed program \emph{allocates ahead} of the source program.
+Defining value similarity as just syntactic equality is not sufficient: corresponding source and target block allocations are not done in locksteps, so their location may differ -- even if we assumed that allocation uses deterministic locations. \Xgabriel{My understanding of \RefTirName{StepBlockDet} is that allocation is non-deterministic, right?}
+For example, consider the \datalang{map} function (\cref{fig:map}) and its DPS transform (\cref{fig:map_tmc}).
+In the source program, the cons cell \datalang{y :: @map (fn, xs)} is allocated after the recursive call.
+In the transformed program, the corresponding block is allocated before the call.
 
 To deal with this, we introduce a \emph{heap bijection} as in \Simuliris~\citep*{simuliris-2022}.
 Corresponding source and target locations --- pointing to block fields in our semantics --- are logically and permanently registered in this bijection. 
@@ -79,7 +76,12 @@ This mechanism is formalized by the \RefTirName{BijInsert} rule:
         }
 \end{mathpar}
 
-Finally, we define value similarity in \cref{fig:isimilar}.
+We can formally define value similarity $\datalangVal_s \iSimilar \datalangVal_t$ in \cref{fig:isimilar}.
 It coincides with equality except on blocks, for which we require all fields to be registered in the bijection.
 
 \input{figures/isimilar}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

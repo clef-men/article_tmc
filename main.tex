@@ -59,6 +59,12 @@
 \renewcommand{\DefTirName}[1]{\hypertarget{#1}{\TirName {#1}}}
 \newcommand{\RefTirName}[1]{\hyperlink{#1}{\TirName {#1}}}
 
+\newenvironment{mathline}
+   {\abovedisplayskip 0.2em
+    \belowdisplayskip 0.2em
+    \begin{mathpar}}
+   {\end{mathpar}}
+
 % ---------------------------------------------------------
 
 \usepackage[capitalize,noabbrev,nameinlink]{cleveref}

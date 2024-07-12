@@ -1,15 +1,17 @@
 \section{Relational separation logic}
 \label{sec:program_logic}
 
-To prove the specifications of \cref{sec:specification}, we need a relational program logic.
-In this section, we introduce such a logic by giving the reasoning rules that should hold.
-In the next section, we use this logic to prove the specifications.
-In section \cref{sec:simulation}, we show how it is actually defined and what notion of soundness supports it.
+\input{figures/program_logic}
 
-The reasoning rules are presented in \cref{fig:program_logic}.
-We omitted some standard rules for brevity.
-Compared to the specifications of \cref{sec:specification}, we introduced an additional parameter $\iProt$.
-We will explain it together with the \RefTirName{RelProtocol} rule.
+In this section, we describe the inference rules of our relational program logic,
+presented in \cref{fig:program_logic}.
+% In the next section, we use this logic to prove the specifications.
+% In section \cref{sec:simulation}, we show how it is actually defined and what notion of soundness supports it.
+We omitted some standard rules for brevity.\Xgabriel{Which ones?}
+Compared to the specifications of \cref{sec:specification}, we introduced an additional protocol parameter $\iProt$.
+We explain it together with the \RefTirName{RelProtocol} rule in \cref{subsec:protocols}.
+
+\Xgabriel{There are two judgments lying around, one with a precondition and one without. I would expect here some explanation about how those two judgments relate.}
 
 \subsection{Language-independent rules}
 The following rules are independent of \DataLang and could be reused as is in further works.
@@ -17,7 +19,7 @@ The following rules are independent of \DataLang and could be reused as is in fu
 \RefTirName{RelPost} states that two expressions are related when they are in the relational postcondition.
 
 \RefTirName{RelStuck} relates \emph{strongly stuck} expressions.
-An expression is strongly stuck when it is stuck for any state.
+An expression is strongly stuck when it is stuck for any heap state.
 
 \RefTirName{RelBind} is a standard bind rule sequencing computations on both sides.
 
@@ -31,10 +33,9 @@ Consequently, non-determinism is treated differently in the source and target: w
 Our operational semantics uses non-determinism in the reduction of constructors: $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ reduces to $\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}$, where $\datalangVar_1$ and $\datalangVar_2$ are bound to $\datalangExpr_1$ and $\datalangExpr_2$ in some non-deterministic order.
 In the program logic, the user may \emph{choose} an order for the source reduction, by using one of the rules \RefTirName{RelSrcBlock1} or \RefTirName{RelSrcBlock2}, and it has to prove that the expressions are related against \emph{any} target order, by proving the two premises of the rule \RefTirName{RelTgtBlock}.
 
-Once we have a deterministic constructor $\datalangBlockDet{\datalangTag}{\datalangVal_1}{\datalangVal_2}$, we can apply \RefTirName{RelSrcBlockDet} or \RefTirName{RelTgtBlockDet}, yielding a points-to assertion for the allocated block.
-
 \subsection{Language-specific rules: private locations.}
 We can reason on points-to assertions --- that we interpret as locations private to the source or target --- in a standard way.
+From a deterministic constructor $\datalangBlockDet{\datalangTag}{\datalangVal_1}{\datalangVal_2}$, we can apply \RefTirName{RelSrcBlockDet} or \RefTirName{RelTgtBlockDet}, yielding a points-to assertion for the allocated block.
 The rules \RefTirName{RelSrcLoad} and \RefTirName{RelTgtLoad} let us load the pointed value while \RefTirName{RelSrcStore} and \RefTirName{RelTgtStore} let us update it with a new value.
 
 \subsection{Language-specific rules: locations in the bijection.}
@@ -46,49 +47,35 @@ Corresponding source and target locations registered in the bijection through \R
 
 Together, these two rules enforce the bijection invariant: the contents of corresponding blocks are always similar.
 
-\subsection{Abstract protocols} \label{subsec:protocols}
+\section{Abstract protocols} \label{sec:protocols} \label{subsec:protocols}
 
-In \cref{sec:simulation}, we will see that our relation is defined coinductively and the first step of the proof essentially amounts to coinduction.
-To internalize the coinduction hypothesis into the program logic, we introduce an additional parameter $\iProt$ that we interpret as a \emph{protocol}~\citep*{de-vilhena-2021}.
+\input{figures/protocol}
 
-The function of the protocol is reflected in the $\RefTirName{RelProtocol}$ rule.
-It gives some authorized pairs of expressions $\datalangExpr_s$ and $\datalangExpr_t$ the ability to evolve in an abstract way to arbitrary expressions $\datalangExpr_s'$ and $\datalangExpr_t'$ related by some postcondition $\iPredTwo$.
-To conclude that $\datalangExpr_s$ and $\datalangExpr_t$ are related, one must prove that any such $\datalangExpr_s'$ and $\datalangExpr_t'$ remain related.
+In \cref{sec:simulation}, we explain how our relation is defined coinductively and the first step of the proof essentially amounts to coinduction.
+To internalize the coinduction hypothesis into the program logic, we introduce an additional parameter $\iProt$, a \emph{protocol}~\citep*{protocols-2021}, which are general proof-state transformers of type
+\begin{mathline}
+(\datalangExpr[] \to \datalangExpr[] \to \iProp) \to \datalangExpr[] \to \datalangExpr[] \to \iProp
+\end{mathline}
 
-Our coinduction hypothesis assumes toplevel function calls to be compatible with the direct and DPS specifications that we want to prove.
-Therefore, we instantiate the program logic with the $\iProt_\mathrm{TMC}$ protocol of \cref{fig:protocol} combining two sub-protocols $\iProt_\mathrm{dir}$ and $\iProt_\mathrm{DPS}$:
-\[
-    \iSimv{
-        \iPred
-    }{
-        \datalangExpr_s
-    }{
-        \datalangExpr_t
-    }
-    \coloneqq
-    \iSimv[
-        \iProt_\mathrm{TMC}
-    ]{
-        \iPred
-    }{
-        \datalangExpr_s
-    }{
-        \datalangExpr_t
-    }
-\]
+Protocols are used in the logic via the $\RefTirName{RelProtocol}$ rule.
+A pair of expressions $\datalangExpr_s$ and $\datalangExpr_t$ is supported by the protocol when it relates them to a postcondition $\iPredTwo$, capturing the possible results of an abstract/axiomatic transition from $\datalangExpr_s$ and $\datalangExpr_t$.
+To conclude that $\datalangExpr_s$ and $\datalangExpr_t$ are related, one must prove that any two $\datalangExpr_s'$ and $\datalangExpr_t'$ accepted by this postcondition $\iPredTwo$ remain related.
 
-Abstractly, $\iProt_\mathrm{dir}$ and $\iProt_\mathrm{DPS}$ formalize the two \emph{calling conventions} of the transformed program.
+\subsection{TMC protocols}
+
+In our correctness proof for the TMC transformation, we use a sepecific protocol $\iProt_\mathrm{TMC}$ defined in \cref{fig:protocol} by combining two sub-protocols $\iProt_\mathrm{dir}$ and $\iProt_\mathrm{DPS}$ for the direct-style and DPS-style functions. Our coinduction hypothesis assumes toplevel function calls to be compatible with the direct and DPS specifications that we want to prove, and allows to reason about recursive calls to those functions inside the function bodies we are trying to relate.
 
 $\iProt_\mathrm{dir}$ specifies the \emph{direct calling convention} induced by the direct transformation.
 It requires $\datalangExpr_s$ and $\datalangExpr_t$ to be function calls to the same function with similar arguments.
 To apply it, users can choose any postcondition implied by value similarity.
+This rule is equivalent to the \TirName{Sim-Call} rule of \Simuliris, and most useful protocols are formed by combining $\iProp_\mathrm{dir}$ with other, more specialized protocols.
 
 $\iProt_\mathrm{DPS}$ specifies the \emph{DPS calling convention} induced by the DPS transformation.
 It requires $\datalangExpr_s$ to be a function call to a TMC-transformed function $\datalangFn$ and $\datalangExpr_t$ to be a function call to the DPS transform of $\datalangFn$.
 As in the DPS specification, ownership of the destination must be passed to the protocol.
 To apply it, users can choose any postcondition implied by the postcondition of the DPS specification, including the recovered ownership of the modified destination.
 
-In the instantiated program logic, the application of the $\iProt_\mathrm{TMC}$ protocol yields the following rules:
+In the instantiated program logic, the application of the $\iProt_\mathrm{TMC}$ protocol is equivalent to the following rules:
 \begin{mathpar}
     \inferrule*[lab=RelDir]
         {
@@ -136,53 +123,35 @@ In the instantiated program logic, the application of the $\iProt_\mathrm{TMC}$ 
         }
 \end{mathpar}
 
-More generally, the technique of parameterizing the program logic by a protocol can be applied to other transformations.
-As a matter of fact, we have also verified an inlining and an APS transformation --- both included in our mechanization.
+\subsection{Other examples of protocols}
 
-For the APS transformation, we use a protocol similar to $\iProt_\mathrm{DPS}$ (combined with $\iProt_\mathrm{dir}$) that allows calling the APS transform of a source function with an integer accumulator --- assuming we extended \DataLang with integers:
+Our program logic can be instantiated with other protocols to reason other program transformations.
+To demonstrate this generality, we have also verified an inlining and an accumulator-passing-style (APS) transformation --- both included in our mechanization.
 
-\medskip
-\begin{tabular}{rcl}
-        $\iProt_\mathrm{APS} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
-        & $\coloneqq$ &
-        $\exists \datalangFn, \datalangFn_\mathit{aps}, \datalangVal_s, acc, \datalangVal_t \ldotp$
-    \\
-        &&
-        $\datalangFn \in \dom{\datalangProg_s} \iSep
-        \datalangRenaming [\datalangFn] = \datalangFn_\mathit{aps} \iSep
-        \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \iSep
-        \datalangExpr_t = \datalangCall{\datalangFnptr{\datalangFn_\mathit{aps}}}{\datalangPair{acc}{\datalangVal_t}} \iSep {}$
-    \\
-        &&
-        $\datalangVal_s \iSimilar \datalangVal_t \iSep {}$
-    \\
-        &&
-        $\forall \datalangVal_s', \datalangExpr_t' \ldotp$
-    \\
-        &&
-        $\bm{\mathrm{match}}\ \datalangVal_s'\ \bm{\mathrm{with}}\ \datalangNat \Rightarrow \datalangExpr_t' = acc + \datalangNat \mid \_ \Rightarrow \mathrm{strongly \mathhyphen stuck}_{\datalangProg_t} (\datalangExpr_t')\ \bm{\mathrm{end}} \iWand$
-    \\
-        &&
-        $\iPredTwo (\datalangVal_s', \datalangExpr_t')$
-\end{tabular}
-\medskip
+\paragraph{Inlining:} Here, the relation $\datalangExpr_s \rightsquigarrow \datalangExpr_t$ allows $\datalangExpr_t$ to recursively inline functions in $\datalangExpr_s$.
+As with TMC, it captures all possible inlining strategies.
 
-For the inlining transformation, we use a fairly simple protocol (combined with $\iProt_\mathrm{dir}$) relating a source function and its body:
+This relation can be proved correct by using a fairly simple protocol (combined with $\iProt_\mathrm{dir}$) relating a source function and its body:
 
-\medskip
 \begin{tabular}{rcl}
         $\iProt_\mathrm{inline} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
         & $\coloneqq$ &
         $\exists \datalangFn, \datalangVar, \datalangExpr_s', \datalangExpr_t', \datalangVal_s, \datalangVal_t \ldotp$
     \\
         &&
-        $\datalangProg_s [\datalangFn] = \datalangRec{\datalangVar}{\datalangExpr_s'} \iSep
-        \datalangExpr_s' \rightsquigarrow \datalangExpr_t' \iSep
-        \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s} \iSep
-        \datalangExpr_t = \datalangLet{\datalangVar}{\datalangVal_t}{\datalangExpr_t'} \iSep {}$
+        $
+        \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s}
+        \ \iSep\ %
+        \datalangVal_s \iSimilar \datalangVal_t
+        \ \iSep {}$
     \\
         &&
-        $\datalangVal_s \iSimilar \datalangVal_t \iSep {}$
+        $\datalangProg_s [\datalangFn] = (\datalangRec{\datalangVar}{\datalangExpr_s'})
+        \ \iSep\ %
+        \datalangExpr_s' \rightsquigarrow \datalangExpr_t'
+        \ \iSep\ %
+        \datalangExpr_t = (\datalangLet{\datalangVar}{\datalangVal_t}{\datalangExpr_t'})
+        \ \iSep {}$
     \\
         &&
         $\forall \datalangValTwo_s, \datalangValTwo_t \ldotp
@@ -191,9 +160,44 @@ For the inlining transformation, we use a fairly simple protocol (combined with 
 \end{tabular}
 \medskip
 
-Here, the relation $\datalangExpr_s \rightsquigarrow \datalangExpr_t$ allows $\datalangExpr_t$ to recursively inline functions in $\datalangExpr_s$.
-As with TMC, it captures all possible inlining strategies.
-In practice, the inlining depth would obviously be bounded.
+\paragraph{Accumulator-passing style}: The APS transformation is a variant of the TMC transformation where the contexts that are made tail-recursive are applications of associative arithmetic operators, typically of the form $(\datalangExpr + \datalangCtxHole)$ or $\datalangExpr_1 + (\datalangExpr_2 \times \datalangCtxHole)$. (See the discussion in \citet*{tmc-koka-2023}.)
 
-\input{figures/program_logic}
-\input{figures/protocol}
+We defined an APS transformation, after extending \DataLang with integers and arithmetic operations. We verify it with a protocol similar to $\iProt_\mathrm{DPS}$ that allows calling the APS transform of a source function with an integer accumulator:
+
+\medskip
+\begin{tabular}{rcl}
+        $\iProt_\mathrm{APS} (\iPredTwo, \datalangExpr_s, \datalangExpr_t)$
+        & $\coloneqq$ &
+        $\exists \datalangFn, \datalangFn_\mathit{aps}, \datalangVal_s, \datalangVal_\mathit{acc}, \datalangVal_t \ldotp$
+    \\
+        &&
+        $\datalangFn \in \dom{\datalangProg_s}
+        \ \iSep\ %
+        \datalangRenaming [\datalangFn] = \datalangFn_\mathit{aps}
+        \iSep {}$
+    \\
+        &&
+        $\datalangVal_s \iSimilar \datalangVal_t
+        \ \iSep\ %
+        \datalangExpr_s = \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s}
+        \ \iSep\ %
+        \datalangExpr_t = \datalangCall{\datalangFnptr{\datalangFn_\mathit{aps}}}{\datalangPair{\datalangVal_\mathit{acc}}{\datalangVal_t}}
+        \iSep {}$
+    \\
+        &&
+        $\forall \datalangVal_s', \datalangExpr_t' \ldotp$
+    \\
+        &&
+        $\bm{\mathrm{match}}\ \datalangVal_s'\ \bm{\mathrm{with}}\ \datalangNat \Rightarrow \datalangExpr_t' = \datalangVal_\mathit{acc} + \datalangNat \mid \_ \Rightarrow \mathrm{strongly \mathhyphen stuck}_{\datalangProg_t} (\datalangExpr_t')\ \bm{\mathrm{end}} \iWand$
+    \\
+        &&
+        $\iPredTwo (\datalangVal_s', \datalangExpr_t')$
+\end{tabular}
+\medskip
+
+One subtlety is that our \DataLang language is untyped, so arithmetic operations (here addition) may get stuck on non-integer values. If the function call $\datalangCall {\datalangFnPtr \datalangFn} {\datalangVal_s}$ in the source program returns a non-integer value, then the outer context $\datalangVar_\mathit{acc} + \datalangCtxHole$ gets stuck. But in the transformed program, this failure happens inside the body of the APS-transformed function $\datalangFnPtr {\datalangFn_\mathit{aps}}$. To represent this failure case in our protocol, the postcondition $\iPredTwo$ relates non-integer source return value $\datalangVal_s'$ with any strongly stuck expression $\datalangExpr_t'$ in the target. This relies on the generality of our protocols being predicate transformers on expressions, not just values.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

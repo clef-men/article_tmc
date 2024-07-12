@@ -3,6 +3,27 @@
 
 In this section, we prove the specifications of \cref{sec:specification}.
 
+As mentioned in \cref{sec:protocols}, we instantiate our program logic with a specific protocol $\iProt_\mathrm{TMC}$ defined in \cref{fig:protocol}. We define a shorthand notation for this instantiation:
+\begin{mathline}
+    \iSimv{
+        \iPred
+    }{
+        \datalangExpr_s
+    }{
+        \datalangExpr_t
+    }
+    \coloneqq
+    \iSimv[
+        \iProt_\mathrm{TMC}
+    ]{
+        \iPred
+    }{
+        \datalangExpr_s
+    }{
+        \datalangExpr_t
+    }
+\end{mathline}
+
 So far, we assumed expressions to be \emph{closed}, \ie to have no free variables.
 To carry out the proof, we need to generalize the specifications to \emph{open} expressions that may have some.
 To do so, we introduce a \emph{runtime relation} $\iRsimv{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ in \cref{fig:rsim}.
@@ -65,3 +86,8 @@ In addition, we will only consider \emph{valid source expressions} --- denoted b
 \end{myproof}
 
 \input{figures/rsim}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
