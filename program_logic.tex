@@ -3,15 +3,18 @@
 
 \input{figures/program_logic}
 
-In this section, we describe the inference rules of our relational program logic,
-presented in \cref{fig:program_logic}.
-% In the next section, we use this logic to prove the specifications.
-% In section \cref{sec:simulation}, we show how it is actually defined and what notion of soundness supports it.
-We omitted some standard rules for brevity.\Xgabriel{Which ones?}
+In this section, we describe the inference rules of our relational program logic, presented in \cref{fig:program_logic}.
+We omitted some congruence rules for brevity.
+The relation $\iSimv{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ relates a source expression $\datalangExpr_s$ with a target expression $\datalangExpr_t$ under a postcondition $\iPred$.
+We extend it to support a precondition in the standard way:
+\[
+    \iSimvHoare{P}{\iPred}{\datalangExpr_s}{\datalangExpr_t}
+    \coloneqq
+    \iPersistent \left( P \iWand \iSimv{\iPred}{\datalangExpr_s}{\datalangExpr_t} \right)
+\]
+
 Compared to the specifications of \cref{sec:specification}, we introduced an additional protocol parameter $\iProt$.
 We explain it together with the \RefTirName{RelProtocol} rule in \cref{subsec:protocols}.
-
-\Xgabriel{There are two judgments lying around, one with a precondition and one without. I would expect here some explanation about how those two judgments relate. TODO for Clément.}
 
 \subsection{Language-independent rules}
 The following rules are independent of \DataLang and could be reused as is in further works.
