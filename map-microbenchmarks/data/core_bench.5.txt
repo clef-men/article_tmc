@@ -1,338 +1,416 @@
 With lists of size 0
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                    
   Name            Time/Run   mWd/Run   Percentage  
  --------------- ---------- --------- ------------ 
-  naive-nontail     6.67ns     5.00w       76.53%  
-  naive-tail        8.72ns     5.00w      100.00%  
-  base              6.70ns     5.00w       76.82%  
-  containers        6.92ns     5.00w       79.32%  
-  batteries         6.84ns     5.00w       78.46%  
-  tmc               6.84ns     5.00w       78.40%  
-  unrolled          6.51ns     5.00w       74.70%  
+  naive-nontail     7.30ns     5.00w       81.00%  
+  naive-tail        9.01ns     5.01w      100.00%  
+  base              7.54ns     5.00w       83.70%  
+  containers        8.33ns     5.00w       92.46%  
+  batteries         7.64ns     5.00w       84.76%  
+  tmc               8.64ns     5.00w       95.85%  
+  unrolled          7.98ns     5.00w       88.58%  
                                                    
 With lists of size 1
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                    
   Name            Time/Run   mWd/Run   Percentage  
  --------------- ---------- --------- ------------ 
-  naive-nontail     9.92ns     8.00w       80.72%  
-  naive-tail       11.18ns    11.00w       90.97%  
-  base              8.82ns     8.00w       71.79%  
-  containers        8.53ns     8.00w       69.38%  
-  batteries        10.93ns    13.00w       88.92%  
-  tmc              12.29ns     8.00w      100.00%  
-  unrolled          8.68ns     8.00w       70.66%  
+  naive-nontail    10.14ns     8.00w       76.75%  
+  naive-tail       11.51ns    11.00w       87.13%  
+  base              9.06ns     8.00w       68.54%  
+  containers        9.44ns     8.00w       71.42%  
+  batteries        11.48ns    13.00w       86.86%  
+  tmc              13.22ns     8.00w      100.00%  
+  unrolled          8.90ns     8.00w       67.33%  
                                                    
 With lists of size 2
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                    
   Name            Time/Run   mWd/Run   Percentage  
  --------------- ---------- --------- ------------ 
-  naive-nontail    14.01ns    11.00w       85.47%  
-  naive-tail       13.84ns    17.00w       84.46%  
-  base             10.78ns    11.00w       65.75%  
-  containers       12.22ns    11.00w       74.55%  
-  batteries        15.36ns    16.00w       93.71%  
-  tmc              16.39ns    11.00w      100.00%  
-  unrolled         10.63ns    11.00w       64.86%  
+  naive-nontail    15.71ns    11.00w       91.58%  
+  naive-tail       14.63ns    17.00w       85.31%  
+  base             11.47ns    11.00w       66.87%  
+  containers       11.98ns    11.00w       69.86%  
+  batteries        16.28ns    16.01w       94.95%  
+  tmc              17.15ns    11.00w      100.00%  
+  unrolled         11.59ns    11.01w       67.59%  
                                                    
 With lists of size 3
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                    
   Name            Time/Run   mWd/Run   Percentage  
  --------------- ---------- --------- ------------ 
-  naive-nontail    16.65ns    14.00w       81.14%  
-  naive-tail       19.13ns    23.00w       93.23%  
-  base             12.82ns    14.00w       62.46%  
-  containers       14.16ns    14.00w       68.99%  
-  batteries        19.78ns    19.00w       96.36%  
-  tmc              20.52ns    14.00w      100.00%  
-  unrolled         12.84ns    14.00w       62.56%  
+  naive-nontail    17.77ns    13.99w       79.41%  
+  naive-tail       18.92ns    23.01w       84.53%  
+  base             13.43ns    13.99w       60.02%  
+  containers       13.09ns    14.00w       58.51%  
+  batteries        22.38ns    19.00w      100.00%  
+  tmc              21.74ns    13.99w       97.15%  
+  unrolled         12.30ns    14.00w       54.98%  
                                                    
 With lists of size 5
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                    
   Name            Time/Run   mWd/Run   Percentage  
  --------------- ---------- --------- ------------ 
-  naive-nontail    22.68ns    20.00w       78.21%  
-  naive-tail       24.25ns    35.00w       83.63%  
-  base             20.38ns    20.00w       70.26%  
-  containers       20.55ns    20.00w       70.87%  
-  batteries        28.07ns    25.00w       96.79%  
-  tmc              29.00ns    20.00w      100.00%  
-  unrolled         19.98ns    20.00w       68.91%  
+  naive-nontail    24.82ns    20.01w       76.64%  
+  naive-tail       24.79ns    35.00w       76.54%  
+  base             19.67ns    20.01w       60.72%  
+  containers       20.03ns    20.00w       61.85%  
+  batteries        32.39ns    25.02w      100.00%  
+  tmc              31.02ns    19.99w       95.78%  
+  unrolled         20.48ns    19.99w       63.24%  
                                                    
 With lists of size 10
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                    
   Name            Time/Run   mWd/Run   Percentage  
  --------------- ---------- --------- ------------ 
-  naive-nontail    38.52ns    35.00w       75.07%  
-  naive-tail       41.32ns    65.00w       80.52%  
-  base             29.93ns    35.00w       58.33%  
-  containers       33.81ns    35.00w       65.89%  
-  batteries        50.80ns    40.00w       99.00%  
-  tmc              51.31ns    35.00w      100.00%  
-  unrolled         32.67ns    35.00w       63.67%  
+  naive-nontail    43.47ns    35.03w       76.31%  
+  naive-tail       42.70ns    64.99w       74.96%  
+  base             31.27ns    35.01w       54.89%  
+  containers       32.28ns    35.01w       56.67%  
+  batteries        56.97ns    39.99w      100.00%  
+  tmc              54.68ns    34.99w       95.99%  
+  unrolled         33.79ns    35.00w       59.32%  
                                                    
 With lists of size 17
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                    
   Name            Time/Run   mWd/Run   Percentage  
  --------------- ---------- --------- ------------ 
-  naive-nontail    61.75ns    56.00w       76.46%  
-  naive-tail       67.85ns   107.00w       84.01%  
-  base             46.94ns    56.00w       58.13%  
-  containers       49.84ns    56.00w       61.72%  
-  batteries        80.42ns    61.00w       99.58%  
-  tmc              80.76ns    56.00w      100.00%  
-  unrolled         52.05ns    56.00w       64.45%  
+  naive-nontail    69.63ns    56.04w       76.94%  
+  naive-tail       71.93ns   107.03w       79.47%  
+  base             48.25ns    56.02w       53.31%  
+  containers       48.59ns    55.99w       53.68%  
+  batteries        90.50ns    61.04w      100.00%  
+  tmc              87.09ns    56.05w       96.22%  
+  unrolled         50.95ns    56.02w       56.29%  
                                                    
 With lists of size 31
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                          
   Name            Time/Run   mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ---------- --------- ---------- ---------- ------------ 
-  naive-nontail   124.67ns    97.99w                             86.07%  
-  naive-tail      133.85ns   191.00w      0.12w      0.12w       92.41%  
-  base             82.62ns    98.00w                             57.04%  
-  containers       87.22ns    98.00w                             60.22%  
-  batteries       144.84ns   103.00w                            100.00%  
-  tmc             141.59ns    98.00w                             97.76%  
-  unrolled         91.02ns    98.00w                             62.84%  
+  naive-nontail   135.85ns    97.97w                             82.08%  
+  naive-tail      144.60ns   191.06w      0.12w      0.12w       87.36%  
+  base             84.33ns    97.97w                             50.95%  
+  containers       83.99ns    98.05w                             50.75%  
+  batteries       165.51ns   102.98w                            100.00%  
+  tmc             157.31ns    98.08w                             95.05%  
+  unrolled         87.64ns    97.97w                             52.95%  
                                                                          
 With lists of size 56
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                          
   Name            Time/Run   mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ---------- --------- ---------- ---------- ------------ 
-  naive-nontail   207.12ns   173.00w      0.16w      0.16w       77.90%  
-  naive-tail      265.89ns   341.01w      0.38w      0.38w      100.00%  
-  base            145.12ns   173.00w      0.16w      0.16w       54.58%  
-  containers      152.24ns   173.00w      0.16w      0.16w       57.26%  
-  batteries       261.91ns   178.00w      0.22w      0.22w       98.50%  
-  tmc             252.69ns   173.01w      0.22w      0.22w       95.04%  
-  unrolled        157.58ns   173.00w      0.21w      0.21w       59.27%  
+  naive-nontail   231.08ns   172.92w      0.16w      0.16w       81.05%  
+  naive-tail      255.12ns   340.95w      0.39w      0.39w       89.48%  
+  base            154.45ns   173.02w      0.16w      0.16w       54.17%  
+  containers      150.92ns   172.98w      0.16w      0.16w       52.93%  
+  batteries       285.12ns   178.03w      0.22w      0.22w      100.00%  
+  tmc             265.53ns   173.14w      0.22w      0.22w       93.13%  
+  unrolled        153.63ns   173.02w      0.21w      0.21w       53.88%  
                                                                          
 With lists of size 100
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                          
   Name            Time/Run   mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ---------- --------- ---------- ---------- ------------ 
-  naive-nontail   355.75ns   304.95w      0.52w      0.52w       73.82%  
-  naive-tail      481.91ns   604.99w      1.21w      1.21w      100.00%  
-  base            286.05ns   305.00w      0.52w      0.52w       59.36%  
-  containers      318.52ns   305.01w      0.52w      0.52w       66.10%  
-  batteries       470.92ns   310.01w      0.71w      0.71w       97.72%  
-  tmc             445.04ns   305.02w      0.70w      0.70w       92.35%  
-  unrolled        280.88ns   305.01w      0.69w      0.69w       58.28%  
+  naive-nontail   392.93ns   304.96w      0.52w      0.52w       78.75%  
+  naive-tail      499.00ns   604.80w      1.22w      1.22w      100.00%  
+  base            267.67ns   304.89w      0.52w      0.52w       53.64%  
+  containers      301.94ns   304.88w      0.52w      0.52w       60.51%  
+  batteries       497.94ns   310.30w      0.71w      0.71w       99.79%  
+  tmc             471.15ns   305.30w      0.70w      0.70w       94.42%  
+  unrolled        271.65ns   304.90w      0.70w      0.70w       54.44%  
                                                                          
 With lists of size 177
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                            
   Name            Time/Run     mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ---------- ----------- ---------- ---------- ------------ 
-  naive-nontail   612.60ns     535.97w      1.62w      1.62w       72.10%  
-  naive-tail      839.98ns   1_067.02w      3.77w      3.77w       98.86%  
-  base            534.51ns     536.00w      1.62w      1.62w       62.91%  
-  containers      574.59ns     536.03w      1.63w      1.63w       67.62%  
-  batteries       849.70ns     540.97w      2.18w      2.18w      100.00%  
-  tmc             805.62ns     535.98w      2.17w      2.17w       94.81%  
-  unrolled        502.14ns     535.99w      2.16w      2.16w       59.10%  
+  naive-nontail   682.95ns     536.23w      1.62w      1.62w       77.12%  
+  naive-tail      854.46ns   1_066.63w      3.78w      3.78w       96.48%  
+  base            537.96ns     536.22w      1.61w      1.61w       60.75%  
+  containers      513.08ns     536.03w      1.63w      1.63w       57.94%  
+  batteries       885.60ns     541.61w      2.19w      2.19w      100.00%  
+  tmc             827.06ns     535.86w      2.17w      2.17w       93.39%  
+  unrolled        480.90ns     535.83w      2.16w      2.16w       54.30%  
                                                                            
 With lists of size 316
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                              
   Name              Time/Run     mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ------------ ----------- ---------- ---------- ------------ 
-  naive-nontail   1_166.16ns     953.01w      5.14w      5.14w       74.15%  
-  naive-tail      1_572.74ns   1_901.00w     12.02w     12.02w      100.00%  
-  base              950.81ns     953.01w      5.15w      5.15w       60.46%  
-  containers      1_008.98ns     953.00w      5.15w      5.15w       64.15%  
-  batteries       1_519.46ns     957.95w      6.91w      6.91w       96.61%  
-  tmc             1_412.75ns     953.04w      6.88w      6.88w       89.83%  
-  unrolled          878.51ns     953.01w      6.83w      6.83w       55.86%  
+  naive-nontail   1_214.85ns     952.89w      5.15w      5.15w       74.21%  
+  naive-tail      1_637.10ns   1_901.90w     12.04w     12.04w      100.00%  
+  base              968.77ns     952.68w      5.13w      5.13w       59.18%  
+  containers        925.70ns     953.03w      5.10w      5.10w       56.54%  
+  batteries       1_591.11ns     958.26w      6.92w      6.92w       97.19%  
+  tmc             1_479.22ns     952.83w      6.86w      6.86w       90.36%  
+  unrolled          868.76ns     952.90w      6.84w      6.84w       53.07%  
                                                                              
 With lists of size 562
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                          
   Name            Time/Run   mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ---------- --------- ---------- ---------- ------------ 
-  naive-nontail     2.05us    1.69kw     16.31w     16.31w       69.13%  
-  naive-tail        2.97us    3.38kw     38.02w     38.02w      100.00%  
-  base              1.77us    1.69kw     16.27w     16.27w       59.52%  
-  containers        1.86us    1.69kw     16.24w     16.24w       62.60%  
-  batteries         2.75us    1.70kw     21.77w     21.77w       92.57%  
-  tmc               2.62us    1.69kw     21.72w     21.72w       88.10%  
-  unrolled          1.71us    1.69kw     21.73w     21.73w       57.60%  
+  naive-nontail     2.50us    1.69kw     16.41w     16.41w       83.69%  
+  naive-tail        2.99us    3.38kw     38.24w     38.24w      100.00%  
+  base              1.78us    1.69kw     16.47w     16.47w       59.69%  
+  containers        1.75us    1.69kw     16.21w     16.21w       58.52%  
+  batteries         2.86us    1.70kw     21.83w     21.83w       95.53%  
+  tmc               2.66us    1.69kw     21.74w     21.74w       88.82%  
+  unrolled          1.63us    1.69kw     21.74w     21.74w       54.50%  
                                                                          
 With lists of size 1000
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                          
   Name            Time/Run   mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ---------- --------- ---------- ---------- ------------ 
-  naive-nontail     3.91us    3.00kw     51.43w     51.43w       66.32%  
-  naive-tail        5.89us    6.01kw    120.29w    120.29w      100.00%  
-  base              3.21us    3.00kw     51.41w     51.41w       54.43%  
-  containers        3.53us    3.01kw     51.33w     51.33w       59.80%  
-  batteries         5.10us    3.01kw     68.88w     68.88w       86.56%  
-  tmc               4.75us    3.01kw     68.71w     68.71w       80.56%  
-  unrolled          3.29us    3.00kw     68.55w     68.55w       55.76%  
+  naive-nontail     4.48us    3.00kw     51.58w     51.58w       81.15%  
+  naive-tail        5.52us    6.01kw    120.44w    120.44w      100.00%  
+  base              3.34us    3.01kw     51.39w     51.39w       60.47%  
+  containers        3.27us    3.01kw     51.55w     51.55w       59.35%  
+  batteries         5.40us    3.01kw     69.05w     69.05w       97.91%  
+  tmc               4.86us    3.01kw     68.68w     68.68w       88.05%  
+  unrolled          3.01us    3.01kw     68.61w     68.61w       54.52%  
                                                                          
 With lists of size 1778
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                          
   Name            Time/Run   mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ---------- --------- ---------- ---------- ------------ 
-  naive-nontail     7.64us    5.34kw    162.95w    162.95w       64.41%  
-  naive-tail       11.86us   10.67kw    380.05w    380.05w      100.00%  
-  base              6.43us    5.34kw    162.73w    162.73w       54.25%  
-  containers        6.73us    5.34kw    162.75w    162.75w       56.78%  
-  batteries         9.52us    5.34kw    217.35w    217.35w       80.31%  
-  tmc               8.92us    5.34kw    217.21w    217.21w       75.20%  
-  unrolled          6.45us    5.34kw    216.94w    216.94w       54.42%  
+  naive-nontail     8.37us    5.34kw    162.70w    162.70w       77.62%  
+  naive-tail       10.78us   10.68kw    380.92w    380.92w      100.00%  
+  base              6.16us    5.34kw    163.15w    163.15w       57.18%  
+  containers        6.19us    5.34kw    162.85w    162.85w       57.41%  
+  batteries         9.51us    5.35kw    217.63w    217.63w       88.19%  
+  tmc               8.88us    5.34kw    217.04w    217.04w       82.41%  
+  unrolled          5.81us    5.34kw    216.60w    216.60w       53.86%  
                                                                          
 With lists of size 3162
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                            
   Name            Time/Run   mWd/Run    mjWd/Run    Prom/Run   Percentage  
  --------------- ---------- --------- ----------- ----------- ------------ 
-  naive-nontail    15.37us    9.49kw     514.47w     514.47w       64.20%  
-  naive-tail       23.94us   18.98kw   1_202.07w   1_202.07w      100.00%  
-  base             12.06us    9.49kw     515.08w     515.08w       50.40%  
-  containers       13.39us    9.49kw     515.06w     515.06w       55.92%  
-  batteries        18.45us    9.50kw     687.22w     687.22w       77.06%  
-  tmc              17.57us    9.49kw     686.05w     686.05w       73.41%  
-  unrolled         12.28us    9.49kw     686.77w     686.77w       51.30%  
+  naive-nontail    16.45us    9.51kw     512.25w     512.25w       74.82%  
+  naive-tail       21.99us   18.98kw   1_200.37w   1_200.37w      100.00%  
+  base             12.64us    9.50kw     514.97w     514.97w       57.50%  
+  containers       12.03us    9.49kw     514.52w     514.52w       54.70%  
+  batteries        18.48us    9.52kw     688.83w     688.83w       84.06%  
+  tmc              17.26us    9.50kw     687.83w     687.83w       78.49%  
+  unrolled         11.71us    9.50kw     686.39w     686.39w       53.26%  
                                                                            
 With lists of size 5623
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                          
   Name            Time/Run   mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ---------- --------- ---------- ---------- ------------ 
-  naive-nontail    33.94us   16.88kw     1.63kw     1.63kw       65.71%  
-  naive-tail       51.65us   33.75kw     3.80kw     3.80kw      100.00%  
-  base             33.34us   17.76kw     1.69kw     1.69kw       64.55%  
-  containers       30.72us   19.22kw     1.81kw     1.81kw       59.47%  
-  batteries        37.26us   16.88kw     2.17kw     2.17kw       72.12%  
-  tmc              35.36us   16.88kw     2.17kw     2.17kw       68.45%  
-  unrolled         27.12us   16.87kw     2.17kw     2.17kw       52.49%  
+  naive-nontail    38.26us   16.90kw     1.63kw     1.63kw       78.82%  
+  naive-tail       48.54us   33.79kw     3.81kw     3.81kw      100.00%  
+  base             30.76us   17.76kw     1.69kw     1.69kw       63.36%  
+  containers       28.65us   19.25kw     1.82kw     1.82kw       59.03%  
+  batteries        37.25us   16.92kw     2.18kw     2.18kw       76.73%  
+  tmc              35.41us   16.89kw     2.18kw     2.18kw       72.94%  
+  unrolled         25.60us   16.91kw     2.18kw     2.18kw       52.74%  
                                                                          
 With lists of size 10000
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                          
   Name            Time/Run   mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ---------- --------- ---------- ---------- ------------ 
-  naive-nontail    75.14us   30.01kw     5.15kw     5.15kw       61.50%  
-  naive-tail      122.18us   60.02kw    12.02kw    12.02kw      100.00%  
-  base             89.71us   37.21kw     6.30kw     6.30kw       73.42%  
-  containers       96.90us   38.67kw     6.61kw     6.61kw       79.31%  
-  batteries       105.20us   30.01kw     6.90kw     6.90kw       86.10%  
-  tmc             103.69us   30.01kw     6.90kw     6.90kw       84.86%  
-  unrolled         88.58us   30.00kw     6.90kw     6.90kw       72.50%  
+  naive-nontail    79.67us   30.05kw     5.16kw     5.16kw       70.28%  
+  naive-tail      113.36us   60.02kw    12.01kw    12.01kw      100.00%  
+  base             65.04us   37.29kw     6.30kw     6.30kw       57.38%  
+  containers       66.06us   38.66kw     6.59kw     6.59kw       58.28%  
+  batteries        81.50us   30.04kw     6.88kw     6.88kw       71.90%  
+  tmc              77.49us   30.07kw     6.89kw     6.89kw       68.36%  
+  unrolled         60.75us   30.02kw     6.88kw     6.88kw       53.59%  
                                                                          
-With lists of size 17782
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+With lists of size 12589
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
+                                                                         
+  Name            Time/Run   mWd/Run   mjWd/Run   Prom/Run   Percentage  
+ --------------- ---------- --------- ---------- ---------- ------------ 
+  naive-nontail   113.36us   37.85kw     8.19kw     8.19kw       72.56%  
+  naive-tail      156.24us   75.72kw    19.05kw    19.05kw      100.00%  
+  base             97.65us   48.79kw    10.46kw    10.46kw       62.50%  
+  containers       92.84us   50.27kw    10.88kw    10.88kw       59.42%  
+  batteries       112.87us   37.84kw    10.92kw    10.92kw       72.24%  
+  tmc             107.44us   37.77kw    10.90kw    10.90kw       68.77%  
+  unrolled         86.05us   37.86kw    10.93kw    10.93kw       55.07%  
+                                                                         
+With lists of size 15848
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
+                                                                         
+  Name            Time/Run   mWd/Run   mjWd/Run   Prom/Run   Percentage  
+ --------------- ---------- --------- ---------- ---------- ------------ 
+  naive-nontail   164.84us   47.59kw    13.00kw    13.00kw       73.43%  
+  naive-tail      224.50us   95.26kw    30.32kw    30.32kw      100.00%  
+  base            135.66us   63.38kw    17.27kw    17.27kw       60.43%  
+  containers      133.10us   64.77kw    17.82kw    17.82kw       59.29%  
+  batteries       157.75us   47.61kw    17.30kw    17.30kw       70.27%  
+  tmc             149.75us   47.70kw    17.33kw    17.33kw       66.70%  
+  unrolled        126.46us   47.58kw    17.28kw    17.28kw       56.33%  
+                                                                         
+With lists of size 19952
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                           
   Name            Time/Run    mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ---------- ---------- ---------- ---------- ------------ 
-  naive-nontail   254.74us    53.37kw    16.40kw    16.40kw       61.52%  
-  naive-tail      414.09us   106.74kw    38.33kw    38.33kw      100.00%  
-  base            259.57us    71.84kw    22.19kw    22.19kw       62.69%  
-  containers      259.64us    73.29kw    22.82kw    22.82kw       62.70%  
-  batteries       274.09us    53.36kw    21.91kw    21.91kw       66.19%  
-  tmc             270.20us    53.37kw    21.93kw    21.93kw       65.25%  
-  unrolled        238.27us    53.36kw    21.91kw    21.91kw       57.54%  
+  naive-nontail   238.59us    59.90kw    20.51kw    20.51kw       72.85%  
+  naive-tail      327.51us   119.96kw    47.96kw    47.96kw      100.00%  
+  base            197.94us    81.66kw    28.22kw    28.22kw       60.44%  
+  containers      197.29us    83.06kw    28.96kw    28.96kw       60.24%  
+  batteries       220.59us    60.07kw    27.48kw    27.48kw       67.36%  
+  tmc             216.73us    59.93kw    27.43kw    27.43kw       66.18%  
+  unrolled        185.03us    59.90kw    27.38kw    27.38kw       56.50%  
+                                                                          
+With lists of size 25118
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
+                                                                          
+  Name            Time/Run    mWd/Run   mjWd/Run   Prom/Run   Percentage  
+ --------------- ---------- ---------- ---------- ---------- ------------ 
+  naive-nontail   330.16us    75.44kw    32.31kw    32.31kw       66.22%  
+  naive-tail      498.60us   151.29kw    76.20kw    76.20kw      100.00%  
+  base            295.53us   104.62kw    45.98kw    45.98kw       59.27%  
+  containers      300.31us   106.27kw    46.93kw    46.93kw       60.23%  
+  batteries       320.23us    75.40kw    43.34kw    43.34kw       64.22%  
+  tmc             317.22us    75.40kw    43.35kw    43.35kw       63.62%  
+  unrolled        274.28us    75.47kw    43.47kw    43.47kw       55.01%  
                                                                           
 With lists of size 31622
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
+                                                                          
+  Name            Time/Run    mWd/Run   mjWd/Run   Prom/Run   Percentage  
+ --------------- ---------- ---------- ---------- ---------- ------------ 
+  naive-nontail   505.67us    95.24kw    51.77kw    51.77kw       69.67%  
+  naive-tail      725.85us   189.77kw   119.26kw   119.26kw      100.00%  
+  base            453.02us   133.47kw    73.75kw    73.75kw       62.41%  
+  containers      453.32us   134.80kw    75.13kw    75.13kw       62.45%  
+  batteries       477.38us    95.25kw    69.01kw    69.01kw       65.77%  
+  tmc             465.68us    95.25kw    69.02kw    69.02kw       64.16%  
+  unrolled        414.92us    95.14kw    68.85kw    68.85kw       57.16%  
+                                                                          
+With lists of size 39810
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                             
   Name              Time/Run    mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ------------ ---------- ---------- ---------- ------------ 
-  naive-nontail     730.05us    94.91kw    52.07kw    52.07kw       60.89%  
-  naive-tail      1_198.91us   189.81kw   120.27kw   120.27kw      100.00%  
-  base              745.62us   133.30kw    74.28kw    74.28kw       62.19%  
-  containers        743.15us   134.85kw    75.61kw    75.61kw       61.99%  
-  batteries         734.06us    94.92kw    69.25kw    69.25kw       61.23%  
-  tmc               728.41us    94.87kw    69.23kw    69.23kw       60.76%  
-  unrolled          680.70us    94.87kw    69.29kw    69.29kw       56.78%  
+  naive-nontail     754.79us   120.05kw    81.81kw    81.81kw       71.29%  
+  naive-tail      1_058.74us   239.91kw   173.93kw   173.93kw      100.00%  
+  base              669.77us   169.72kw   118.16kw   118.16kw       63.26%  
+  containers        681.55us   171.77kw   120.03kw   120.03kw       64.37%  
+  batteries         701.88us   119.77kw   109.35kw   109.35kw       66.29%  
+  tmc               685.55us   119.82kw   109.43kw   109.43kw       64.75%  
+  unrolled          619.43us   119.78kw   109.38kw   109.38kw       58.51%  
                                                                             
-With lists of size 56234
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+With lists of size 50118
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
+                                                                            
+  Name              Time/Run    mWd/Run   mjWd/Run   Prom/Run   Percentage  
+ --------------- ------------ ---------- ---------- ---------- ------------ 
+  naive-nontail   1_157.68us   151.01kw   126.63kw   126.63kw       86.86%  
+  naive-tail      1_332.74us   301.18kw   235.93kw   235.93kw      100.00%  
+  base              985.18us   216.35kw   171.50kw   171.50kw       73.92%  
+  containers        972.97us   218.08kw   173.52kw   173.52kw       73.01%  
+  batteries         951.25us   150.50kw   150.52kw   150.52kw       71.38%  
+  tmc               944.80us   150.60kw   150.64kw   150.64kw       70.89%  
+  unrolled          839.62us   151.02kw   151.10kw   151.10kw       63.00%  
+                                                                            
+With lists of size 63095
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                           
   Name            Time/Run    mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ---------- ---------- ---------- ---------- ------------ 
-  naive-nontail     2.06ms   168.75kw   152.42kw   152.42kw       78.36%  
-  naive-tail        2.63ms   337.69kw   273.01kw   273.01kw      100.00%  
-  base              1.86ms   242.75kw   201.18kw   201.18kw       70.64%  
-  containers        1.89ms   244.37kw   199.27kw   199.27kw       71.79%  
-  batteries         1.71ms   168.76kw   168.76kw   168.76kw       64.96%  
-  tmc               1.68ms   168.74kw   168.74kw   168.74kw       63.79%  
-  unrolled          1.61ms   168.87kw   168.88kw   168.88kw       61.30%  
+  naive-nontail     1.60ms   189.91kw   179.57kw   179.57kw       87.09%  
+  naive-tail        1.84ms   379.62kw   314.94kw   314.94kw      100.00%  
+  base              1.24ms   274.59kw   232.24kw   232.24kw       67.69%  
+  containers        1.29ms   274.41kw   233.20kw   233.20kw       70.13%  
+  batteries         1.19ms   190.63kw   190.82kw   190.82kw       64.90%  
+  tmc               1.18ms   190.63kw   190.82kw   190.82kw       64.04%  
+  unrolled          1.06ms   190.40kw   190.55kw   190.55kw       57.83%  
+                                                                          
+With lists of size 79432
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
+                                                                          
+  Name            Time/Run    mWd/Run   mjWd/Run   Prom/Run   Percentage  
+ --------------- ---------- ---------- ---------- ---------- ------------ 
+  naive-nontail     2.15ms   238.31kw   236.09kw   236.09kw       91.71%  
+  naive-tail        2.35ms   477.01kw   412.06kw   412.06kw      100.00%  
+  base              1.61ms   346.38kw   303.99kw   303.99kw       68.45%  
+  containers        1.61ms   348.13kw   305.63kw   305.63kw       68.59%  
+  batteries         1.49ms   238.58kw   238.62kw   238.62kw       63.60%  
+  tmc               1.46ms   240.12kw   240.38kw   240.38kw       62.33%  
+  unrolled          1.36ms   238.75kw   238.82kw   238.82kw       57.93%  
                                                                           
 With lists of size 100000
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                           
   Name            Time/Run    mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ---------- ---------- ---------- ---------- ------------ 
-  naive-nontail     4.36ms   300.26kw   300.29kw   300.29kw       85.27%  
-  naive-tail        5.12ms   600.04kw   535.47kw   535.47kw      100.00%  
-  base              3.63ms   437.28kw   395.29kw   395.29kw       71.01%  
-  containers        3.59ms   438.73kw   396.62kw   396.62kw       70.19%  
-  batteries         3.01ms   300.08kw   300.09kw   300.09kw       58.83%  
-  tmc               2.97ms   300.26kw   300.30kw   300.30kw       58.00%  
-  unrolled          2.81ms   300.19kw   300.22kw   300.22kw       54.87%  
+  naive-nontail     2.85ms   300.85kw   300.97kw   300.97kw       95.09%  
+  naive-tail        3.00ms   601.36kw   536.06kw   536.06kw      100.00%  
+  base              2.04ms   436.32kw   393.92kw   393.92kw       67.98%  
+  containers        2.05ms   439.69kw   397.17kw   397.17kw       68.53%  
+  batteries         1.89ms   299.69kw   299.64kw   299.64kw       62.91%  
+  tmc               1.87ms   299.69kw   299.64kw   299.64kw       62.34%  
+  unrolled          1.68ms   300.92kw   301.05kw   301.05kw       56.21%  
                                                                           
 With lists of size 177827
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                                 
   Name            Time/Run      mWd/Run     mjWd/Run     Prom/Run   Percentage  
  --------------- ---------- ------------ ------------ ------------ ------------ 
-  naive-nontail     8.60ms     533.34kw     533.31kw     533.31kw       88.86%  
-  naive-tail        9.68ms   1_067.01kw   1_028.73kw   1_028.73kw      100.00%  
-  base              6.65ms     783.40kw     739.55kw     739.55kw       68.69%  
-  containers        6.76ms     785.44kw     741.05kw     741.05kw       69.76%  
-  batteries         5.37ms     533.91kw     533.97kw     533.97kw       55.48%  
-  tmc               5.35ms     533.96kw     534.02kw     534.02kw       55.30%  
-  unrolled          4.99ms     533.49kw     533.49kw     533.49kw       51.57%  
+  naive-nontail     5.92ms     538.04kw     538.68kw     538.68kw      100.00%  
+  naive-tail        5.71ms   1_070.03kw   1_007.01kw   1_007.01kw       96.45%  
+  base              3.78ms     787.12kw     732.50kw     732.50kw       63.96%  
+  containers        3.81ms     790.12kw     732.29kw     732.29kw       64.35%  
+  batteries         3.38ms     535.62kw     535.92kw     535.92kw       57.20%  
+  tmc               3.31ms     535.61kw     535.92kw     535.92kw       55.94%  
+  unrolled          2.98ms     536.70kw     537.16kw     537.16kw       50.44%  
                                                                                 
 With lists of size 316227
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                                 
   Name            Time/Run      mWd/Run     mjWd/Run     Prom/Run   Percentage  
  --------------- ---------- ------------ ------------ ------------ ------------ 
-  naive-nontail    18.44ms     950.25kw     950.46kw     950.46kw      100.00%  
-  naive-tail       17.95ms   1_898.46kw   1_832.61kw   1_832.61kw       97.38%  
-  base             12.19ms   1_398.99kw   1_356.88kw   1_356.88kw       66.10%  
-  containers       12.15ms   1_399.88kw   1_358.20kw   1_358.20kw       65.90%  
-  batteries         9.60ms     949.56kw     949.68kw     949.68kw       52.07%  
-  tmc               9.45ms     949.45kw     949.56kw     949.56kw       51.24%  
-  unrolled          8.99ms     948.86kw     948.88kw     948.88kw       48.74%  
+  naive-nontail    13.18ms     947.12kw     946.89kw     946.89kw      100.00%  
+  naive-tail       10.59ms   1_907.44kw   1_841.91kw   1_841.91kw       80.31%  
+  base              7.33ms   1_399.77kw   1_357.46kw   1_357.46kw       55.57%  
+  containers        6.95ms   1_399.95kw   1_357.73kw   1_357.73kw       52.70%  
+  batteries         6.04ms     951.90kw     952.36kw     952.36kw       45.81%  
+  tmc               5.85ms     951.90kw     952.36kw     952.36kw       44.38%  
+  unrolled          5.32ms     947.61kw     947.45kw     947.45kw       40.32%  
                                                                                 
 With lists of size 562341
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                          
   Name            Time/Run   mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ---------- --------- ---------- ---------- ------------ 
-  naive-nontail    39.43ms    1.69Mw     1.69Mw     1.69Mw      100.00%  
-  naive-tail       31.65ms    3.38Mw     3.32Mw     3.32Mw       80.25%  
-  base             21.88ms    2.49Mw     2.46Mw     2.46Mw       55.49%  
-  containers       22.00ms    2.50Mw     2.46Mw     2.46Mw       55.80%  
-  batteries        17.28ms    1.69Mw     1.69Mw     1.69Mw       43.82%  
-  tmc              17.08ms    1.69Mw     1.69Mw     1.69Mw       43.30%  
-  unrolled         15.96ms    1.69Mw     1.69Mw     1.69Mw       40.47%  
+  naive-nontail    31.27ms    1.70Mw     1.70Mw     1.70Mw      100.00%  
+  naive-tail       19.45ms    3.38Mw     3.32Mw     3.32Mw       62.20%  
+  base             13.15ms    2.49Mw     2.44Mw     2.44Mw       42.05%  
+  containers       12.84ms    2.50Mw     2.46Mw     2.46Mw       41.06%  
+  batteries        10.81ms    1.69Mw     1.68Mw     1.68Mw       34.57%  
+  tmc              10.46ms    1.69Mw     1.68Mw     1.68Mw       33.44%  
+  unrolled          9.57ms    1.69Mw     1.68Mw     1.68Mw       30.62%  
                                                                          
 With lists of size 1000000
-Estimated testing time 35s (7 benchmarks x 5s). Change using '-quota'.
+Estimated testing time 3.5s (7 benchmarks x 500ms). Change using '-quota'.
                                                                          
   Name            Time/Run   mWd/Run   mjWd/Run   Prom/Run   Percentage  
  --------------- ---------- --------- ---------- ---------- ------------ 
-  naive-nontail    89.27ms    3.01Mw     3.01Mw     3.01Mw      100.00%  
-  naive-tail       57.34ms    6.00Mw     5.94Mw     5.94Mw       64.24%  
-  base             39.19ms    4.44Mw     4.40Mw     4.40Mw       43.90%  
-  containers       38.76ms    4.44Mw     4.40Mw     4.40Mw       43.42%  
-  batteries        30.09ms    3.00Mw     3.00Mw     3.00Mw       33.71%  
-  tmc              29.88ms    3.00Mw     3.00Mw     3.00Mw       33.47%  
-  unrolled         28.26ms    3.00Mw     3.00Mw     3.00Mw       31.66%  
+  naive-nontail    74.72ms    3.01Mw     3.01Mw     3.01Mw      100.00%  
+  naive-tail       34.25ms    6.03Mw     5.98Mw     5.98Mw       45.84%  
+  base             24.43ms    4.44Mw     4.41Mw     4.41Mw       32.70%  
+  containers       23.06ms    4.46Mw     4.43Mw     4.43Mw       30.86%  
+  batteries        19.04ms    3.01Mw     3.01Mw     3.01Mw       25.48%  
+  tmc              19.04ms    3.01Mw     3.01Mw     3.01Mw       25.49%  
+  unrolled         17.13ms    3.00Mw     3.00Mw     3.00Mw       22.92%  
                                                                          
