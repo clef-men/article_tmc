@@ -1,85 +1,13 @@
 \section{\OCaml Implementation}
 \label{sec:implementation}
 
-\subsection{Alternatives}
-
-Before we discuss our implementation of TMC in \OCaml, we mention other approaches than TMC to solve the problem of overflowing the call stack, and explain why they were unsuitable for \OCaml.
-
-\subsubsection{Doing a CPS transformation}
-
-Instead of a program transformation in \emph{destination-passing} style, we could perform a more general program transformation that can make more functions tail-recursive, for example a generic \emph{continuation-passing} style (CPS) transformation.
-
-We have three arguments for implementing the TMC transformation:
+For reasons of space, we moved some of the content in this section to \cref{app:more-ocaml}:
 \begin{itemize}
-\item The TMC transformation generates more efficient code, using mutation instead of function calls. On the OCaml runtime, the difference is a large constant factor.\footnote{On a toy benchmark with large-sized lists, the CPS version is 100\% slower and has 130\% more allocations than the non-tail-recursive version.}
-
-\item The CPS transformation can be expressed at the source level, and can be made reasonably nice-looking using some monadic-binding syntactic sugar. TMC can only be done by the compiler, or using safety-breaking features.
+\item \cref{subsec:alternative-impls}
+  discusses alternative language implementation techniques that do not require TMC.
+\item \cref{subsec:PR-history} provides a summary of the history of our implementation (started in 2015, restarted in 2020, merged in 2021).
+\item \cref{subsec:applicative-impl} exhibits an applicative functor structure that makes our implementation nicely compact and readable.
 \end{itemize}
-
-\subsubsection{Lazy data}
-
-Lazy (call-by-need) languages will also often avoid running into stack overflows: as soon as a lazy datastructure is returned, which is the default, functions such as \ocaml{map} will return immediately, with recursive calls frozen in a lazy thunk, waiting to be evaluated on-demand as the user traverses the result structure.
-User still need to worry about tail-recursivity for their strict functions; strict functions are often preferred when writing performant code.
-
-\subsubsection{Unlimiting the system stack}
-
-Some operating systems can provide an unlimited system stack; such as \texttt{ulimit -s unlimited} on Linux systems -- the system stack is then resized on-demand.
-Frustratingly, unlimited stacks are not available on all systems, and not the default on any system in wide use.
-Convincing all users to setup their system in a non-standard way would be \emph{much} harder than performing a program transformation or accepting the CPS overhead for some programs.
-
-\subsubsection{Using another stack}
-
-Using the native system stack is a choice of the OCaml 4 implementation.
-Some other implementations of functional languages, such as SML/NJ, use a different stack (the OCaml bytecode interpreter does this), or directly allocate stack frames on their GC-managed heap.
-This approach can make ``stack overflow'' go away completely, and it also makes it very simple to implement stack-capture control operators, such as continuations, or other stack operations such as continuation marks.
-
-On the other hand, using the native stack brings compatibility benefits (coherent stack traces for mixed OCaml+C programs), and seems to improve the performance of function calls (on benchmarks that are only testing function calls and return, such as Ackermann or the naive Fibonacci, OCaml can be 4x, 5x faster than SML/NJ.)
-
-\paragraph{OCaml 5}
-
-OCaml 5.0.0 was released in December 2022, about a year after we landed our TMC implementation in the OCaml 4 compiler.
-OCaml 5 uses a different runtime to support multicore programming, and a different calling convention to support algebraic effects.
-In particular, it only uses the system stack for C calls, and a ``cactus stack'' for OCaml calls (stored outside the OCaml heap).
-
-OCaml 5 manages its own stack, but the implementors still decided to have a stack limit.
-It is sensibly higher by default (1Gio at the time of writing) than the system stack (8Mio), so many ``small'' can now use non-tail-recursive functions without fears of stack overflows, but overflows remain possible and likely in practice on large inputs.
-The reason to keep a (user-settable) limit for the OCaml call stack is usability in the face of buggy programs.
-When programmers write recursive functions, they occasionally go through incorrect versions with a faulty base case that fail to terminate.
-In this case, we want the system to fail quickly with an error, instead of remaining silent for a few minutes, crashing once all the machine memory has been consumed.
-
-We were curious about whether users would still see a need for TMC in OCaml 5, or whether they would stop using the feature in practice.
-The feedback we got from expert users is that stack overflows is still an issue they worry about.
-We observe that TMC adoption in OCaml codebases keep growing after the transition to OCaml 5.
-
-\subsection{Implementation history}
-
-We first proposed adding TMC as an optional program transformation to
-the OCaml compiler in
-May 2015.\footnote{\nonanon{URL}{\url{https://github.com/ocaml/ocaml/pull/181}}}
-The proposal was received favorably, but it never received an in-depth
-review and a detailed performance evaluation and remained unmerged for
-years.
-
-We re-activated the discussion in July 2020 with a modified
-implementation, and a careful performance
-evaluation\footnote{\nonanon{URL}{\url{https://github.com/ocaml/ocaml/pull/9760}}}. The
-new implementation put a larger focus on producing readable code,
-giving more control to the user through annotations. It also removed
-an optimization of the previous implementation that would specialize
-the DPS version, generating a distinct definition for each block
-offset. The new design was carefully reviewed by Basile Clément and
-Pierre Chambart, and was finally merged in November 2021, available to
-users with OCaml 4.14, released in March 2022.
-
-The TMC transformation is that it adds extra parameters to functions
-(two parameters, the block and the offset). At the time the OCaml
-compiler had a limitation on some supported architectures, where it
-would not optimze tail calls above a certain number of arguments
-(enough that they cannot be all passed by registers), breaking the
-tail-call promises of TMC on those systems. Xavier Leroy implemented
-a change to the OCaml calling convention for those architectures in
-May 2021,\footnote{\url{https://github.com/ocaml/ocaml/pull/10595}},
-which was motivated by the TMC work.
 
 \subsection{Examples}
 
@@ -256,7 +184,7 @@ non-determinism.
 
 \paragraph{Choices with an obviously better alternative.} Some choices have an obviously better alternative, because they allow to strictly improve more programs. For example, some implementations of TMC limit themselves to calls that are immediately inside a constructor: they would optimize the recursive call to \ocaml|f| in \ocaml|Cons(x, f y)| but not, for example, in \ocaml|Cons(x1, Cons(x2, f y))|, or in \ocaml|Cons (x, if p then f y else z)|.
 
-In the terms of \cref{subsec:specification}, some implementations only allow to optimize calling contexts of the form $\datalangTailCtx{[\datalangConsFrame]}$ or $\datalangTailCtx{[\datalangConsCtx]}$. We support a more general situation $\datalangTMCCtx = (\datalangTailFrame | \datalangConsFrame)^{*}$, at the cost of some implementation complexity.
+In the terms of \cref{subsec:specification}, some implementations only allow to optimize calling contexts of the form $\datalangTailCtx{[\datalangConsFrame]}$ or $\datalangTailCtx{[\datalangConsCtx]}$. We support a more general situation $\datalangTMCCtx = (\datalangTailFrame | \datalangConsFrame)^{*}$.
 
 \paragraph{Choices with a subtly better alternative.} In some cases it
 is possible to put a bit more work in the choice heuristics, to
@@ -361,59 +289,6 @@ This is implemented by passing as an extra transformation parameter a stack of `
 \subsection{Implementation} \label{subsec:implementation} Implementing the TMC transform is not an obvious top-down or bottom-up traversal, because it relies on two informations flowing in opposite directions: the transformation is \emph{possible} for subterms that are in tail-or-constructor position relative to the root of the function (top-down information), and it is \emph{desirable} for subterms whose leaves contain calls to TMC-transformed functions (bottom-up information). A naive approach is to perform a recursive traversal that tracks the top-down context and, on each subterm, recursively traverses the whole subterm to check desirability; this has quadratic time complexity, which is best avoided in production compilers.
 
 Instead of trying to transform each subterm in a single pass, our implementation computes for each subterm a ``choice'', a summary of all the bottom-up information relevant to choose how to transform it -- once we have the top-down information available. This includes (1) the direct-style transform of the subterm, (2) the DPS-style transform of the subterm, (3) metadata tracking whether the transformation is beneficial (if a TMC-function call was found in tail-modulo-cons position), the list of TMC calls it contains (for error diagnostics), and whether some were explicitly requested by the user (for disambiguation). Computing transformed terms is not compositional, computing choices is compositional. We compute a choice for the whole function body (in one pass), from which we can directly extract the direct-style and DPS-style transformations of the function.
-
-The computation of choices can be expressed elegantly. Instead of a monomorphic type \ocaml|Choice.t| that represents a choice of how to transform a term, we use a polymorphic type \ocaml|'a Choice.t| that represents how to transform zero, one or several subterms that occur in the source; for example transforming two subterms in the same context relies on a choice of type \ocaml|(lambda * lambda) Choice.t|, where \ocaml|lambda| is the type of terms in the intermediate representation we are working on. This \ocaml|'a Choice.t| type can be equipped with an applicative functor interface:
-
-\begin{minipage}{0.4\linewidth}
-\begin{Ocaml}
-module Choice : sig
-  type 'a t = {
-    dps : 'a Dps.t;
-    direct : unit -> 'a;
-    tmc_calls : tmc_call_info list;
-    benefits_from_dps : bool;
-    explicit_tailcall_request : bool;
-  }
-
-
-
-
-
-end
-\end{Ocaml}
-\end{minipage}
-\hfill
-\begin{minipage}{0.5\linewidth}
-\begin{Ocaml}
-  (* construct a choice from an arbitrary term *)
-  val lambda : lambda -> lambda t
-
-  (* applicative functor interface *)
-  val unit : unit t
-  val map : ('a -> 'b) -> 'a t -> 'b t
-  val pair : 'a t * 'b t -> ('a * 'b) t
-
-  (* extract the direct-style and DPS transforms *)
-  val direct : lambda t -> lambda
-  val dps :
-    lambda t -> tail:bool -> dst:offset dst ->
-    lambda
-\end{Ocaml}
-\end{minipage}
-
-With this interface, the easy cases of the transformation can be expressed compactly:
-\begin{Ocaml}
-  let rec choice ctx ~tail t =
-    match t with
-    [...]
-    | Lifthenelse (l1, l2, l3) ->
-        let l1 = traverse ctx l1 in
-        let+ l2 = choice ctx ~tail l2
-        and+ l3 = choice ctx ~tail l3
-        in Lifthenelse (l1, l2, l3)
-    [...]
-\end{Ocaml}
-The binding operators \ocaml|let+|, \ocaml|and+| are standard syntax for applicative-like structures in OCaml: \ocaml|let+| desugars to \ocaml|Choice.map| and \ocaml|and+| desugars to \ocaml|Choice.pair|. \ocaml|traverse| performs a direct-style translation, and \ocaml|traverse_letrec| may also transform \ocaml|let|-bound functions marked with \ocaml|[@tail_mod_constr]| and add them to the local transformation environment.
 
 \subsection{Evaluation: benchmarks}
 

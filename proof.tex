@@ -67,25 +67,21 @@ In addition, we will only consider \emph{valid source expressions} --- denoted b
     \]
 \end{lemma}
 
-\begin{myproof}
-    We prove both specifications by induction over $\datalangExpr_s$ and mutual induction over $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ and $(\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$.
-    We only sketch the cases shown in \cref{fig:tmc_dir} and \cref{fig:tmc_dps} and refer to our mechanization for the complete proof.
-    \begin{itemize}[align=left, leftmargin=*]
-        \item[\RefTirName{DirVal}:] Follows from $\wf{\datalangVal}$.
-        \item[\RefTirName{DirVar}:] Follows from $\wf{\datalangBisubst}$.
-        \item[\RefTirName{DirLet}:] Follows from IH for $\datalangExpr_{s1}$ and IH for $\datalangExpr_{s2}$.
-        \item[\RefTirName{DirBlockDPS1}:] Follows from \RefTirName{RelSrcBlock1}, \RefTirName{RelTgtBlock}, IH for $\datalangExpr_{s1}$, \RefTirName{RelTgtBlockDet}, IH for $\datalangExpr_{s2}$, \RefTirName{RelSrcBlockDet} and \RefTirName{BijInsert}.
-        \item[\RefTirName{DirBlockDPS2}:] Similar to \RefTirName{DirBlockDPS1}.
-        \item[\RefTirName{DPSBase}:] Follows from IH for $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ and \RefTirName{RelTgtStore}.
-        \item[\RefTirName{DPSLet}:] Follows from IH for $\datalangExpr_{s1}$ and IH for $\datalangExpr_{s2}$.
-        \item[\RefTirName{DPSCall}:] Follows from \RefTirName{SimTgtBlock}, \RefTirName{SimTgtBlockDet}, IH for $\datalangExpr_s$ and \RefTirName{RelDPS}.
-        \item[\RefTirName{DPSIf}:] Follows from IH for $\datalangExpr_{s0}$, IH for $\datalangExpr_{s1}$ and IH for $\datalangExpr_{s2}$.
-        \item[\RefTirName{DPSBlock1}:] Follows from \RefTirName{RelSrcBlock1}, \RefTirName{RelTgtBlock}, IH for $\datalangExpr_{s1}$, \RefTirName{RelTgtBlockDet}, \RefTirName{RelTgtStore} IH for $\datalangExpr_{s2}$, \RefTirName{RelSrcBlockDet} and \RefTirName{BijInsert}.
-        \item[\RefTirName{DPSBlock2}:] Similar to \RefTirName{DPSBlock1}. \qedhere
-    \end{itemize}
-\end{myproof}
-
-\Xgabriel{We can probably remove the proof sketch here to save space.}
+Both proofs proceed by induction over $\datalangExpr_s$ and mutual induction over $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ and $(\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$ -- we refer to our mechanization for the details.
+    % We only sketch the cases shown in \cref{fig:tmc_dir} and \cref{fig:tmc_dps} and refer to our mechanization for the complete proof.
+    % \begin{itemize}[align=left, leftmargin=*]
+    %     \item[\RefTirName{DirVal}:] Follows from $\wf{\datalangVal}$.
+    %     \item[\RefTirName{DirVar}:] Follows from $\wf{\datalangBisubst}$.
+    %     \item[\RefTirName{DirLet}:] Follows from IH for $\datalangExpr_{s1}$ and IH for $\datalangExpr_{s2}$.
+    %     \item[\RefTirName{DirBlockDPS1}:] Follows from \RefTirName{RelSrcBlock1}, \RefTirName{RelTgtBlock}, IH for $\datalangExpr_{s1}$, \RefTirName{RelTgtBlockDet}, IH for $\datalangExpr_{s2}$, \RefTirName{RelSrcBlockDet} and \RefTirName{BijInsert}.
+    %     \item[\RefTirName{DirBlockDPS2}:] Similar to \RefTirName{DirBlockDPS1}.
+    %     \item[\RefTirName{DPSBase}:] Follows from IH for $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ and \RefTirName{RelTgtStore}.
+    %     \item[\RefTirName{DPSLet}:] Follows from IH for $\datalangExpr_{s1}$ and IH for $\datalangExpr_{s2}$.
+    %     \item[\RefTirName{DPSCall}:] Follows from \RefTirName{SimTgtBlock}, \RefTirName{SimTgtBlockDet}, IH for $\datalangExpr_s$ and \RefTirName{RelDPS}.
+    %     \item[\RefTirName{DPSIf}:] Follows from IH for $\datalangExpr_{s0}$, IH for $\datalangExpr_{s1}$ and IH for $\datalangExpr_{s2}$.
+    %     \item[\RefTirName{DPSBlock1}:] Follows from \RefTirName{RelSrcBlock1}, \RefTirName{RelTgtBlock}, IH for $\datalangExpr_{s1}$, \RefTirName{RelTgtBlockDet}, \RefTirName{RelTgtStore} IH for $\datalangExpr_{s2}$, \RefTirName{RelSrcBlockDet} and \RefTirName{BijInsert}.
+    %     \item[\RefTirName{DPSBlock2}:] Similar to \RefTirName{DPSBlock1}. \qedhere
+    % \end{itemize}
 
 \input{figures/rsim}
 

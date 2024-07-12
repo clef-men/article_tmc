@@ -92,7 +92,7 @@ Note that the rule \RefTirName{DPSDef}, which relates the two judgments, uses th
 In the direct-style relation, congruence rules apply the same direct-style transformation to all subexpressions. The congruence-like rule of the DPS relation, for example \RefTirName{DPSLet} and \RefTirName{DPSIf}, are different. They apply the DPS transformation to sub-expressions which are in tail position relative to the expression, and the direct-style transformation to all other subexpressions. (The if-then-else construct can have two different subexpressions in tail position, because at most one of them is evaluated at runtime.)
 
 The rules \RefTirName{DPSBlock1} and \RefTirName{DPSBlock2}
-correspond to the rules \RefTirName{DirBlockDPS1} and \RefTirName{DirBlockDPS2} in the direct-style transformation, but the behavior of the transformed code is different. Consider the translation of $
+correspond to the rules \RefTirName{DirBlockDPS1} and \RefTirName{DirBlockDPS2} in the direct-style transformation, but the transformed code is different. Consider the translation of $
 \left(
   \datalangExpr_\mathit{dst},
   \datalangExpr_\mathit{idx},
@@ -105,9 +105,7 @@ $ by \RefTirName{DirBlockDPS2}. First we create a new destination $\datalangVar$
 
 The rule \RefTirName{DPSCall} applies only to calls $\datalangCall {\datalangFnptr \datalangFn} {\datalangExpr_s}$ to a known function $\datalangFn$, on the condition that a DPS variant has been generated for $\datalangFn$: $\datalangFn \in \dom{\datalangRenaming}$. In this case, the function call can be compiled to a call to the DPS variant $\datalangRenaming [\datalangFn]$, transferring the responsibility to write to the destination to the callee. This is the case where the DPS transform is beneficial, as this transformation may turn a non-tail-call into a tail-call -- when it occurs under a block, in a subterm that was moved to tail position. This rule is selected for \ocaml|map| in our \ocaml|y :: map f xs| example.
 
-Finally, there is a catch-all rule \RefTirName{DPSBase} that applies whenever none of the other rules can be selected, and may be non-deterministically applied in any case. This case trivially realizes the DPS calling convention by evaluating the subterm to a result and writing this result in the desired destination. This is what happens in the base case of \ocaml|map_dps|, where the empty list \ocaml|[]| is transformed into \ocaml|dst.(idx) <- []|.
-
-\medskip
+Finally, there is a catch-all rule \RefTirName{DPSBase} that applies in any case, in particular whenever none of the other rules can be selected. This case trivially realizes the DPS calling convention by evaluating the subterm to a result and writing this result in the desired destination. This is what happens in the base case of \ocaml|map_dps|, where the empty list \ocaml|[]| is transformed into \ocaml|dst.(idx) <- []|.
 
 \input{figures/map_tmc}
 
