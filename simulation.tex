@@ -2,11 +2,10 @@
 \label{sec:simulation}
 
 \input{figures/sim}
-\input{figures/refinement}
 
-So far, we assumed a program logic satisfying a set of reason rules.
-In the section, we define this program logic using an \Iris \emph{simulation} à la \Simuliris~\citep*{simuliris-2022}.
-This simulation comes with an \emph{adequacy theorem} that allows to extract a \emph{behavior refinement} in the meta-logic and thus prove the final soundness theorem for TMC.
+So far, we assumed a program logic satisfying a set of reasoning rules.
+In the section, we prove that our rules are sound: they imply a \emph{simulation} à la \Simuliris~\citep*{simuliris-2022}.
+This simulation comes with an \emph{adequacy theorem} that allows to extract a \emph{behavior refinement} in the meta-logic (Coq, without \Iris), our final soundness theorem.
 
 \subsection{Definition}
 
@@ -14,9 +13,12 @@ Our simulation in defined in \cref{fig:sim}.
 It is largely inspired by the \Simuliris simulation --- simplified due to the absence of concurrency.
 The main difference lies in the protocol clause \circled{5}, which is a generalization of the function call clause of \Simuliris.
 
-The definition consists of two nested fixpoints \textcolor{\iSimGfpColor}{sim} and \textcolor{\iSimLfpColor}{sim-inner}.
-\textcolor{\iSimGfpColor}{sim} is a greatest fixpoint (coinduction) allowing expressions to diverge (in a controlled way, see clause \circled{4}\circled{B}).
-\textcolor{\iSimLfpColor}{sim-inner} is a least fixpoint (induction) allowing source and target stuttering (see clauses \circled{3} and \circled{4}\circled{A}).
+\newcommand{\iSimGfp}{\textcolor{\iSimGfpColor}{sim}\xspace}
+\newcommand{\iSimLfp}{\textcolor{\iSimLfpColor}{sim-inner}\xspace}
+
+The definition consists of two nested fixpoints \iSimGfp and \iSimLfp.
+\iSimGfp is a greatest fixpoint (coinduction) allowing expressions to diverge (in a controlled way, see clause \circled{4}\circled{B}).
+\iSimLfp is a least fixpoint (induction) allowing source and target stuttering (see clauses \circled{3} and \circled{4}\circled{A}).
 The \emph{state interpretation} $\mathrm{I} (\datalangState_s, \datalangState_t)$ intuitively materializes the invariant of the simulation, including the heap bijection (see \cref{sec:specification}); it is systematically maintained.
 We now review the six clauses.
 
@@ -28,21 +30,26 @@ The simulation can also stop on simultaneously stuck expressions.
 
 \paragraph{\circled{3} Target stuttering.}
 The source expression can angelically take some steps.
-This can only happen finitely many times in \textcolor{\iSimLfpColor}{sim-inner}.
+This can only happen finitely many times in \iSimLfp.
+If we used \iSimGfp instead, a silent loop in the source could be simulated by anything, breaking preservation of divergence.
 
 \paragraph{\circled{4}\circled{A} Source stuttering.}
 The target expression can demonically take one step.
-This can also only happen finitely many times in \textcolor{\iSimLfpColor}{sim-inner}.
+This can also only happen finitely many times in \iSimLfp.
+If we used \iSimGfp instead, a silent loop in the target could simulate any source expression, breaking preservation of termination.
 
 \paragraph{\circled{4}\circled{B} Synchronization.}
 Alternatively, both expressions can simultaneously take one step.
-This can happen infinitely many times in \textcolor{\iSimGfpColor}{sim}.
+This can happen infinitely many times in \iSimGfp.
+If we used \iSimLfp instead, we would be unable to relate divergent programs.
 
 \paragraph{\circled{5} Protocol application.}
 Finally, we can apply the protocol under evaluation contexts.
 We can choose any postcondition $\iPredTwo$ accepted by the protocol and assume it to prove the continuation.
 
 \subsection{Adequacy}
+
+\input{figures/refinement}
 
 Informally, our simulation is \emph{adequate} in the sense that if $\datalangExpr_s$ simulates $\datalangExpr_t$, $\datalangExpr_t$ refines $\datalangExpr_s$, \ie the behaviours of $\datalangExpr_t$ are included in the behaviours of $\datalangExpr_s$.
 Crucially, this is only true for a \emph{closed} simulation, \ie not using the protocol --- equivalently using the empty protocol $\bot$.
@@ -60,24 +67,10 @@ We consider not only converging behaviours (resulting in values or stuck express
 Expression refinement $\datalangExpr_s \refined \datalangExpr_t$ is \emph{termination-preserving}: if $\datalangExpr_s$ always terminates, so does $\datalangExpr_t$.
 Program refinement $\datalangProg_s \refined \datalangProg_t$, also defined in \cref{fig:refinement}, requires any source function call in $\datalangProg_t$ to behave as in $\datalangProg_s$.
 
-\subsection{Transformation soundness}
-
-We can finally express the soundness of the TMC transformation: if program $\datalangProg_s$ is well-formed and transforms into program $\datalangProg_t$, $\datalangProg_t$ refines $\datalangProg_s$.
-A program is well-formed when its function definitions are well-formed and well-scoped.
-
-\begin{theorem}[Transformation soundness] \label{thm:soundness}
-    $
-        \wf{\datalangProg_s} \wedge \datalangProg_s \tmc \datalangProg_t \implies
-        \datalangProg_s \refined \datalangProg_t
-    $
-\end{theorem}
-
-For the proof, we need a last critical piece to connect \cref{thm:dir} and \cref{thm:adequacy}.
-In other words, we need a way to close an open simulation.
-Obviously, this closure mechanism cannot work for any protocol; we have to constrain it a bit.
-The following lemma formalizes the condition under which a protocol is deemed valid:
-
+Adequacy is proved with an empty protocol, but we combine it with a \emph{simulation closure} result for any protocol $\iProt$. This lemma says that $\iProt$ respects a certain admissibility condition, then program relations established using this protocol also hold with the empty protocol:
 \begin{lemma}[Simulation closure]
+\label{lem:closure}
+  For any protocol $\iProt$, we have:
     \begin{align*}
             &
             \iPersistent \left(
@@ -92,10 +85,27 @@ The following lemma formalizes the condition under which a protocol is deemed va
     \end{align*}
 \end{lemma}
 
-In simple terms, any expressions accepted by a valid protocol have to be able to take one simultaneous step after potential stuttering to return in the open simulation.
-Actually, for the TMC protocol, a less general lemma suffices:
+\Xgabriel{TODO Clément re-read this.} In simple terms, the admissibility condition states that the protocol can be realized by a concrete function that takes a pair of expressions related in the protocol with a postcondition $\iPredTwo$, and produces related reduction sequences (one simultaneous step, after potential stuttering on both sides) that end up in the desired postcondition $\iPredTwo$.
 
-\begin{lemma}[Simulation closure (simplified)] \label{thm:closure}
+\subsection{Transformation soundness}
+
+We can finally express the soundness of the TMC transformation: if program $\datalangProg_s$ is well-formed and transforms into program $\datalangProg_t$, $\datalangProg_t$ refines $\datalangProg_s$.
+A program is well-formed when its function definitions are well-formed and well-scoped.
+
+\begin{theorem}[Transformation soundness] \label{thm:soundness}
+    $
+        \wf{\datalangProg_s} \wedge \datalangProg_s \tmc \datalangProg_t \implies
+        \datalangProg_s \refined \datalangProg_t
+    $
+\end{theorem}
+
+The meat of the proof is to use \cref{lem:closure} to connect  \cref{thm:dir} and \cref{thm:adequacy}.
+For this we must prove that the TMC protocol is admissible.
+In the specific case of TMC, the admissibility condition
+can be reformulated in 
+In other words, we need a way to close an open simulation.
+Obviously, this closure mechanism cannot work for any protocol; we have to constrain it a bit.
+Actually, for the TMC protocol, we can prove a slightly simpler condition that applies admissibility:
     \begin{align*}
             &
             \iPersistent \left(
@@ -105,17 +115,16 @@ Actually, for the TMC protocol, a less general lemma suffices:
                 \datalangExpr_s \pureStep{\datalangProg_s} \datalangExpr_s' \iSep
                 \datalangExpr_t \pureStep{\datalangProg_t} \datalangExpr_t' \iSep
                 \iSim[\iProt]{\iPredTwo}{\datalangExpr_s'}{\datalangExpr_t'}
-            \right) \iWand
-        \\
-            &
-            \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t} \iWand
-            \iSim[\bot]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
+            \right) 
+        % \\
+        %     &
+        %     \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t} \iWand
+        %     \iSim[\bot]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
     \end{align*}
-\end{lemma}
 
-\begin{proof}[Proof of \cref{thm:soundness}]
-    Follows from \cref{thm:adequacy}, \cref{thm:closure}, \RefTirName{RelDir} and \RefTirName{RelDPS}.
-\end{proof}
+% \begin{proof}[Proof of \cref{thm:soundness}]
+%     Follows from \cref{thm:adequacy}, \cref{thm:closure}, \RefTirName{RelDir} and \RefTirName{RelDPS}.
+% \end{proof}
 
 %%% Local Variables:
 %%% mode: latex

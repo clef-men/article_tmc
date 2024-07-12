@@ -11,7 +11,7 @@ We omitted some standard rules for brevity.\Xgabriel{Which ones?}
 Compared to the specifications of \cref{sec:specification}, we introduced an additional protocol parameter $\iProt$.
 We explain it together with the \RefTirName{RelProtocol} rule in \cref{subsec:protocols}.
 
-\Xgabriel{There are two judgments lying around, one with a precondition and one without. I would expect here some explanation about how those two judgments relate.}
+\Xgabriel{There are two judgments lying around, one with a precondition and one without. I would expect here some explanation about how those two judgments relate. TODO for Clément.}
 
 \subsection{Language-independent rules}
 The following rules are independent of \DataLang and could be reused as is in further works.
@@ -195,7 +195,8 @@ We defined an APS transformation, after extending \DataLang with integers and ar
 \end{tabular}
 \medskip
 
-One subtlety is that our \DataLang language is untyped, so arithmetic operations (here addition) may get stuck on non-integer values. If the function call $\datalangCall {\datalangFnPtr \datalangFn} {\datalangVal_s}$ in the source program returns a non-integer value, then the outer context $\datalangVar_\mathit{acc} + \datalangCtxHole$ gets stuck. But in the transformed program, this failure happens inside the body of the APS-transformed function $\datalangFnPtr {\datalangFn_\mathit{aps}}$. To represent this failure case in our protocol, the postcondition $\iPredTwo$ relates non-integer source return value $\datalangVal_s'$ with any strongly stuck expression $\datalangExpr_t'$ in the target. This relies on the generality of our protocols being predicate transformers on expressions, not just values.
+\Xgabriel{TODO Clément: read this.}
+One subtlety is that our \DataLang language is untyped, so arithmetic operations (here addition) may get stuck on non-integer values. If the function call $\datalangCall {\datalangFnptr \datalangFn} {\datalangVal_s}$ in the source program returns a non-integer value, then the outer context $\datalangVar_\mathit{acc} + \datalangCtxHole$ gets stuck. But in the transformed program, this failure happens inside the body of the APS-transformed function $\datalangFnptr {\datalangFn_\mathit{aps}}$. To represent this failure case in our protocol, the postcondition $\iPredTwo$ relates non-integer source return value $\datalangVal_s'$ with any strongly stuck expression $\datalangExpr_t'$ in the target. This relies on the generality of our protocols being predicate transformers on expressions, not just values.
 
 %%% Local Variables:
 %%% mode: latex

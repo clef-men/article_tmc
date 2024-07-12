@@ -24,13 +24,13 @@ As mentioned in \cref{sec:protocols}, we instantiate our program logic with a sp
     }
 \end{mathline}
 
-So far, we assumed expressions to be \emph{closed}, \ie to have no free variables.
-To carry out the proof, we need to generalize the specifications to \emph{open} expressions that may have some.
+So far, we worked with \emph{closed} expressions, that have no free variables.
+We need to generalize the specifications to \emph{open} expressions that may have free variables, as is standard.
 To do so, we introduce a \emph{runtime relation} $\iRsimv{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ in \cref{fig:rsim}.
 It requires $\datalangBisubst_s (\datalangExpr_s)$ and $\datalangBisubst_t (\datalangExpr_t)$ to be related for any \emph{well-formed closing bisubstitution} $\datalangBisubst \in \datalangVar[] \rightarrow \datalangVal[] \times \datalangVal[]$.
 In practice, $\datalangBisubst$ contains let-reduced binders and their substitute source and target values.
 
-In addition, we will only consider \emph{valid source expressions} --- denoted by $\wf{\datalangExpr_s}$ ---, \ie those that do not involve any location nor undefined source function.
+In addition, we will only consider \emph{valid source expressions} --- denoted by $\wf{\datalangExpr_s}$ ---, \ie those that do not involve any location, deterministic block expressions, or undefined source function.
 
 \begin{lemma}[Specification of direct transformation] \label{thm:dir}
     \[
@@ -84,6 +84,8 @@ In addition, we will only consider \emph{valid source expressions} --- denoted b
         \item[\RefTirName{DPSBlock2}:] Similar to \RefTirName{DPSBlock1}. \qedhere
     \end{itemize}
 \end{myproof}
+
+\Xgabriel{We can probably remove the proof sketch here to save space.}
 
 \input{figures/rsim}
 
