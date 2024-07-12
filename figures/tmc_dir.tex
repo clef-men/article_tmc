@@ -93,37 +93,37 @@
                   \datalangSeq{\datalangExpr_{t2}}{\datalangVar}}
                 \end{array}
             }
-        \and
-        \inferrule*[lab=DirBlockDPS21]
-            {
-                (\datalangVar, \datalangOne, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}
-            \and
-                (\datalangVar, \datalangTwo, \datalangExpr_{s2}) \tmcDps{\datalangRenaming} \datalangExpr_{t2}
-            }{
-                \datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
-                \tmcDir{\datalangRenaming}
-                \begin{array}{l}
-                    \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangHole}{\datalangHole}}{\\
-                    \datalangSeq{\datalangExpr_{t2}}{
-                      \datalangSeq{\datalangExpr_{t1}}{
-                        \datalangVar}}}
-                \end{array}
-            }        \and
-        \inferrule*[lab=DirBlockDPS12]
-            {
-                (\datalangVar, \datalangOne, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}
-            \and
-                (\datalangVar, \datalangTwo, \datalangExpr_{s2}) \tmcDps{\datalangRenaming} \datalangExpr_{t2}
-            }{
-                \datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
-                \tmcDir{\datalangRenaming}
-                \begin{array}{l}
-                    \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangHole}{\datalangHole}}{\\
-                    \datalangSeq{\datalangExpr_{t1}}{
-                      \datalangSeq{\datalangExpr_{t2}}{
-                        \datalangVar}}}
-                \end{array}
-            }
+        % \and
+        % \inferrule*[lab=DirBlockDPS21]
+        %     {
+        %         (\datalangVar, \datalangOne, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}
+        %     \and
+        %         (\datalangVar, \datalangTwo, \datalangExpr_{s2}) \tmcDps{\datalangRenaming} \datalangExpr_{t2}
+        %     }{
+        %         \datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
+        %         \tmcDir{\datalangRenaming}
+        %         \begin{array}{l}
+        %             \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangHole}{\datalangHole}}{\\
+        %             \datalangSeq{\datalangExpr_{t2}}{
+        %               \datalangSeq{\datalangExpr_{t1}}{
+        %                 \datalangVar}}}
+        %         \end{array}
+        %     }        \and
+        % \inferrule*[lab=DirBlockDPS12]
+        %     {
+        %         (\datalangVar, \datalangOne, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}
+        %     \and
+        %         (\datalangVar, \datalangTwo, \datalangExpr_{s2}) \tmcDps{\datalangRenaming} \datalangExpr_{t2}
+        %     }{
+        %         \datalangBlock{\datalangTag}{\datalangExpr_{s1}}{\datalangExpr_{s2}}
+        %         \tmcDir{\datalangRenaming}
+        %         \begin{array}{l}
+        %             \datalangLet{\datalangVar}{\datalangBlock{\datalangTag}{\datalangHole}{\datalangHole}}{\\
+        %             \datalangSeq{\datalangExpr_{t1}}{
+        %               \datalangSeq{\datalangExpr_{t2}}{
+        %                 \datalangVar}}}
+        %         \end{array}
+        %     }
     \end{mathparpagebreakable}
     \caption{Direct TMC transformation (omitting congruence rules similar to \TirName{DirCall})}
     \label{fig:tmc_dir}
