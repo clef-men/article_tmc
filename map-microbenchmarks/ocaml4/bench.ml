@@ -1,3 +1,7 @@
+(* This benchmark code is derived from faster-map:
+   https://github.com/aantron/faster-map
+*)
+
 let impls = [
   "naive-nontail", Impls.Naive_nontail.map;
   "naive-tail", Impls.Naive_tail.map;
@@ -15,21 +19,17 @@ let test map =
 let () =
   List.iter (fun (_, impl) -> test impl) impls
 
-
-(* reused from faster-map *)
 let list_sizes =
-  let lower_exponent = 1. in
-  let upper_exponent = 6. in
-  let exponent_step = 0.25 in
-
-  let rec generate exponent sizes_acc =
-    if exponent > upper_exponent then
-      List.rev sizes_acc
+  let rec log_steps ~lower:exponent ~upper ~step =
+    if exponent > upper then []
     else
       let size = int_of_float (10. ** exponent) in
-      generate (exponent +. exponent_step) (size::sizes_acc)
+      size :: log_steps ~lower:(exponent +. step) ~upper ~step
   in
-  [0; 1; 2; 3; 5;] @generate lower_exponent []
+  [0; 1; 2; 3; 5;]
+  @ log_steps ~lower:1. ~upper:4. ~step:0.25
+  @ log_steps ~lower:4.1 ~upper:4.9 ~step:0.1
+  @ log_steps ~lower:5. ~upper:6. ~step:0.25
 
 let old = ref []
 
