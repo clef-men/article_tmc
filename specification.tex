@@ -54,7 +54,7 @@ This captures destination-passing style in simple terms.
 \subsection{Heap bijection}
 
 Defining value similarity as just syntactic equality is not sufficient: corresponding source and target block allocations are not done in locksteps, so their location may differ.
-For example, consider the \datalang{map} function (\cref{fig:map}) and its DPS transform (\cref{fig:map_tmc}).
+For example, consider the \datalang{map} function and its DPS transform from \cref{subsec:tmc_example}.
 In the source program, the cons cell \datalang{y :: @map (fn, xs)} is allocated after the recursive call.
 In the transformed program, the corresponding block is allocated before the call.
 

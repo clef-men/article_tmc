@@ -119,12 +119,13 @@ a program perform (some of) the program transformations that they are
 currently doing manually.
 
 \subsection{TMC transformation example}
+\label{subsec:tmc_example}
 
 A function call is in \emph{tail position} within a function
 definition if the definition has ``nothing to do'' after evaluating
 the function call -- the result of the call is the result of the whole
 function at this point of the program. (A precise definition will be
-given in Section~\ref{sec:tcmc}.) A function is \emph{tail recursive}
+given in Section~\ref{subsec:specification}.) A function is \emph{tail recursive}
 if all its recursive calls are tail calls.
 
 In the definition of \ocaml{map}, the recursive call is not in tail
