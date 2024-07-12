@@ -344,7 +344,7 @@ Our interpretation of the result is that some unrolling makes a noticeable perfo
 
 \paragraph{Asymptotics of \bench{nontail}} The bad behavior of \bench{nontail} on large lists comes from a quadratic behavior on very large call stacks, coming from a repeated scan of the call stack during minor collections. (The OCaml compiler and runtime could be tweaked to avoid this quadratic behavior, at the cost of some small constant overhead on function returns.)
 
-\paragraph{Memory usage} The \bench{tail} version allocates twice as many words as the \bench{tail} or TMC versions. The \bench{base} and \bench{containers} version allocate more as well, once they reach the cutoff where they move to their tail-recursive regime. This probably does not matter for most use-cases, and it does not show in the time measurements in the microbenchmark.
+% \paragraph{Memory usage} The \bench{tail} version allocates twice as many words as the \bench{tail} or TMC versions. The \bench{base} and \bench{containers} version allocate more as well, once they reach the cutoff where they move to their tail-recursive regime. This probably does not matter for most use-cases, and it does not show in the time measurements in the microbenchmark.
 
 \subsection{Evaluation: adoption}
 
