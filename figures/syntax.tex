@@ -33,59 +33,9 @@
             $\datalangVal, \datalangValTwo$
             & $\Coloneqq$ &
             $\datalangUnit \mid \datalangIdx \mid \datalangTag \mid \datalangBool \mid \datalangLoc \mid \datalangFnptr{\datalangFn}$
-        \\
-            $\datalangExpr[]$
-            & $\ni$ &
-            $\datalangExpr$
-            & $\Coloneqq$ &
-            $\datalangVal$
-        \\
-            &&
-            & | &
-            $\datalangVar \mid \datalangLet{\datalangVar}{\datalangExpr_1}{\datalangExpr_2} \mid \datalangCall{\datalangExpr_1}{\datalangExpr_2}$
-        \\
-            &&
-            & | &
-            $\datalangEq{\datalangExpr_1}{\datalangExpr_2}$
-        \\
-            &&
-            & | &
-            $\datalangIf{\datalangExpr_0}{\datalangExpr_1}{\datalangExpr_2}$
-        \\
-            &&
-            & | &
-            $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2} \mid \datalangBlockDet{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$
-        \\
-            &&
-            & | &
-            $\datalangLoad{\datalangExpr_1}{\datalangExpr_2} \mid \datalangStore{\datalangExpr_1}{\datalangExpr_2}{\datalangExpr_3}$
-        \\
-            $\datalangEctx[]$
-            & $\ni$ &
-            $\datalangEctx$
-            & $\Coloneqq$ &
-            $\Box$
-        \\
-            &&
-            & | &
-            $\datalangLet{\datalangVar}{\datalangEctx}{\datalangExpr_2} \mid \datalangCall{\datalangExpr_1}{\datalangEctx} \mid \datalangCall{\datalangEctx}{\datalangVal_2}$
-        \\
-            &&
-            & | &
-            $\datalangEq{\datalangExpr_1}{\datalangEctx} \mid \datalangEq{\datalangEctx}{\datalangVal_2}$
-        \\
-            &&
-            & | &
-            $\datalangIf{\datalangEctx}{\datalangExpr_1}{\datalangExpr_2}$
-        \\
-            &&
-            & | &
-            $\datalangLoad{\datalangExpr_1}{\datalangEctx} \mid \datalangLoad{\datalangEctx}{\datalangVal_2}$
-        \\
-            &&
-            & | &
-            $\datalangStore{\datalangExpr_1}{\datalangExpr_2}{K} \mid \datalangStore{\datalangExpr_1}{\datalangEctx}{\datalangVal_3} \mid \datalangStore{\datalangEctx}{\datalangVal_2}{\datalangVal_3}$
-        \\
+      \\
+  \end{tabular}
+  \begin{tabular}{lclcl}
             $\datalangDef[]$
             & $\ni$ &
             $\datalangDef$
@@ -110,6 +60,56 @@
             & $\coloneqq$ &
             $\datalangExpr[] \times \datalangState[]$
     \end{tabular}
+
+  \begin{tabular}{rcl}
+            $\datalangExpr[]$
+            $\ni$
+            $\datalangExpr$
+            & $\Coloneqq$ &
+            $\datalangVal$
+        \\
+            & | &
+            $\datalangVar \mid \datalangLet{\datalangVar}{\datalangExpr_1}{\datalangExpr_2} \mid \datalangCall{\datalangExpr_1}{\datalangExpr_2}$
+        \\
+            & | &
+            $\datalangEq{\datalangExpr_1}{\datalangExpr_2}$
+        \\
+            & | &
+            $\datalangIf{\datalangExpr_0}{\datalangExpr_1}{\datalangExpr_2}$
+        \\
+            & | &
+            $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2} \mid \datalangBlockDet{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$
+        \\
+            & | &
+            $\datalangLoad{\datalangExpr_1}{\datalangExpr_2} \mid \datalangStore{\datalangExpr_1}{\datalangExpr_2}{\datalangExpr_3}$
+  \end{tabular}~
+  \begin{tabular}{lclcl}
+            $\datalangEctx[]$
+            $\ni$
+            $\datalangEctx$
+            & $\Coloneqq$ &
+            $\Box$
+        \\
+            & | &
+            $\datalangLet{\datalangVar}{\datalangEctx}{\datalangExpr_2} \mid \datalangCall{\datalangExpr_1}{\datalangEctx} \mid \datalangCall{\datalangEctx}{\datalangVal_2}$
+        \\
+            & | &
+            $\datalangEq{\datalangExpr_1}{\datalangEctx} \mid \datalangEq{\datalangEctx}{\datalangVal_2}$
+        \\
+            & | &
+            $\datalangIf{\datalangEctx}{\datalangExpr_1}{\datalangExpr_2}$
+        \\
+            & | &
+            $\datalangLoad{\datalangExpr_1}{\datalangEctx} \mid \datalangLoad{\datalangEctx}{\datalangVal_2}$
+        \\
+            & | &
+            $\datalangStore{\datalangExpr_1}{\datalangExpr_2}{K} \mid \datalangStore{\datalangExpr_1}{\datalangEctx}{\datalangVal_3} \mid \datalangStore{\datalangEctx}{\datalangVal_2}{\datalangVal_3}$
+  \end{tabular}
     \caption{\DataLang syntax}
     \label{fig:syntax}
 \end{figure}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End:

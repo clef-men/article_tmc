@@ -107,10 +107,10 @@ The rule \RefTirName{DPSCall} applies only to calls $\datalangCall {\datalangFnp
 
 Finally, there is a catch-all rule \RefTirName{DPSBase} that applies in any case, in particular whenever none of the other rules can be selected. This case trivially realizes the DPS calling convention by evaluating the subterm to a result and writing this result in the desired destination. This is what happens in the base case of \ocaml|map_dps|, where the empty list \ocaml|[]| is transformed into \ocaml|dst.(idx) <- []|.
 
-\input{figures/map_tmc}
+% \input{figures/map_tmc}
 
-As an example, we can show that the two \DataLang functions defined in \cref{fig:map_tmc} are respectively the direct and DPS transforms of the original \datalang|map| function defined in \cref{fig:map}.
-Thanks to the rules \RefTirName{DirBlockDPS2} and \RefTirName{DPSCall}, the non-tail recursive call is replaced by the allocation of a partially initialized block followed by a call to \datalang|map_dps|.
+% As an example, we can show that the two \DataLang functions defined in \cref{fig:map_tmc} are respectively the direct and DPS transforms of the original \datalang|map| function defined in \cref{fig:map}.
+% Thanks to the rules \RefTirName{DirBlockDPS2} and \RefTirName{DPSCall}, the non-tail recursive call is replaced by the allocation of a partially initialized block followed by a call to \datalang|map_dps|.
 
 \subsection{Realizing the relation as a function}
 

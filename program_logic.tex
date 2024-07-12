@@ -7,16 +7,16 @@ In this section, we describe the inference rules of our relational program logic
 We omitted some congruence rules for brevity.
 The relation $\iSimv{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ relates a source expression $\datalangExpr_s$ with a target expression $\datalangExpr_t$ under a postcondition $\iPred$.
 We extend it to support a precondition in the standard way:
-\[
+\begin{mathline}
     \iSimvHoare{P}{\iPred}{\datalangExpr_s}{\datalangExpr_t}
     \coloneqq
     \iPersistent \left( P \iWand \iSimv{\iPred}{\datalangExpr_s}{\datalangExpr_t} \right)
-\]
+\end{mathline}
 
 Compared to the specifications of \cref{sec:specification}, we introduced an additional protocol parameter $\iProt$.
 We explain it together with the \RefTirName{RelProtocol} rule in \cref{subsec:protocols}.
 
-\subsection{Language-independent rules}
+\paragraph{Language-independent rules}
 The following rules are independent of \DataLang and could be reused as is in further works.
 
 \RefTirName{RelPost} states that two expressions are related when they are in the relational postcondition.
@@ -29,19 +29,19 @@ An expression is strongly stuck when it is stuck for any heap state.
 \RefTirName{RelSrcPure} and \RefTirName{RelTgtPure} let us take pure reduction steps in either the source or target.
 Pure steps (omitted for brevity) are the reduction steps that are deterministic and do not depend on the state.
 
-\subsection{Language-specific rules: non-determinism}
+\paragraph{Language-specific rules: non-determinism}
 $\iSimv[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ asserts that $\datalangExpr_t$ refines $\datalangExpr_s$: any behavior of $\datalangExpr_t$ is also a behavior of $\datalangExpr_s$.
 Consequently, non-determinism is treated differently in the source and target: we treat non-determinism as \emph{angelic} in source reductions and \emph{demonic} in target reductions.
 
 Our operational semantics uses non-determinism in the reduction of constructors: $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ reduces to $\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}$, where $\datalangVar_1$ and $\datalangVar_2$ are bound to $\datalangExpr_1$ and $\datalangExpr_2$ in some non-deterministic order.
 In the program logic, the user may \emph{choose} an order for the source reduction, by using one of the rules \RefTirName{RelSrcBlock1} or \RefTirName{RelSrcBlock2}, and it has to prove that the expressions are related against \emph{any} target order, by proving the two premises of the rule \RefTirName{RelTgtBlock}.
 
-\subsection{Language-specific rules: private locations.}
+\paragraph{Language-specific rules: private locations.}
 We can reason on points-to assertions --- that we interpret as locations private to the source or target --- in a standard way.
 From a deterministic constructor $\datalangBlockDet{\datalangTag}{\datalangVal_1}{\datalangVal_2}$, we can apply \RefTirName{RelSrcBlockDet} or \RefTirName{RelTgtBlockDet}, yielding a points-to assertion for the allocated block.
 The rules \RefTirName{RelSrcLoad} and \RefTirName{RelTgtLoad} let us load the pointed value while \RefTirName{RelSrcStore} and \RefTirName{RelTgtStore} let us update it with a new value.
 
-\subsection{Language-specific rules: locations in the bijection.}
+\paragraph{Language-specific rules: locations in the bijection.}
 Corresponding source and target locations registered in the bijection through \RefTirName{BijInsert} have given up their respective points-to assertions but can still be accessed using the rules \RefTirName{RelLoad} and \RefTirName{RelStore}.
 
 \RefTirName{RelLoad} states that simultaneously loading from two corresponding blocks yields similar values.

@@ -26,53 +26,53 @@ It requires $\datalangExpr_s$ to be a function call to a TMC-transformed functio
 As in the DPS specification, ownership of the destination must be passed to the protocol.
 To apply it, users can choose any postcondition implied by the postcondition of the DPS specification, including the recovered ownership of the modified destination.
 
-In the instantiated program logic, the application of the $\iProt_\mathrm{TMC}$ protocol is equivalent to the following rules:
-\begin{mathpar}
-    \inferrule*[lab=RelDir]
-        {
-            \datalangFn \in \dom{\datalangProg_s}
-        \\\\
-            \datalangVal_s \iSimilar \datalangVal_t
-        \\\\
-            \forall \datalangValTwo_s, \datalangValTwo_t \ldotp
-            \datalangValTwo_s \iSimilar \datalangValTwo_t \iWand
-            \iPred (\datalangValTwo_s, \datalangValTwo_t)
-        }{
-            \iSimv{
-                \iPred
-            }{
-                \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s}
-            }{
-                \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_t}
-            }
-        }
-    \and
-    \inferrule*[lab=RelDPS]
-        {
-            \datalangRenaming [\datalangFn] = \datalangFn_\mathit{dps}
-        \\\\
-            (\datalangLoc_1 + 1) \iPointsto_t (\datalangLoc_2, \datalangVal_t)
-        \\\\
-            (\datalangLoc_2 + 1) \iPointsto_t (\datalangLoc, \datalangIdx)
-        \\\\
-            (\datalangLoc + \datalangIdx) \iPointsto_t \datalangHole
-        \\\\
-            \datalangVal_s \iSimilar \datalangVal_t
-        \\\\
-            \forall \datalangValTwo_s, \datalangValTwo_t \ldotp
-            (\datalangLoc + \datalangIdx) \iPointsto_t \datalangValTwo_t \iWand
-            \datalangValTwo_s \iSimilar \datalangValTwo_t \iWand
-            \iPred (\datalangValTwo_s, \datalangUnit)
-        }{
-            \iSimv{
-                \iPred
-            }{
-                \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s}
-            }{
-                \datalangCall{\datalangFnptr{\datalangFn_\mathit{dps}}}{\datalangLoc_1}
-            }
-        }
-\end{mathpar}
+% In the instantiated program logic, the application of the $\iProt_\mathrm{TMC}$ protocol is equivalent to the following rules:
+% \begin{mathpar}
+%     \inferrule*[lab=RelDir]
+%         {
+%             \datalangFn \in \dom{\datalangProg_s}
+%         \\\\
+%             \datalangVal_s \iSimilar \datalangVal_t
+%         \\\\
+%             \forall \datalangValTwo_s, \datalangValTwo_t \ldotp
+%             \datalangValTwo_s \iSimilar \datalangValTwo_t \iWand
+%             \iPred (\datalangValTwo_s, \datalangValTwo_t)
+%         }{
+%             \iSimv{
+%                 \iPred
+%             }{
+%                 \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s}
+%             }{
+%                 \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_t}
+%             }
+%         }
+%     \and
+%     \inferrule*[lab=RelDPS]
+%         {
+%             \datalangRenaming [\datalangFn] = \datalangFn_\mathit{dps}
+%         \\\\
+%             (\datalangLoc_1 + 1) \iPointsto_t (\datalangLoc_2, \datalangVal_t)
+%         \\\\
+%             (\datalangLoc_2 + 1) \iPointsto_t (\datalangLoc, \datalangIdx)
+%         \\\\
+%             (\datalangLoc + \datalangIdx) \iPointsto_t \datalangHole
+%         \\\\
+%             \datalangVal_s \iSimilar \datalangVal_t
+%         \\\\
+%             \forall \datalangValTwo_s, \datalangValTwo_t \ldotp
+%             (\datalangLoc + \datalangIdx) \iPointsto_t \datalangValTwo_t \iWand
+%             \datalangValTwo_s \iSimilar \datalangValTwo_t \iWand
+%             \iPred (\datalangValTwo_s, \datalangUnit)
+%         }{
+%             \iSimv{
+%                 \iPred
+%             }{
+%                 \datalangCall{\datalangFnptr{\datalangFn}}{\datalangVal_s}
+%             }{
+%                 \datalangCall{\datalangFnptr{\datalangFn_\mathit{dps}}}{\datalangLoc_1}
+%             }
+%         }
+% \end{mathpar}
 
 \subsection{Other examples of protocols}
 
@@ -147,3 +147,8 @@ We defined an APS transformation, after extending \DataLang with integers and ar
 \medskip
 
 One subtlety is that our \DataLang language is untyped, so arithmetic operations (here addition) may get stuck on non-integer values. If the function call $\datalangCall {\datalangFnptr \datalangFn} {\datalangVal_s}$ in the source program returns a non-integer value, then the outer context $\datalangVar_\mathit{acc} + \datalangCtxHole$ gets stuck. But in the transformed program, this failure happens inside the body of the APS-transformed function $\datalangFnptr {\datalangFn_\mathit{aps}}$. To represent this failure case in our protocol, the postcondition $\iPredTwo$ relates a non-integer source return value $\datalangVal_s'$ with any strongly stuck expression $\datalangExpr_t'$ in the target. This relies on the generality of our protocols being predicate transformers on expressions, not just values.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
