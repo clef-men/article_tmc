@@ -85,7 +85,7 @@ Adequacy is proved with an empty protocol, but we combine it with a \emph{simula
     \end{align*}
 \end{lemma}
 
-\Xgabriel{TODO Clément re-read this.} In simple terms, the admissibility condition states that the protocol can be realized by a concrete function that takes a pair of expressions related in the protocol with a postcondition $\iPredTwo$, and produces related reduction sequences (one simultaneous step, after potential stuttering on both sides) that end up in the desired postcondition $\iPredTwo$.
+In simple terms, any expressions accepted by a valid protocol have to be able to take one simultaneous step after potential stuttering to return in the open simulation.
 
 \subsection{Transformation soundness}
 
