@@ -89,11 +89,20 @@ decomposition where all recursive calls are in TMC position. Notable
 functions include \ocaml{map}, as already discussed, but also for
 example:
 
+\begin{minipage}{0.47\linewidth}
 \begin{Ocaml}
-let[@tail_mod_cons] rec filter p = function
-| [] -> []
-| x :: xs -> if p x then x :: filter p xs else filter p xs
-
+let[@tail_mod_cons] rec filter p =
+  function
+  | [] -> []
+  | x :: xs ->
+    if p x
+    then x :: filter p xs
+    else filter p xs
+\end{Ocaml}
+\end{minipage}
+\hfill
+\begin{minipage}{0.53\linewidth}
+\begin{Ocaml}
 let[@tail_mod_cons] rec merge cmp l1 l2 =
   match l1, l2 with
   | [], l | l, [] -> l
@@ -102,6 +111,7 @@ let[@tail_mod_cons] rec merge cmp l1 l2 =
       then h1 :: merge cmp t1 l2
       else h2 :: merge cmp l1 t2
 \end{Ocaml}
+\end{minipage}
 
 TMC is not useful only for lists or other ``linear'' data types, with
 at most one recursive occurrence of the datatype in each
@@ -135,6 +145,7 @@ is likely to contain a deep subtree. The OCaml compiler itself
 contains a number of them; consider for example the following function
 from the \ocaml{Cmm} module, one of its lower-level program
 representations:
+
 \begin{Ocaml}
 let[@tail_mod_cons] rec map_tail f = function
   | Clet(id, exp, body) ->
@@ -146,10 +157,6 @@ let[@tail_mod_cons] rec map_tail f = function
   | Cswitch(e, tbl, el) ->
       Cswitch(e, tbl, Array.map (map_tail f) el)
   [...]
-  | Cexit _ | Cop (Craise _, _, _) as cmm ->
-      cmm
-  | Cconst_int _ | Cvar _ | Ctuple _ | Cop _ as c ->
-      f c
 \end{Ocaml}
 
 This function is traversing the ``tail'' context of an arbitrary
@@ -313,7 +320,15 @@ version.
 \begin{Ocaml}
 let rec dup = function [] -> [] | x :: xs -> x :: x :: dup xs
 \end{Ocaml}
-The DPS version, translated naively, would be as follows:
+
+Such nested constructors are common in compiler codebases, for
+example a desugaring pass that transforms a single term-former into
+a composition of several simpler term-formers, and applies recursively to
+its subterms.
+
+Following the TMC transformation naively, the DPS version would two location and performs two writes, leading to more complex code with worse constant factors. We introduced ``constructor compression'', an optimization of the generated code that avoids creating intermediary destinations for nested constructors. Compare the naive translation of \ocaml|dup|, on the left, and our compressed translation on the right:
+
+\begin{minipage}{0.5\linewidth}
 \begin{Ocaml}
 let rec dup_dps dst ofs = function
 | [] -> dst.(ofs) <- []
@@ -324,12 +339,9 @@ let rec dup_dps dst ofs = function
   dst1.(1) <- dst2;
   dup_dps dst2 1 xs
 \end{Ocaml}
-Such nested constructors are common in compiler codebases, for
-example a desugaring pass that transforms a single term-former into
-a composition of several simpler term-formers, and applies recursively to
-its subterms.
-
-The TMC transformation implemented in OCaml performs ``constructor compression'', an optimization of the generated code that avoids creating intermediary destinations for nested constructors, generating instead the following code directly:
+\end{minipage}
+\hfill
+\begin{minipage}{0.5\linewidth}
 \begin{Ocaml}
 let rec dup_dps dst ofs = function
 | [] -> dst.(ofs) <- []
@@ -338,6 +350,7 @@ let rec dup_dps dst ofs = function
   dst1.(1) <- x :: dst2;
   dup_dps dst2 1 xs
 \end{Ocaml}
+\end{minipage}
 
 This is implemented by passing as an extra transformation parameter a stack of ``delayed'' constructor applications, that are in context and must be applied to the result of the subterm. When we encounter the final recursive call, we ``reify'' this stack: the last/innermost constructor in the stack becomes the new destination (\ocaml|dst1| in the example above), and the rest of the stack is applied to the new destination when we write to the old destination. There are two subtleties:
 \begin{enumerate}
@@ -350,16 +363,28 @@ This is implemented by passing as an extra transformation parameter a stack of `
 Instead of trying to transform each subterm in a single pass, our implementation computes for each subterm a ``choice'', a summary of all the bottom-up information relevant to choose how to transform it -- once we have the top-down information available. This includes (1) the direct-style transform of the subterm, (2) the DPS-style transform of the subterm, (3) metadata tracking whether the transformation is beneficial (if a TMC-function call was found in tail-modulo-cons position), the list of TMC calls it contains (for error diagnostics), and whether some were explicitly requested by the user (for disambiguation). Computing transformed terms is not compositional, computing choices is compositional. We compute a choice for the whole function body (in one pass), from which we can directly extract the direct-style and DPS-style transformations of the function.
 
 The computation of choices can be expressed elegantly. Instead of a monomorphic type \ocaml|Choice.t| that represents a choice of how to transform a term, we use a polymorphic type \ocaml|'a Choice.t| that represents how to transform zero, one or several subterms that occur in the source; for example transforming two subterms in the same context relies on a choice of type \ocaml|(lambda * lambda) Choice.t|, where \ocaml|lambda| is the type of terms in the intermediate representation we are working on. This \ocaml|'a Choice.t| type can be equipped with an applicative functor interface:
+
+\begin{minipage}{0.4\linewidth}
 \begin{Ocaml}
 module Choice : sig
   type 'a t = {
     dps : 'a Dps.t;
     direct : unit -> 'a;
-    tmc_calls : tmc_call_information list;
+    tmc_calls : tmc_call_info list;
     benefits_from_dps : bool;
     explicit_tailcall_request : bool;
   }
 
+
+
+
+
+end
+\end{Ocaml}
+\end{minipage}
+\hfill
+\begin{minipage}{0.5\linewidth}
+\begin{Ocaml}
   (* construct a choice from an arbitrary term *)
   val lambda : lambda -> lambda t
 
@@ -370,37 +395,23 @@ module Choice : sig
 
   (* extract the direct-style and DPS transforms *)
   val direct : lambda t -> lambda
-  val dps : lamdba t -> tail:bool -> dst:offset destination -> 'd
-end
+  val dps :
+    lambda t -> tail:bool -> dst:offset dst ->
+    lambda
 \end{Ocaml}
+\end{minipage}
 
 With this interface, the easy cases of the transformation can be expressed compactly:
 \begin{Ocaml}
   let rec choice ctx ~tail t =
     match t with
-    (* base cases: no TMC call opportunities *)
-    | (Lvar _ | Lmutvar _ | Lconst _ | Lfunction _ | Lsend _
-      | Lassign _ | Lfor _ | Lwhile _) ->
-        let t = traverse ctx t in
-        Choice.lambda t
-
-    (* congruence cases *)
-
+    [...]
     | Lifthenelse (l1, l2, l3) ->
         let l1 = traverse ctx l1 in
         let+ l2 = choice ctx ~tail l2
         and+ l3 = choice ctx ~tail l3
         in Lifthenelse (l1, l2, l3)
-
-    | Lletrec (bindings, body) ->
-        let ctx, bindings = traverse_letrec ctx bindings in
-        let+ body = choice ctx ~tail body in
-        Lletrec(bindings, body)
-
-    (* .... *)
-
-    (* hard cases: function and constructor application
-       (omitted)  *)
+    [...]
 \end{Ocaml}
 The binding operators \ocaml|let+|, \ocaml|and+| are standard syntax for applicative-like structures in OCaml: \ocaml|let+| desugars to \ocaml|Choice.map| and \ocaml|and+| desugars to \ocaml|Choice.pair|. \ocaml|traverse| performs a direct-style translation, and \ocaml|traverse_letrec| may also transform \ocaml|let|-bound functions marked with \ocaml|[@tail_mod_constr]| and add them to the local transformation environment.
 
