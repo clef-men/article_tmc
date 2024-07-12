@@ -20,7 +20,8 @@
         \\
             &&
             $\datalangExpr_2}}}$
-        \\
+    \end{tabular}~%
+    \begin{tabular}{rcl}
             $\datalangRec{\datalangPair{\datalangVar_1}{\datalangVar_2}}{\datalangExpr}$
             & $\coloneqq$ &
             $\datalangRec{\datalangVarTwo}{
@@ -33,7 +34,9 @@
             $\datalangCons{\datalangExpr_1}{\datalangExpr_2}$
             & $\coloneqq$ &
             $\datalangBlock{\mathrm{CONS}}{\datalangExpr_1}{\datalangExpr_2}$
-        \\
+    \end{tabular}
+
+    \begin{tabular}{rcl}
             $\datalangMatchOneline[]{\datalangExpr_0}{\datalangExpr_1}{\datalangVar}{\mathit{\datalangVar s}}{\datalangExpr_2}$
             & $\coloneqq$ &
             $\datalangLet{\datalangVarTwo}{\datalangExpr_0}{$

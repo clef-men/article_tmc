@@ -9,7 +9,7 @@
             {}{
                 \boxed{- \tmcDir{\datalangRenaming} - : \datalangExpr[] \rightarrow \datalangExpr[] \rightarrow \Prop}
             }
-        \\
+        \and
         \inferrule*[lab=DirDef]
             {
                 \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
@@ -18,7 +18,7 @@
                 \tmcDir{\datalangRenaming}
                 \datalangRec{\datalangVar}{\datalangExpr_t}
             }
-        \\
+        \and
         \inferrule*[lab=DirVal]
             {}{
                 \datalangVal
@@ -43,7 +43,7 @@
                 \tmcDir{\datalangRenaming}
                 \datalangLet{\datalangVar}{\datalangExpr_{t1}}{\datalangExpr_{t2}}
             }
-        \\
+        \and
         \inferrule*[lab=DirCall]
             {
                 \datalangExpr_{s1} \tmcDir{\datalangRenaming} \datalangExpr_{t1}
@@ -65,7 +65,7 @@
                 \tmcDir{\datalangRenaming}
                 \datalangBlock \datalangTag {\datalangExpr_{t1}} {\datalangExpr_{t2}}
             }
-        \\
+        \and
         \inferrule*[lab=DirBlockDPS1]
             {
                 (\datalangVar, \datalangOne, \datalangExpr_{s1}) \tmcDps{\datalangRenaming} \datalangExpr_{t1}

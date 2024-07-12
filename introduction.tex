@@ -189,7 +189,7 @@ The transformed code has two variants of the \ocaml{map} function. The \ocaml{ma
 
 The key idea of the transformation is that the expression \ocaml{y :: map f xs}, which contained a non-tail-recursive call, is transformed into first the computation of a \emph{partial} list cell, written \ocaml{y :: ?}, followed by a call to \ocaml{map_dps} that is asked to write its result in the position of the \ocaml{?}. The recursive call thus happens after the cell creation (instead of before), in tail-recursive position in the \ocaml{map_dps} variant. In the direct variant, the value of the destination \ocaml{dst} has to be returned after the call.
 
-The transformed code is in a pseudo-OCaml, it is not a valid OCaml
+The transformed code is pseudo-OCaml, it is not a valid OCaml
 program: we use a magical \ocaml{?} constant, and our notation
 \ocaml{dst.i <- ...} to update constructor parameters in-place is also
 invalid in source programs. The transformation is implemented on
@@ -199,9 +199,9 @@ system is not expressive enough to type-check the transformed program:
 the list cell is only partially-initialized at first, each partial
 cell is mutated exactly once, and in the end the whole result is
 returned as an \emph{immutable} list. Some type system are expressive
-enough to represent this transformed code, notably \Mezzo~\citep*{mezzo-2016}, which is based on a permission system inspired by \emph{separation logic}~\citep*{seplog-cacm-2019}, or the linear types used in \citet*{minamide-98}.
+enough to represent this transformed code, notably \Mezzo~\citep*{mezzo-2016}, based on a permission system inspired by \emph{separation logic}~\citep*{seplog-cacm-2019}, or the linear types used in \citet*{minamide-98}.
 
-TMC has been implemented in Lisp~[TODO], Prolog~[TODO] and (simultaneously to our work) Koka~\citep*{tmc-koka-2023}. A simpler variant of TMC, where constructors are replaced by associative operations and transformed to \emph{accumulator-passing style}, is implemented in \texttt{gcc} and \texttt{clang}.
+TMC has been implemented in Lisp~[TODO], Prolog~[TODO] and (simultaneously to our work) Koka~\citep*{tmc-koka-2023}. A simpler variant of TMC, where constructors are replaced by associative operations and transformed to \emph{accumulator-passing style}, is in \texttt{gcc} and \texttt{clang}.
 
 The first main contribution of our work is an implementation of TMC in the \OCaml compiler as an on-demand program transformation.
 %
