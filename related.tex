@@ -69,21 +69,15 @@ results. (See the
 module of the Mezzo standard library, and in particular \ocaml{cell},
 \ocaml{freeze} and \ocaml{append} in destination-passing-style).
 
-\citet*{tmc-koka-2023} provide a (pen-and-paper) correctness argument
-for TMC, or in fact a family of approaches based on optimized
-representations of classes of non-tail contexts, in the style of
-program calculation. The clarity of their exposition is
-remarkable. The implementation they prove correct, which corresponds
-to the approach described in \citet*{minamide-98}, results in
-a slightly different code generation where recursive calls to
-\ocaml{map_dps} are passed \emph{both} the beginning of the list and
-the destination to be written at its end. The beginning of the list
-remains constant over all recursive calls, and it is known to the
-caller, so our DPS version does not propagate it. We were inspired by
-the generality of their presentation and verified that our proof
-technique can also be applied to some over TMC variants, by extending
-our mechanized development with a correctness proof for an
-accumulator-passing-style transformation.
+\citet*{tmc-koka-2023} provide a (pen-and-paper) correctness argument for TMC, or in fact a family of approaches based on optimized representations of classes of non-tail contexts, in the style of program calculation.
+The clarity of their exposition is remarkable.\\
+
+The implementation they prove correct, which corresponds to the approach described in \citet*{minamide-98}, results in a slightly less efficient generation where recursive calls to \ocaml{map_dps} are passed \emph{both} the beginning of the list and the destination to be written at its end.
+The beginning of the list remains constant over all recursive calls, and it is known to the caller, so our DPS version does not propagate it.\\
+We were inspired by the generality of their presentation and verified that our proof technique can also be applied to some other TMC variants, by extending our mechanized development with a correctness proof for an
+accumulator-passing-style transformation.\\
+Finally, our correctness results are slightly stronger, as they assume well-typed programs that cannot go wrong, while we work on an untyped calculus and prove a behavioral refinement of failures: the target can get stuck only when the source can.
+We get this extra generality mostly for free by defining the simulation carefully, but it requires some care when handling type failures arithmetic operators in the accumulator-passing-style variant.
 
 \subsection{Relational reasoning in separation logic}
 

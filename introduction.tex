@@ -205,9 +205,11 @@ Various functions in the standard library and third-party codebases have been re
 
 The second main contribution of this work is a mechanized proof of correctness for the core of this transformation on a small untyped calculus.
 %
-For any input source program, we establish a termination-preserving \emph{behavioral refinement} between the source program and the corresponding transformed program: any behavior of the transformed program, be it converging, diverging or stuck, is a behavior of the source program.
+We etablish that for any input source program there is a termination-preserving \emph{behavioral refinement} between the source program and the corresponding transformed program: any behavior of the transformed program, be it converging, diverging or stuck, is a behavior of the source program.
+%
+To our knowledge this is the first verification of the TMC transformation in an untyped setting.
 
-Our proof technique is to define a relational program logic for our small untyped calculus, to show the correctness of the TMC transformation using this program logic, and to get the behavioral refinement by proving adequacy of our program logic. We build on top of \Simuliris~\citep*{simuliris-2022}, a framework for simulations in separation logic over the \Iris base logic. The use of separation logic nicely captures certain aspects of the proof argument, in particular the fact that the the destination-passing-style function uniquely owns the destination location it receives.
+Our proof technique is to define a relational program logic for our small untyped calculus, to show the correctness of the TMC transformation using this program logic, and to get the behavioral refinement by proving adequacy of our program logic. We build on top of \Simuliris~\citep*{simuliris-2022}, a framework for simulations in separation logic over the \Iris base logic. The use of separation logic nicely captures certain aspects of the proof argument, in particular the fact that the the destination-passing-style function uniquely owns the destination location that it receives.
 
 To our knowledge, previous works on \Simuliris have verified \emph{examples} of interesting optimizations and program transformations, by formally proving relations between pairs of concrete programs. Our work may be the first proof of correctness of a \emph{program transformation} (as a function or relation) using a simulation-based approach, establishing correctness for all input programs. (Earlier \Iris work proves program transformations using logical relations, see for example \citet*{tassarotti-2017}.)
 
@@ -228,7 +230,7 @@ For instance, to give a taste of the formalism, the specification of the variant
 %
 \begin{align*}
         \iSimvHoare{
-            \iTrue
+            \datalangVal_s \iSimilar \datalangVal_t
         }{
             \iSimilar
         }{
@@ -242,6 +244,8 @@ For instance, to give a taste of the formalism, the specification of the variant
         }
     \\
         \iSimvHoare{
+            \datalangVal_s \iSimilar \datalangVal_t
+            \ \iSep\ %
             (\datalangLoc + \datalangIdx) \iPointsto \datalangHole
         }{
             \datalangVal'_s, \datalangUnit \ldotp
@@ -262,6 +266,7 @@ For instance, to give a taste of the formalism, the specification of the variant
                 {\datalangVal_t}}
         }
 \end{align*}
+If two input lists are related, then calling the \ocaml{map} function or its direct-style translation will return related outputs. Furthermore, if we call the destination-passing-style version on a partial block that we own, we will get a source value $\datalangVal'_s$ and a \ocaml{unit} value $\datalangUnit$, and a target value $\datalangVal'_t$ related to $\datalangVal'_s$ will be written in the block.
 
 To sum up, our main contributions are:
 \begin{enumerate}
