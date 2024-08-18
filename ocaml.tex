@@ -108,7 +108,7 @@ Another example would be
 the \OCaml compiler proposed in June 2020 by Mark Shinwell, to get
 a partially-tail-recursive implementation of the ``Common
 Subexpression Elimination'' (CSE) pass through a manual
-contiation-passing-style transform. Xavier Leroy remarked that the
+continuation-passing-style transform. Xavier Leroy remarked that the
 existing implementation in fact fits the TMC fragment. Not all
 recursive calls become tail-calls (this would require a more powerful
 transformation or a longer, less readable patch), but the behavior of
@@ -247,7 +247,7 @@ function arguments with a \ocaml{[@tail_mod_cons]} annotation, and
 elaborating them into a pair of functions, the direct-style and the DPS
 version.
 
-\subsection{Constructor compression} \label{subsec:constructor-compression} The translation as we described it formally in \cref{subsec:transformation} generates unpleasant (and slower) code when many constructors are nested before the recursive call. For example, consider this strange function: element in a list:
+\subsection{Constructor compression} \label{subsec:constructor-compression} The translation as we described it formally in \cref{subsec:transformation} generates unpleasant (and slower) code when many constructors are nested before the recursive call. For example, consider this strange function duplicating each element of a list:
 \begin{Ocaml}
 let rec dup = function [] -> [] | x :: xs -> x :: x :: dup xs
 \end{Ocaml}
@@ -257,7 +257,7 @@ example a desugaring pass that transforms a single term-former into
 a composition of several simpler term-formers, and applies recursively to
 its subterms.
 
-Following the TMC transformation naively, the DPS version would two location and performs two writes, leading to more complex code with worse constant factors. We introduced ``constructor compression'', an optimization of the generated code that avoids creating intermediary destinations for nested constructors. Compare the naive translation of \ocaml|dup|, on the left, and our compressed translation on the right:
+Following the TMC transformation naively, the DPS version would propagate two different locations and performs two writes, leading to more complex code with worse constant factors. We introduced ``constructor compression'', an optimization of the generated code that avoids creating intermediary destinations for nested constructors. Compare the naive translation of \ocaml|dup|, on the left, and our compressed translation on the right:
 
 \begin{minipage}{0.5\linewidth}
 \begin{Ocaml}
@@ -278,14 +278,14 @@ let rec dup_dps dst ofs = function
 | [] -> dst.(ofs) <- []
 | x :: xs ->
   let dst2 = x :: ? in
-  dst1.(1) <- x :: dst2;
+  dst.(ofs) <- x :: dst2;
   dup_dps dst2 1 xs
 \end{Ocaml}
 \end{minipage}
 
 This is implemented by passing as an extra transformation parameter a stack of ``delayed'' constructor applications, that are in context and must be applied to the result of the subterm. When we encounter the final recursive call, we ``reify'' this stack: the last/innermost constructor in the stack becomes the new destination (\ocaml|dst1| in the example above), and the rest of the stack is applied to the new destination when we write to the old destination. There are two subtleties:
 \begin{enumerate}
-\item \ocaml|if p then e1 else e2| has two subterms which are transformed in DPS style, and naively passing the stack of delayed constructors to both subterms would duplicate code; instead of also reify the current stack when encountering such constructs.
+\item \ocaml|if p then e1 else e2| has two subterms which are transformed in DPS style, and naively passing the stack of delayed constructors to both subterms would duplicate code; instead we also reify the current stack when encountering such constructs.
 \item This transformation may permute constructor applications after effectful subterms. If the constructor application contains effectful arguments, those must be \ocaml|let|-bound at their original position to avoid changing the evaluation order.
 \end{enumerate}
 
@@ -336,7 +336,7 @@ The benchmarks reports the relative performance compared to the naive tail-recur
 
 Qualitatively we see that there are four groups:
 \begin{itemize}
-\item \bench{tmc}, \bench{batteries} perform very on large lists, but they
+\item \bench{tmc}, \bench{batteries} perform very well on large lists, but they
   are slower than the baseline on small lists.
 \item \bench{nontail} performs better than \bench{tmc}, \bench{batteries} on list sizes up to $10^4$, and much worse on larger lists.
 \item \bench{base}, \bench{containers} perform noticeably better than \bench{nontail} at all sizes,

@@ -14,7 +14,7 @@ To conclude that $\datalangExpr_s$ and $\datalangExpr_t$ are related, one must p
 
 \subsection{TMC protocols}
 
-In our correctness proof for the TMC transformation, we use a sepecific protocol $\iProt_\mathrm{TMC}$ defined in \cref{fig:protocol} by combining two sub-protocols $\iProt_\mathrm{dir}$ and $\iProt_\mathrm{DPS}$ for the direct-style and DPS-style functions. Our coinduction hypothesis assumes toplevel function calls to be compatible with the direct and DPS specifications that we want to prove, and allows to reason about recursive calls to those functions inside the function bodies we are trying to relate.
+In our correctness proof for the TMC transformation, we use a specific protocol $\iProt_\mathrm{TMC}$ defined in \cref{fig:protocol} by combining two sub-protocols $\iProt_\mathrm{dir}$ and $\iProt_\mathrm{DPS}$ for the direct-style and DPS-style functions. Our coinduction hypothesis assumes toplevel function calls to be compatible with the direct and DPS specifications that we want to prove, and allows to reason about recursive calls to those functions inside the function bodies we are trying to relate.
 
 $\iProt_\mathrm{dir}$ specifies the \emph{direct calling convention} induced by the direct transformation.
 It requires $\datalangExpr_s$ and $\datalangExpr_t$ to be function calls to the same function with similar arguments.
