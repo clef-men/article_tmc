@@ -15,8 +15,8 @@ For reasons of space, we moved some of the content in this section to \cref{app:
 \label{subsec:ocaml-examples}
 
 Many functions that consume and produce lists are
-tail-recursive-modulo-cons, in the sense that all they have a TMC
-decomposition where all recursive calls are in TMC position. Notable
+tail-recursive-modulo-cons, in the sense that they admit a TMC
+transformatin where all recursive calls become tail calls. Notable
 functions include \ocaml{map}, as already discussed, but also for
 example:
 
@@ -46,7 +46,7 @@ let[@tail_mod_cons] rec merge cmp l1 l2 =
 
 TMC is not useful only for lists or other ``linear'' data types, with
 at most one recursive occurrence of the datatype in each
-constructor.
+constructor. An example follows.
 
 \paragraph{A non-example} Consider a \ocaml{map} function on binary
 trees:
@@ -90,30 +90,15 @@ let[@tail_mod_cons] rec map_tail f = function
   [...]
 \end{Ocaml}
 
-This function is traversing the ``tail'' context of an arbitrary
-program term -- a meta-example! The \ocaml{Cifthenelse} node acts as
-our binary-node constructor, we do not know which side is likely to be
-larger, so TMC is not so interesting. The recursive calls for
-\ocaml{Cswitch} are not in TMC position. But on the other hand the
-\ocaml{Clet}, \ocaml{Csequence} cases are very beneficial to have in
-TMC: while they have several recursive subtrees, they are in practice
-only deeply nested in the direction that is turned into a tailcall by
-the transformation. The \OCaml compiler does sometimes encounter
-machine-generated programs with a unusually long sequence of either
-constructions, and the TMC transformation may very well avoid a stack
-overflow in this case.
+This function is traversing the ``tail'' context of an arbitrary program term -- a meta-example!
+The \ocaml{Cifthenelse} node acts as our binary-node constructor.
+We do not know which side is likely to be larger, so TMC is not so interesting.
+The recursive calls for \ocaml{Cswitch} are not in TMC position.
+But on the other hand the \ocaml{Clet}, \ocaml{Csequence} do benefit from the TMC transformation: while they have several recursive subtrees, they are in practice only deeply nested in the direction that is turned into a tailcall by the transformation.
+The \OCaml compiler does sometimes encounter machine-generated programs with a unusually long sequence of either constructions, and the TMC transformation may very well avoid a stack overflow in this case.
 
-Another example would be
-\href{https://github.com/ocaml/ocaml/pull/9636}{\#9636}, a patch to
-the \OCaml compiler proposed in June 2020 by Mark Shinwell, to get
-a partially-tail-recursive implementation of the ``Common
-Subexpression Elimination'' (CSE) pass through a manual
-continuation-passing-style transform. Xavier Leroy remarked that the
-existing implementation in fact fits the TMC fragment. Not all
-recursive calls become tail-calls (this would require a more powerful
-transformation or a longer, less readable patch), but the behavior of
-TMC on the unchanged code matches the tail-call-ness proposed in the
-human-written patch.
+Another example would be \href{https://github.com/ocaml/ocaml/pull/9636}{\#9636}, a patch to the \OCaml compiler proposed in June 2020 by Mark Shinwell, to get a partially-tail-recursive implementation of the ``Common Subexpression Elimination'' (CSE) pass through a manual continuation-passing-style transform.
+Xavier Leroy remarked that the existing implementation in fact fits the TMC fragment. Not all recursive calls become tail-calls (this would require a more powerful transformation or a longer, less readable patch), but the behavior of TMC on the unchanged code matches the tail-call-ness proposed in the human-written patch.
 
 \subsection{Specifying which calls are in TMC position} \label{subsec:specification}
 To reason about the stack usage of their programs, users must understand which calls are in tail-modulo-cons position.
@@ -185,9 +170,10 @@ The main question faced by an implementation is how to resolve the
 inherent non-determinism. We identified fairly different kinds of
 non-determinism.
 
-\paragraph{Choices with an obviously better alternative.} Some choices have an obviously better alternative, because they allow to strictly improve more programs. For example, some implementations of TMC limit themselves to calls that are immediately inside a constructor: they would optimize the recursive call to \ocaml|f| in \ocaml|Cons(x, f y)| but not, for example, in \ocaml|Cons(x1, Cons(x2, f y))|, or in \ocaml|Cons (x, if p then f y else z)|.
+\paragraph{Choices with an obviously better alternative.}
+Some choices offer an alternative that is obviously better than the others, because it allows to strictly improve more programs. For example, some implementations of TMC limit themselves to calls that are immediately inside a constructor: they would optimize the recursive call to \ocaml|f| in \ocaml|Cons(x, f y)| but not, for example, in \ocaml|Cons(x1, Cons(x2, f y))|, or in \ocaml|Cons (x, if p then f y else z)|.
 
-In the terms of \cref{subsec:specification}, some implementations only allow to optimize calling contexts of the form $\datalangTailCtx{[\datalangConsFrame]}$ or $\datalangTailCtx{[\datalangConsCtx]}$. We support a more general situation $\datalangTMCCtx = (\datalangTailFrame | \datalangConsFrame)^{*}$.
+In the terms of \cref{subsec:specification}, those implementations only allow to optimize calling contexts of the form $\datalangTailCtx{[\datalangConsFrame]}$ or $\datalangTailCtx{[\datalangConsCtx]}$. Our implementation supports the more general situation $\datalangTMCCtx = (\datalangTailFrame | \datalangConsFrame)^{*}$. Both approaches are included in our non-deterministic relation -- we prove them both correct -- but optimizing more calls is obviously better.
 
 \paragraph{Choices with a subtly better alternative.} In some cases it
 is possible to put a bit more work in the choice heuristics, to
@@ -197,7 +183,7 @@ implementation would result in more subterms being transformed in
 destination-passing-style, only to finally use the
 \RefTirName{DPSBase} rule without any DPS function call. The generated
 code is slightly less pleasant to read, and in our experience it can
-be noticeably slower.
+be noticeably slower. (We detail such a situation in \cref{subsec:constructor-compression}.)
 
 Code readability is important in our context of an on-demand program
 transformation used by performance experts: those experts will often
@@ -226,28 +212,20 @@ error in case of ambiguity:
        transformed.
 \end{Ocaml}
 
-This approach would be incompatible with a view of the TMC
+This approach is incompatible with a view of the TMC
 transformation as an implicit optimization, applied whenever
 possible -- in that case one would rather have the compiler make
 arbitrary choices rather than fail. We rather view TMC as a tool for
 expert users to better reason about program performance. It should be
 predictable and flexible (let the user express
-their intent). Failing on the lack of annotations is an acceptable way
+their intent). Failing due to the lack of annotations is an acceptable way
 to drive user interaction.
 
-\subsubsection{First-order implementation} A notable limitation of the
-\OCaml implementation is that it is first-order and non-modular in
-nature: only direct calls to known functions can be converted into DPS
-style, and the availability of a DPS variant is not exposed through
-module abstractions.
+\subsubsection{First-order implementation}\label{subsubsec:first-order}
+A notable limitation of the \OCaml implementation is that it is first-order and non-modular in nature: only direct calls to known functions can be converted into DPS style, and the availability of a DPS variant is not exposed through module abstractions.
+It would be possible to allow DPS calls through external modules or higher-order function parameters, by annotating interfaces and function arguments with a \ocaml{[@tail_mod_cons]} annotation, and elaborating them into a pair of functions, the direct-style and the DPS version.
 
-It would be possible to allow DPS calls through external modules or
-higher-order function parameters, by annotating interfaces and
-function arguments with a \ocaml{[@tail_mod_cons]} annotation, and
-elaborating them into a pair of functions, the direct-style and the DPS
-version.
-
-\subsection{Constructor compression} \label{subsec:constructor-compression} The translation as we described it formally in \cref{subsec:transformation} generates unpleasant (and slower) code when many constructors are nested before the recursive call. For example, consider this strange function duplicating each element of a list:
+\subsection{Constructor compression} \label{subsec:constructor-compression} The translation as we described it formally in \cref{subsec:transformation} generates unpleasant code when many constructors are nested before the recursive call. For example, consider this strange function duplicating each element of a list:
 \begin{Ocaml}
 let rec dup = function [] -> [] | x :: xs -> x :: x :: dup xs
 \end{Ocaml}
