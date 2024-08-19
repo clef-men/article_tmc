@@ -235,7 +235,7 @@ example a desugaring pass that transforms a single term-former into
 a composition of several simpler term-formers, and applies recursively to
 its subterms.
 
-Following the TMC transformation naively, the DPS version would propagate two different locations and performs two writes, leading to more complex code with worse constant factors. We introduced ``constructor compression'', an optimization of the generated code that avoids creating intermediary destinations for nested constructors. Compare the naive translation of \ocaml|dup|, on the left, and our compressed translation on the right:
+Following the TMC transformation naively, the DPS version would propagate two different locations and performs two writes. We introduced ``constructor compression'', an optimization of the generated code that avoids creating intermediary destinations for nested constructors, leading to clearer generated code and better constant factors. Compare the naive translation of \ocaml|dup|, on the left, and our compressed translation on the right:
 
 \begin{minipage}{0.5\linewidth}
 \begin{Ocaml}
@@ -261,19 +261,19 @@ let rec dup_dps dst ofs = function
 \end{Ocaml}
 \end{minipage}
 
-This is implemented by passing as an extra transformation parameter a stack of ``delayed'' constructor applications, that are in context and must be applied to the result of the subterm. When we encounter the final recursive call, we ``reify'' this stack: the last/innermost constructor in the stack becomes the new destination (\ocaml|dst1| in the example above), and the rest of the stack is applied to the new destination when we write to the old destination. There are two subtleties:
+This is implemented by passing a new transformation parameter: a stack of ``delayed'' constructor applications, that are in context and must be applied to the result of the subterm. When we encounter the final recursive call, we ``reify'' this stack: the last/innermost constructor in the stack becomes the new destination (\ocaml|dst2| in the example above), and the rest of the stack is applied to the new destination when we write to the old destination. There are two subtleties:
 \begin{enumerate}
 \item \ocaml|if p then e1 else e2| has two subterms which are transformed in DPS style, and naively passing the stack of delayed constructors to both subterms would duplicate code; instead we also reify the current stack when encountering such constructs.
-\item This transformation may permute constructor applications after effectful subterms. If the constructor application contains effectful arguments, those must be \ocaml|let|-bound at their original position to avoid changing the evaluation order.
+\item This transformation may permute constructor applications after effectful subterms. If the constructor application context frame contains possibly-effectful subterms (for example \ocaml{f x :: _? } instead of \ocaml{x :: _?}), the compiler must \ocaml|let|-bind them at their original position to avoid changing the evaluation order.
 \end{enumerate}
 
-\subsection{Implementation} \label{subsec:implementation} Implementing the TMC transform is not an obvious top-down or bottom-up traversal, because it relies on two informations flowing in opposite directions: the transformation is \emph{possible} for subterms that are in tail-or-constructor position relative to the root of the function (top-down information), and it is \emph{desirable} for subterms whose leaves contain calls to TMC-transformed functions (bottom-up information). A naive approach is to perform a recursive traversal that tracks the top-down context and, on each subterm, recursively traverses the whole subterm to check desirability; this has quadratic time complexity, which is best avoided in production compilers.
+\subsection{Implementation} \label{subsec:implementation} Implementing the TMC transform is not an obvious top-down or bottom-up traversal, because it relies on information flowing in two opposite directions: the transformation is \emph{possible} for subterms that are in tail-or-constructor position relative to the root of the function (top-down information), and it is \emph{desirable} for subterms whose leaves contain calls to TMC-transformed functions (bottom-up information). A naive approach is to perform a recursive traversal that tracks the top-down context and, on each subterm, recursively traverses the whole subterm to check desirability; this has quadratic time complexity, which is best avoided in production compilers.
 
-Instead of trying to transform each subterm in a single pass, our implementation computes for each subterm a ``choice'', a summary of all the bottom-up information relevant to choose how to transform it -- once we have the top-down information available. This includes (1) the direct-style transform of the subterm, (2) the DPS-style transform of the subterm, (3) metadata tracking whether the transformation is beneficial (if a TMC-function call was found in tail-modulo-cons position), the list of TMC calls it contains (for error diagnostics), and whether some were explicitly requested by the user (for disambiguation). Computing transformed terms is not compositional, computing choices is compositional. We compute a choice for the whole function body (in one pass), from which we can directly extract the direct-style and DPS-style transformations of the function.
+Instead of trying to transform each subterm in a single pass, our implementation computes for each subterm a ``choice'', a summary of all the bottom-up information that is relevant to choose how to transform this subterm -- once we have the top-down information available. This includes (1) the direct-style transform of the subterm, (2) the DPS-style transform of the subterm, (3) metadata tracking whether the transformation is beneficial (if a TMC-function call was found in tail-modulo-cons position), the list of TMC calls it contains (for error diagnostics), and whether some were explicitly requested by the user (for disambiguation). Computing transformed terms is not compositional; computing choices is compositional. We compute a choice for the whole function body (in one pass), from which we can directly extract the direct-style and DPS-style transformations of the function.
 
 \subsection{Evaluation: benchmarks}
 
-We measured the performance of \ocaml|List.map (fun n -> n + 1)| to validate our claims that the TMC transformation preserves program performance, and let us replace complex hand-optimized tail-recursive implementations.
+We measured the performance of \ocaml|List.map (fun n -> n + 1)| to validate our claims that the TMC transformation preserves program performance, and lets us replace complex hand-optimized tail-recursive implementations.
 
 \begin{figure}[tp]
 \def\svgscale{0.8}
@@ -307,7 +307,7 @@ The \ocaml{List.map} versions in the graph are the following. We measure the cod
 \item[\bench{tmc}] (5 lines) ``Our'' version, the last version of the Prologue: the
   result of applying our implementation of the TMC transformation to
   the simple, non-tail-recursive version.
-\item[\bench{tmc-unrolled}] (18 lines) The result of manually unrolling the \bench{tmc} implementation three times, to be compare with \bench{base} and \bench{containers} that use manual unrolling as well.
+\item[\bench{tmc-unrolled}] (18 lines) The result of manually unrolling the \bench{tmc} implementation three times, to be compared with \bench{base} and \bench{containers} that use manual unrolling as well.
 \end{description}
 
 The benchmarks reports the relative performance compared to the naive tail-recursive version as our baseline. They were run on \OCaml~5.1 in July 2024, on a Linux machine with an AMD Ryzen processor fixed at a 3Ghz frequency, looping each measurement for 5s (a single \ocaml|List.map| run takes between 7ns, for empty lists, and 89ms on lists with a million element).
@@ -319,9 +319,9 @@ Qualitatively we see that there are four groups:
 \item \bench{nontail} performs better than \bench{tmc}, \bench{batteries} on list sizes up to $10^4$, and much worse on larger lists.
 \item \bench{base}, \bench{containers} perform noticeably better than \bench{nontail} at all sizes,
   but worse than the TMC versions above size $10^4$.
-\item \bench{tmc-unrolled} is the best option, it performs as well as \bench{base} and \bench{containers} before $10^4$, and as well as \bench{tmc}, \bench{batteries} afterwards.
+\item \bench{tmc-unrolled} is the best option: it performs as well as \bench{base} and \bench{containers} before $10^4$, and as well as \bench{tmc}, \bench{batteries} afterwards.
 \end{itemize}
-Our interpretation of the result is that some unrolling makes a noticeable performance difference for such a short function: \bench{tmc} is not good enough on smaller lists, but \bench{tmc-unrolled} is the best-performing, despite much simpler than the \bench{base} and \bench{containers} version.
+Our interpretation of the result is that some unrolling makes a noticeable performance difference for such a short function: \bench{tmc} is not good enough on smaller lists, but \bench{tmc-unrolled} is the best-performing, despite being much simpler than the \bench{base} and \bench{containers} versions.
 
 \paragraph{Asymptotics of \bench{nontail}} The bad behavior of \bench{nontail} on large lists comes from a quadratic behavior on very large call stacks, coming from a repeated scan of the call stack during minor collections. (The \OCaml compiler and runtime could be tweaked to avoid this quadratic behavior, at the cost of some small constant overhead on function returns.)
 

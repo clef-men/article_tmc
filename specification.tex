@@ -6,9 +6,9 @@ In this section, we gradually introduce aspects of our relational separation log
 
 \subsection{Direct transformation}
 
-Intuitively, the direct transformation $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ preserves the behaviours of the source expression $\datalangExpr_s$.
+Intuitively, the direct transformation $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ preserves the behaviors of the source expression $\datalangExpr_s$.
 Basically, $\datalangExpr_s$ and $\datalangExpr_t$ compute the same thing.
-Using \emph{relational Hoare logic}, an assumed extension of standard Hoare logic relating two expressions, we would write:
+Using \emph{relational Hoare logic}\Xfrancois{TODO cite Benton 2004}, a extension of standard Hoare logic relating two expressions, we would write:
 \[
     \iSimvHoare{
         \datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t
@@ -21,16 +21,17 @@ Using \emph{relational Hoare logic}, an assumed extension of standard Hoare logi
         \datalangExpr_t
     }
 \]
+\Xfrancois{The $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ is pure and could be outside the triple.}
 
-The informal meaning of this specification is that 1) $\datalangExpr_t$ refines $\datalangExpr_s$ in the sense that any behaviour (converging, diverging or stuck execution) of $\datalangExpr_t$ is also a behaviour of $\datalangExpr_s$ and 2) if $\datalangExpr_t$ converges to value $\datalangVal_t$, $\datalangExpr_s$ also converges to some value $\datalangVal_s$ that is \emph{similar} to $\datalangVal_s$.
-We will formalize the notion of \emph{behaviour} in \cref{sec:simulation} and that of \emph{similarity} later in this section.
-For the time being, the ready may assume similarity is just equality on values.
+The informal meaning of this specification is that 1) $\datalangExpr_t$ refines $\datalangExpr_s$ in the sense that any behavior (converging, diverging or stuck execution) of $\datalangExpr_t$ is also a behavior of $\datalangExpr_s$ and 2) if $\datalangExpr_t$ converges to value $\datalangVal_t$, then $\datalangExpr_s$ also converges to some value $\datalangVal_s$ that is \emph{similar} to $\datalangVal_s$.
+We will formalize the notion of \emph{behavior} in \cref{sec:simulation} and that of \emph{similarity} later in this section.
+For the time being, the reader may assume similarity is just equality on values.
 
 \subsection{DPS transformation}
 
 The DPS transformation $(\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$ is parameterized by a destination $(\datalangLoc, \datalangIdx)$ pointing to an uninitialized field of some block.
 Intuitively, $\datalangExpr_t$ computes the same thing as $\datalangExpr_s$ but writes it into the destination instead of returning it.
-Using \emph{relational separation logic}, an assumed further extension of relational Hoare logic with the concepts of separation logic, we write:
+Using \emph{relational separation logic} \Xfrancois{TODO cite Yang 2006}, a further extension of relational Hoare logic with the concepts of separation logic, we write:
 \[
     \iSimvHoare{
         (\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t \iSep
@@ -53,15 +54,14 @@ This captures destination-passing style in simple terms.
 
 \subsection{Heap bijection}
 
-Defining value similarity as just syntactic equality is not sufficient: corresponding source and target block allocations are not done in locksteps, so their location may differ.
+Defining value similarity as just syntactic equality is not sufficient: corresponding source and target block allocations are not done in locksteps, so the resulting locations may differ.
 For example, consider the \datalang{map} function and its DPS transform from \cref{subsec:tmc_example}.
 In the source program, the cons cell \datalang{y :: @map (fn, xs)} is allocated after the recursive call.
 In the transformed program, the corresponding block is allocated before the call.
 
 To deal with this, we introduce a \emph{heap bijection} as in \Simuliris~\citep*{simuliris-2022}.
-Corresponding source and target locations --- pointing to block fields in our semantics --- are logically and permanently registered in this bijection. 
-We can then refer to a registered pair of locations though the assertion $\datalangLoc_s \iInBij \datalangLoc_t$.
-This mechanism is formalized by the \RefTirName{BijInsert} rule:
+This is a partial bijection (some destination locations have no source counterpart) which grows over time.
+Its usage is formalized by the \RefTirName{BijInsert} rule:
 
 \begin{mathpar}
     \inferrule*[lab=BijInsert]
@@ -75,6 +75,9 @@ This mechanism is formalized by the \RefTirName{BijInsert} rule:
             \datalangLoc_s \iInBij \datalangLoc_t
         }
 \end{mathpar}
+This is a \emph{ghost update} rule that mutates the logical state.
+It can only be applied when the two locations $\datalangLoc_s$ and $\datalangLoc_t$ have similar content $\datalangVal_s \iSimilar \datalangVal_t$.
+It consumes the ``private'' ownership of the source and destination points-to $\datalangLoc_s \iPointsto_s \datalangVal_s$ and $\datalangLoc_t \iPointsto_t \datalangVal_t$, and produces a permanent proposition $\datalangLoc_s \iInBij \datalangLoc_t$ witnessing that the two locations are now in the ``public'' bijection.\Xgabriel{I changed this a bit on François' feedback, TODO have Clément review this.}
 
 We can formally define value similarity $\datalangVal_s \iSimilar \datalangVal_t$ in \cref{fig:isimilar}.
 It coincides with equality except on blocks, for which we require all fields to be registered in the bijection.

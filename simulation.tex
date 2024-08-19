@@ -51,7 +51,7 @@ We can choose any postcondition $\iPredTwo$ accepted by the protocol and assume 
 
 \input{figures/refinement}
 
-Informally, our simulation is \emph{adequate} in the sense that if $\datalangExpr_s$ simulates $\datalangExpr_t$, $\datalangExpr_t$ refines $\datalangExpr_s$, \ie the behaviours of $\datalangExpr_t$ are included in the behaviours of $\datalangExpr_s$.
+Informally, our simulation is \emph{adequate} in the sense that if $\datalangExpr_s$ simulates $\datalangExpr_t$, $\datalangExpr_t$ refines $\datalangExpr_s$, \ie the behaviors of $\datalangExpr_t$ are included in the behaviors of $\datalangExpr_s$.
 Crucially, this is only true for a \emph{closed} simulation, \ie not using the protocol --- equivalently using the empty protocol $\bot$.
 Formally, we write:
 
@@ -62,8 +62,8 @@ Formally, we write:
     $
 \end{lemma}
 
-The notions of \emph{behaviours} and \emph{refinement} are defined in \cref{fig:refinement}.
-We consider not only converging behaviours (resulting in values or stuck expressions) but also diverging behaviours.
+The notions of \emph{behaviors} and \emph{refinement} are defined in \cref{fig:refinement}.
+We consider not only converging behaviors (resulting in values or stuck expressions) but also diverging behaviors.
 Expression refinement $\datalangExpr_s \refined \datalangExpr_t$ is \emph{termination-preserving}: if $\datalangExpr_s$ always terminates, so does $\datalangExpr_t$.
 Program refinement $\datalangProg_s \refined \datalangProg_t$, also defined in \cref{fig:refinement}, requires any source function call in $\datalangProg_t$ to behave as in $\datalangProg_s$.
 
