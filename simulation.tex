@@ -52,26 +52,45 @@ We can choose any postcondition $\iPredTwo$ accepted by the protocol and assume 
 
 \subsection{Simulation closure}\label{subsec:closure}
 
-If a protocol $\iProt$ respects a certain admissibility condition, then program relations established using this protocol are also in the \emph{closed} simulation, using the empty protocol $\bot$:
-\begin{lemma}[Simulation closure]
-\label{lem:closure}
+If a protocol $\iProt$ respects a certain admissibility condition, then program relations established using this protocol are also in the \emph{closed} simulation, using the empty protocol $\bot$.
+
+\begin{definition}[Admissibility]
+  \label{def:protocol-admissibility}
+  A protocol $\iProt$ is admissible, written $\Admissible{\iProt}$, when we have:
+  \begin{mathline}
+    \iPersistent \left(
+      \forall \iPredTwo, \datalangExpr_s, \datalangExpr_t \ldotp
+      \iProt (\iPredTwo, \datalangExpr_s, \datalangExpr_t) \iWand
+      \mathrm{sim \mathhyphen inner}_\bot (\lambdaAbs (\_, \datalangExpr_s', \datalangExpr_t') \ldotp \iSim[\iProt]{\iPredTwo}{\datalangExpr_s'}{\datalangExpr_t'}) (\bot, \datalangExpr_s, \datalangExpr_t)
+    \right)
+  \end{mathline}
+\end{definition}
+
+In simple terms, the admissibility condition $\Admissible{\iProt}$ states that every triple $(\iPredTwo, \datalangExpr_s, \datalangExpr_t)$ is justified, that is, that $\datalangExpr_s$ and $\datalangExpr_t$ are related.
+But the protocol $\iProt$ cannot be used right away to establish this relation (this would allow cyclic, vacuous proofs). Our use of $\mathrm{sim \mathhyphen inner}_\bot$ forces a proof of admissibility to perform some ``productive'' simulation steps with an empty protocol: in this instantiation of the simulation, \iSimLfp uses the empty protocol and \iSimGfP uses $\iProt$, so we have to perform at least one reduction in the source before we can use the protocol again.
+
+\begin{theorem}[Simulation closure]
+\label{thm:closure}
   For any protocol $\iProt$, we have:
-    \begin{align*}
-            &
+    \begin{mathline}
+            \Admissible{\iProt} \iWand
+            \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t} \iWand
+            \iSim[\bot]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
+    \end{mathline}
+\end{theorem}
+
+Actually, for the TMC protocol, we prove a simpler condition that implies admissibility:
+\begin{mathline}
             \iPersistent \left(
                 \forall \iPredTwo, \datalangExpr_s, \datalangExpr_t \ldotp
                 \iProt (\iPredTwo, \datalangExpr_s, \datalangExpr_t) \iWand
-                \mathrm{sim \mathhyphen inner}_\bot (\lambdaAbs (\_, \datalangExpr_s', \datalangExpr_t') \ldotp \iSim[\iProt]{\iPredTwo}{\datalangExpr_s'}{\datalangExpr_t'}) (\bot, \datalangExpr_s, \datalangExpr_t)
-            \right) \iWand
-        \\
-            &
-            \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t} \iWand
-            \iSim[\bot]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
-    \end{align*}
-\end{lemma}
-
-In simple terms, the admissibility condition states that every triple $(\iPredTwo, \datalangExpr_s, \datalangExpr_t)$ is justified, that is, that $\datalangExpr_s$ and $\datalangExpr_t$ are related.
-But the protocol $\iProt$ cannot be used right away to establish this relation (this would allow cyclic, vacuous proofs), we have to use $\mathrm{sim \mathhyphen inner}_\bot$, performing at least one simultaneous reduction step in an empty protocol, before continuing with the open simulation.
+                \exists \datalangExpr_s', \datalangExpr_t' \ldotp
+                \datalangExpr_s \pureStep{\datalangProg_s} \datalangExpr_s' \iSep
+                \datalangExpr_t \pureStep{\datalangProg_t} \datalangExpr_t' \iSep
+                \iSim[\iProt]{\iPredTwo}{\datalangExpr_s'}{\datalangExpr_t'}
+            \right)
+\end{mathline}
+With this weaker version, an admissibility proof must perform exactly one pure step on both sides before the protocol $\iProt$ becomes available again. Other users of our program logic may want to reuse this simpler definition.
 
 \subsection{Adequacy}
 
@@ -90,6 +109,7 @@ The notions of \emph{behaviors} and \emph{refinement} are defined in \cref{fig:r
 We consider not only converging behaviors (resulting in values or stuck expressions) but also diverging behaviors.
 Expression refinement $\datalangExpr_s \refined \datalangExpr_t$ is \emph{termination-preserving}: if $\datalangExpr_s$ always terminates, so does $\datalangExpr_t$.
 Program refinement $\datalangProg_s \refined \datalangProg_t$, also defined in \cref{fig:refinement}, requires any source function call in $\datalangProg_t$ to behave as in $\datalangProg_s$.\Xfrancois{ambiguous}
+
 \subsection{Transformation soundness}
 
 We can finally express the soundness of the TMC transformation: if program $\datalangProg_s$ is well-formed and transforms into program $\datalangProg_t$, then $\datalangProg_t$ refines $\datalangProg_s$.
@@ -101,33 +121,9 @@ A program is well-formed when its function definitions are well-formed and well-
         \datalangProg_s \refined \datalangProg_t
     $
 \end{theorem}
+Note that this statement does not use separation logic, it is a standard mathematical statement. (In our formalization, it is a pure Coq statement without Iris propositions.)
 
-The meat of the proof is to use \cref{lem:closure} to connect  \cref{thm:dir} and \cref{thm:adequacy}.
-For this we must prove that the TMC protocol is admissible.
-In the specific case of TMC, the admissibility condition
-can be reformulated in 
-In other words, we need a way to close an open simulation.
-Obviously, this closure mechanism cannot work for any protocol; we have to constrain it a bit.
-Actually, for the TMC protocol, we can prove a slightly simpler condition that applies admissibility:
-    \begin{align*}
-            &
-            \iPersistent \left(
-                \forall \iPredTwo, \datalangExpr_s, \datalangExpr_t \ldotp
-                \iProt (\iPredTwo, \datalangExpr_s, \datalangExpr_t) \iWand
-                \exists \datalangExpr_s', \datalangExpr_t' \ldotp
-                \datalangExpr_s \pureStep{\datalangProg_s} \datalangExpr_s' \iSep
-                \datalangExpr_t \pureStep{\datalangProg_t} \datalangExpr_t' \iSep
-                \iSim[\iProt]{\iPredTwo}{\datalangExpr_s'}{\datalangExpr_t'}
-            \right) 
-        % \\
-        %     &
-        %     \iSim[\iProt]{\iPred}{\datalangExpr_s}{\datalangExpr_t} \iWand
-        %     \iSim[\bot]{\iPred}{\datalangExpr_s}{\datalangExpr_t}
-    \end{align*}
-
-% \begin{proof}[Proof of \cref{thm:soundness}]
-%     Follows from \cref{thm:adequacy}, \cref{thm:closure}, \RefTirName{RelDir} and \RefTirName{RelDPS}.
-% \end{proof}
+The proof uses \cref{lem:closure} to connect \cref{thm:dir} and \cref{thm:adequacy}.
 
 %%% Local Variables:
 %%% mode: latex
