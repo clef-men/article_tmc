@@ -24,11 +24,11 @@ As mentioned in \cref{sec:protocols}, we instantiate our program logic with a sp
     }
 \end{mathline}
 
-So far, we worked with \emph{closed} expressions, that have no free variables.
+So far, we worked with \emph{closed} expressions, that have no free variables.\Xfrancois{This was never said.}
 We need to generalize the specifications to \emph{open} expressions that may have free variables, as is standard.
 To do so, we introduce a \emph{runtime relation} $\iRsimv{\iPred}{\datalangExpr_s}{\datalangExpr_t}$ in \cref{fig:rsim}.
 It requires $\datalangBisubst_s (\datalangExpr_s)$ and $\datalangBisubst_t (\datalangExpr_t)$ to be related for any \emph{well-formed closing bisubstitution} $\datalangBisubst \in \datalangVar[] \rightarrow \datalangVal[] \times \datalangVal[]$.
-In practice, $\datalangBisubst$ contains let-reduced binders and their substitute source and target values.
+In practice, $\datalangBisubst$ contains $\datalangLetKeyword$-bound variables that have been $\beta$-reduced, and their substitute source and target values.
 
 In addition, we will only consider \emph{valid source expressions} --- denoted by $\wf{\datalangExpr_s}$ ---, \ie those that do not involve any location, deterministic block expressions, or undefined source function.
 
@@ -47,6 +47,7 @@ In addition, we will only consider \emph{valid source expressions} --- denoted b
         }
     \]
 \end{lemma}
+\Xfrancois{Here and below the pure assumptions should be put outside, with an implication, they are ``static'' (compile-time) assumptions.}
 
 \begin{lemma}[Specification of DPS transformation] \label{thm:dps}
     \[
@@ -66,6 +67,7 @@ In addition, we will only consider \emph{valid source expressions} --- denoted b
         }
     \]
 \end{lemma}
+\Xfrancois{TODO point back to the beginning of the paper for an informal explanation of these statements.}
 
 Both proofs proceed by induction over $\datalangExpr_s$ and mutual induction over $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ and $(\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$ -- we refer to our mechanization for the details.
     % We only sketch the cases shown in \cref{fig:tmc_dir} and \cref{fig:tmc_dps} and refer to our mechanization for the complete proof.

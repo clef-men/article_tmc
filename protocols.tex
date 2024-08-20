@@ -3,7 +3,7 @@
 \input{figures/protocol}
 
 In \cref{sec:simulation}, we explain how our relation is defined coinductively and the first step of the proof essentially amounts to coinduction.
-To internalize the coinduction hypothesis into the program logic, we introduce an additional parameter $\iProt$, a \emph{protocol}~\citep*{protocols-2021}, which are general proof-state transformers of type
+To internalize the coinduction hypothesis into the program logic, we introduce an additional parameter $\iProt$, a \emph{protocol}~\citep*{protocols-2021}, which is a general proof-state transformer of type
 \begin{mathline}
 (\datalangExpr[] \to \datalangExpr[] \to \iProp) \to \datalangExpr[] \to \datalangExpr[] \to \iProp
 \end{mathline}
@@ -19,7 +19,8 @@ In our correctness proof for the TMC transformation, we use a specific protocol 
 $\iProt_\mathrm{dir}$ specifies the \emph{direct calling convention} induced by the direct transformation.
 It requires $\datalangExpr_s$ and $\datalangExpr_t$ to be function calls to the same function with similar arguments.
 To apply it, users can choose any postcondition implied by value similarity.
-This rule is equivalent to the \TirName{Sim-Call} rule of \Simuliris, and most useful protocols are formed by combining $\iProp_\mathrm{dir}$ with other, more specialized protocols.
+This rule is equivalent to the \TirName{Sim-Call} rule of \Simuliris.
+Most useful protocols are formed by combining $\iProt_\mathrm{dir}$ with other, more specialized protocols.
 
 $\iProt_\mathrm{DPS}$ specifies the \emph{DPS calling convention} induced by the DPS transformation.
 It requires $\datalangExpr_s$ to be a function call to a TMC-transformed function $\datalangFn$ and $\datalangExpr_t$ to be a function call to the DPS transform of $\datalangFn$.
@@ -111,9 +112,9 @@ This relation can be proved correct by using a fairly simple protocol (combined 
 \end{tabular}
 \medskip
 
-\paragraph{Accumulator-passing style}: The APS transformation is a variant of the TMC transformation where the contexts that are made tail-recursive are applications of associative arithmetic operators, typically of the form $(\datalangExpr + \datalangCtxHole)$ or $\datalangExpr_1 + (\datalangExpr_2 \times \datalangCtxHole)$. (See the discussion in \citet*{tmc-koka-2023}.)
+\paragraph{Accumulator-passing style}: The APS transformation is a variant of the TMC transformation where the contexts that are made tail-recursive are applications of associative arithmetic operators, typically of the form $(\datalangExpr + \datalangCtxHole)$ or $\datalangExpr_1 + (\datalangExpr_2 \times \datalangCtxHole)$. (See the discussion by \citet*{tmc-koka-2023}.)
 
-We defined an APS transformation, after extending \DataLang with integers and arithmetic operations. We verify it with a protocol similar to $\iProt_\mathrm{DPS}$ that allows calling the APS transform of a source function with an integer accumulator:
+We define an APS transformation, after extending \DataLang with integers and arithmetic operations. We verify it with a protocol similar to $\iProt_\mathrm{DPS}$ that allows calling the APS transform of a source function with an integer accumulator: if $\datalangCall{\datalangFn}{\datalangVal_s}$ returns $n$, then $\datalangCall{\datalangFn_\mathit{aps}}{\datalangPair{\datalangVal_{\mathit{acc}}}{\datalangVal_t}}$ returns $\datalangVal_\mathit{acc} + n$.
 
 \medskip
 \begin{tabular}{rcl}
@@ -145,8 +146,9 @@ We defined an APS transformation, after extending \DataLang with integers and ar
         $\iPredTwo (\datalangVal_s', \datalangExpr_t')$
 \end{tabular}
 \medskip
+\Xfrancois{Explain why this guarantee (``$f_\mathit{aps}$ will get stuck'') is needed. Do we want to prove that if the source crashes then the target crashes?}
 
-One subtlety is that our \DataLang language is untyped, so arithmetic operations (here addition) may get stuck on non-integer values. If the function call $\datalangCall {\datalangFnptr \datalangFn} {\datalangVal_s}$ in the source program returns a non-integer value, then the outer context $\datalangVar_\mathit{acc} + \datalangCtxHole$ gets stuck. But in the transformed program, this failure happens inside the body of the APS-transformed function $\datalangFnptr {\datalangFn_\mathit{aps}}$. To represent this failure case in our protocol, the postcondition $\iPredTwo$ relates a non-integer source return value $\datalangVal_s'$ with any strongly stuck expression $\datalangExpr_t'$ in the target. This relies on the generality of our protocols being predicate transformers on expressions, not just values.
+One subtlety is that our \DataLang language is untyped, so arithmetic operations (here addition) may get stuck on non-integer values. If the function call $\datalangCall {\datalangFnptr \datalangFn} {\datalangVal_s}$ in the source program returns a non-integer value, then the outer context $\datalangVal_\mathit{acc} + \datalangCtxHole$ gets stuck. But\Xfrancois{not easy to follow your reasoning here} in the transformed program, this failure happens inside the body of the APS-transformed function $\datalangFnptr {\datalangFn_\mathit{aps}}$. To represent this failure case in our protocol, the postcondition $\iPredTwo$ relates a non-integer source return value $\datalangVal_s'$ with any strongly stuck expression $\datalangExpr_t'$ in the target. This relies on the generality of our protocols being predicate transformers on expressions, not just values.
 
 %%% Local Variables:
 %%% mode: latex

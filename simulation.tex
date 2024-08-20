@@ -4,8 +4,8 @@
 \input{figures/sim}
 
 So far, we assumed a program logic satisfying a set of reasoning rules.
-In the section, we prove that our rules are sound: they imply a \emph{simulation} à la \Simuliris~\citep*{simuliris-2022}.
-This simulation comes with an \emph{adequacy theorem} that allows to extract a \emph{behavior refinement} in the meta-logic (Coq, without \Iris), our final soundness theorem.
+In this section, we prove that our rules are sound: they imply a \emph{simulation} à la \Simuliris~\citep*{simuliris-2022}.
+This simulation comes with an \emph{adequacy theorem} that allows to extract a \emph{behavioral refinement} in the meta-logic (Coq, without \Iris), our final soundness theorem.
 
 \subsection{Definition}
 
@@ -30,44 +30,29 @@ The simulation can also stop on simultaneously stuck expressions.
 
 \paragraph{\circled{3} Target stuttering.}
 The source expression can angelically take some steps.
-This can only happen finitely many times in \iSimLfp.
+\Xfrancois{Could this be just one step?}
+\Xgabriel{I think the present form allows to temporarily break the state invariant.}
+This can only happen finitely many times, as we continue with \iSimLfp.
 If we used \iSimGfp instead, a silent loop in the source could be simulated by anything, breaking preservation of divergence.
 
 \paragraph{\circled{4}\circled{A} Source stuttering.}
 The target expression can demonically take one step.
-This can also only happen finitely many times in \iSimLfp.
+This can also only happen finitely many times, as we continue with \iSimLfp.
 If we used \iSimGfp instead, a silent loop in the target could simulate any source expression, breaking preservation of termination.
 
 \paragraph{\circled{4}\circled{B} Synchronization.}
 Alternatively, both expressions can simultaneously take one step.
-This can happen infinitely many times in \iSimGfp.
+This can happen infinitely many times, as we continue with \iSimGfp.
 If we used \iSimLfp instead, we would be unable to relate divergent programs.
 
 \paragraph{\circled{5} Protocol application.}
 Finally, we can apply the protocol under evaluation contexts.
 We can choose any postcondition $\iPredTwo$ accepted by the protocol and assume it to prove the continuation.
+(We justify separately that a protocol is admissible, see \cref{subsec:closure}.)
 
-\subsection{Adequacy}
+\subsection{Simulation closure}\label{subsec:closure}
 
-\input{figures/refinement}
-
-Informally, our simulation is \emph{adequate} in the sense that if $\datalangExpr_s$ simulates $\datalangExpr_t$, $\datalangExpr_t$ refines $\datalangExpr_s$, \ie the behaviors of $\datalangExpr_t$ are included in the behaviors of $\datalangExpr_s$.
-Crucially, this is only true for a \emph{closed} simulation, \ie not using the protocol --- equivalently using the empty protocol $\bot$.
-Formally, we write:
-
-\begin{lemma}[Simulation adequacy] \label{thm:adequacy}
-    $
-        \left( \vdash \iSimv[\bot]{\iSimilar}{\datalangExpr_s}{\datalangExpr_t} \right) \implies
-        \datalangExpr_s \refined \datalangExpr_t
-    $
-\end{lemma}
-
-The notions of \emph{behaviors} and \emph{refinement} are defined in \cref{fig:refinement}.
-We consider not only converging behaviors (resulting in values or stuck expressions) but also diverging behaviors.
-Expression refinement $\datalangExpr_s \refined \datalangExpr_t$ is \emph{termination-preserving}: if $\datalangExpr_s$ always terminates, so does $\datalangExpr_t$.
-Program refinement $\datalangProg_s \refined \datalangProg_t$, also defined in \cref{fig:refinement}, requires any source function call in $\datalangProg_t$ to behave as in $\datalangProg_s$.
-
-Adequacy is proved with an empty protocol, but we combine it with a \emph{simulation closure} result for any protocol $\iProt$. This lemma says that $\iProt$ respects a certain admissibility condition, then program relations established using this protocol also hold with the empty protocol:
+If a protocol $\iProt$ respects a certain admissibility condition, then program relations established using this protocol are also in the \emph{closed} simulation, using the empty protocol $\bot$:
 \begin{lemma}[Simulation closure]
 \label{lem:closure}
   For any protocol $\iProt$, we have:
@@ -85,11 +70,29 @@ Adequacy is proved with an empty protocol, but we combine it with a \emph{simula
     \end{align*}
 \end{lemma}
 
-In simple terms, any expressions accepted by a valid protocol have to be able to take one simultaneous step after potential stuttering to return in the open simulation.
+In simple terms, the admissibility condition states that every triple $(\iPredTwo, \datalangExpr_s, \datalangExpr_t)$ is justified, that is, that $\datalangExpr_s$ and $\datalangExpr_t$ are related.
+But the protocol $\iProt$ cannot be used right away to establish this relation (this would allow cyclic, vacuous proofs), we have to use $\mathrm{sim \mathhyphen inner}_\bot$, performing at least one simultaneous reduction step in an empty protocol, before continuing with the open simulation.
 
+\subsection{Adequacy}
+
+\input{figures/refinement}
+
+Informally, our closed simulation is \emph{adequate} in the sense that if $\datalangExpr_s$ simulates $\datalangExpr_t$, then $\datalangExpr_t$ refines $\datalangExpr_s$, \ie the behaviors of $\datalangExpr_t$ are included in the behaviors of $\datalangExpr_s$:
+
+\begin{lemma}[Simulation adequacy] \label{thm:adequacy}
+    $
+        \left( \vdash \iSimv[\bot]{\iSimilar}{\datalangExpr_s}{\datalangExpr_t} \right) \implies
+        \datalangExpr_s \refined \datalangExpr_t
+    $
+\end{lemma}
+
+The notions of \emph{behaviors} and \emph{refinement} are defined in \cref{fig:refinement}.
+We consider not only converging behaviors (resulting in values or stuck expressions) but also diverging behaviors.
+Expression refinement $\datalangExpr_s \refined \datalangExpr_t$ is \emph{termination-preserving}: if $\datalangExpr_s$ always terminates, so does $\datalangExpr_t$.
+Program refinement $\datalangProg_s \refined \datalangProg_t$, also defined in \cref{fig:refinement}, requires any source function call in $\datalangProg_t$ to behave as in $\datalangProg_s$.\Xfrancois{ambiguous}
 \subsection{Transformation soundness}
 
-We can finally express the soundness of the TMC transformation: if program $\datalangProg_s$ is well-formed and transforms into program $\datalangProg_t$, $\datalangProg_t$ refines $\datalangProg_s$.
+We can finally express the soundness of the TMC transformation: if program $\datalangProg_s$ is well-formed and transforms into program $\datalangProg_t$, then $\datalangProg_t$ refines $\datalangProg_s$.
 A program is well-formed when its function definitions are well-formed and well-scoped.
 
 \begin{theorem}[Transformation soundness] \label{thm:soundness}

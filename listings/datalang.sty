@@ -189,8 +189,9 @@
 \newcommand{\datalangFnptr}[1]{%
     \term{\color{datalangKeyword2}{@}} #1%
 }
+\newcommand{\datalangLetKeyword}{\term{\color{datalangKeyword1}{let}}}
 \newcommand{\datalangLet}[3]{%
-    \term{\color{datalangKeyword1}{let}}\ #1\ \term{=}\ #2\ \term{\color{datalangKeyword1}{in}}\ #3%
+    \datalangLetKeyword\ #1\ \term{=}\ #2\ \term{\color{datalangKeyword1}{in}}\ #3%
 }
 \newcommand{\datalangSeq}[2]{%
     #1\ \term{\color{datalangKeyword1}{;}}\ #2%
