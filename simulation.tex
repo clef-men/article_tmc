@@ -67,7 +67,7 @@ If a protocol $\iProt$ respects a certain admissibility condition, then program 
 \end{definition}
 
 In simple terms, the admissibility condition $\Admissible{\iProt}$ states that every triple $(\iPredTwo, \datalangExpr_s, \datalangExpr_t)$ is justified, that is, that $\datalangExpr_s$ and $\datalangExpr_t$ are related.
-But the protocol $\iProt$ cannot be used right away to establish this relation (this would allow cyclic, vacuous proofs). Our use of $\mathrm{sim \mathhyphen inner}_\bot$ forces a proof of admissibility to perform some ``productive'' simulation steps with an empty protocol: in this instantiation of the simulation, \iSimLfp uses the empty protocol and \iSimGfP uses $\iProt$, so we have to perform at least one reduction in the source before we can use the protocol again.
+But the protocol $\iProt$ cannot be used right away to establish this relation (this would allow cyclic, vacuous proofs). Our use of $\mathrm{sim \mathhyphen inner}_\bot$ forces a proof of admissibility to perform some ``productive'' simulation steps with an empty protocol: in this instantiation of the simulation, \iSimLfp uses the empty protocol and \iSimGfp uses $\iProt$, so we have to perform at least one reduction in the source before we can use the protocol again.
 
 \begin{theorem}[Simulation closure]
 \label{thm:closure}
@@ -90,7 +90,7 @@ Actually, for the TMC protocol, we prove a simpler condition that implies admiss
                 \iSim[\iProt]{\iPredTwo}{\datalangExpr_s'}{\datalangExpr_t'}
             \right)
 \end{mathline}
-With this weaker version, an admissibility proof must perform exactly one pure step on both sides before the protocol $\iProt$ becomes available again. Other users of our program logic may want to reuse this simpler definition.
+With this weaker version, an admissibility proof must perform exactly one pure step on both sides before the protocol $\iProt$ becomes available again. Other users of our program logic may want to reuse this simpler definition, unless they need the full generality of the $\Admissible{\iProt}$ definition.
 
 \subsection{Adequacy}
 
@@ -98,12 +98,12 @@ With this weaker version, an admissibility proof must perform exactly one pure s
 
 Informally, our closed simulation is \emph{adequate} in the sense that if $\datalangExpr_s$ simulates $\datalangExpr_t$, then $\datalangExpr_t$ refines $\datalangExpr_s$, \ie the behaviors of $\datalangExpr_t$ are included in the behaviors of $\datalangExpr_s$:
 
-\begin{lemma}[Simulation adequacy] \label{thm:adequacy}
+\begin{theorem}[Simulation adequacy] \label{thm:adequacy}
     $
         \left( \vdash \iSimv[\bot]{\iSimilar}{\datalangExpr_s}{\datalangExpr_t} \right) \implies
         \datalangExpr_s \refined \datalangExpr_t
     $
-\end{lemma}
+\end{theorem}
 
 The notions of \emph{behaviors} and \emph{refinement} are defined in \cref{fig:refinement}.
 We consider not only converging behaviors (resulting in values or stuck expressions) but also diverging behaviors.
@@ -123,7 +123,7 @@ A program is well-formed when its function definitions are well-formed and well-
 \end{theorem}
 Note that this statement does not use separation logic, it is a standard mathematical statement. (In our formalization, it is a pure Coq statement without Iris propositions.)
 
-The proof uses \cref{lem:closure} to connect \cref{thm:dir} and \cref{thm:adequacy}.
+The proof uses \cref{thm:closure} to connect \cref{thm:dir} and \cref{thm:adequacy}.
 
 %%% Local Variables:
 %%% mode: latex
