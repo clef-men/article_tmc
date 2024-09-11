@@ -36,23 +36,18 @@
             $\datalangBlock{\mathrm{CONS}}{\datalangExpr_1}{\datalangExpr_2}$
     \end{tabular}
 
-    \begin{tabular}{rcl}
+    \begin{tabular}{rcl@{}l}
             $\datalangMatchOneline[]{\datalangExpr_0}{\datalangExpr_1}{\datalangVar}{\mathit{\datalangVar s}}{\datalangExpr_2}$
             & $\coloneqq$ &
-            $\datalangLet{\datalangVarTwo}{\datalangExpr_0}{$
+            $\datalangLet{\datalangVarTwo}{\datalangExpr_0}{
+               \datalangIf{\datalangEq{\datalangVarTwo}{\datalangNil}$&$}{\datalangExpr_1$ 
         \\
-            &&
-            $\datalangIf{\datalangEq{\datalangVarTwo}{\datalangNil}$
-        \\
-            &&
-            $}{\datalangExpr_1$
-        \\
-            &&
+            &&&
             $}{\datalangLet{\datalangPair{\datalangVar}{\mathit{\datalangVar s}}}{\datalangVarTwo}{\datalangExpr_2}}}$
         \\
             $\datalangHole$
             & $\coloneqq$ &
-            $\datalangUnit$
+            $\datalangUnit$ &
     \end{tabular}
     \caption{\DataLang syntactic sugar}
     \label{fig:sugar}

@@ -3,17 +3,17 @@
 
 \input{figures/program_logic}
 
-In this section, we describe the inference rules of our relational program logic, presented in \cref{fig:program_logic}.
+In this section, we describe our relational program logic, presented in \cref{fig:program_logic}.
 We omit some congruence rules for brevity.
 The relation $\iSimv{\iPred}{\datalangExpr_s}{\datalangExpr_t}$\Xfrancois{analogous to an Iris wp?} relates a source expression $\datalangExpr_s$ with a target expression $\datalangExpr_t$ under a postcondition $\iPred$.
 We extend it to support a precondition in the standard way:
+\Xfrancois{Where is $\iProt$?}
 \begin{mathline}
     \iSimvHoare{P}{\iPred}{\datalangExpr_s}{\datalangExpr_t}
     \coloneqq
     \iPersistent \left( P \iWand \iSimv{\iPred}{\datalangExpr_s}{\datalangExpr_t} \right)
 \end{mathline}
-\Xfrancois{Where is $\iProt$?}
-
+%
 Compared to the specifications of \cref{sec:specification}, we introduce an additional protocol parameter $\iProt$.
 We explain it together with the \RefTirName{RelProtocol} rule in \cref{subsec:protocols}.
 
@@ -50,9 +50,9 @@ Corresponding source and target locations registered in the bijection through \R
 
 \RefTirName{RelLoad} states that simultaneously loading from two corresponding blocks yields similar values.
 
-\RefTirName{RelStore} lets us simultaneously store similar values into the same field of two corresponding blocks.
+\RefTirName{RelStore} lets us store similar values into the same field of two corresponding blocks.
 
-Together, these two rules enforce the bijection invariant: the contents of corresponding blocks are always similar.
+These two rules enforce the bijection invariant: corresponding blocks contain similar values.
 
 %%% Local Variables:
 %%% mode: latex

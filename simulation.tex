@@ -1,13 +1,14 @@
 \section{Simulation}
 \label{sec:simulation}
 
-\input{figures/sim}
-
 So far, we assumed a program logic satisfying a set of reasoning rules.
 In this section, we prove that our rules are sound: they imply a \emph{simulation} à la \Simuliris~\citep*{simuliris-2022}.
 This simulation comes with an \emph{adequacy theorem} that allows to extract a \emph{behavioral refinement} in the meta-logic (Coq, without \Iris), our final soundness theorem.
 
 \subsection{Definition}
+
+\input{figures/sim}
+\input{figures/refinement}
 
 Our simulation in defined in \cref{fig:sim}.
 It is largely inspired by the \Simuliris simulation --- simplified due to the absence of concurrency.
@@ -94,8 +95,6 @@ With this weaker version, an admissibility proof must perform exactly one pure s
 
 \subsection{Adequacy}
 
-\input{figures/refinement}
-
 Informally, our closed simulation is \emph{adequate} in the sense that if $\datalangExpr_s$ simulates $\datalangExpr_t$, then $\datalangExpr_t$ refines $\datalangExpr_s$, \ie the behaviors of $\datalangExpr_t$ are included in the behaviors of $\datalangExpr_s$:
 
 \begin{theorem}[Simulation adequacy] \label{thm:adequacy}
@@ -114,6 +113,8 @@ Program refinement $\datalangProg_s \refined \datalangProg_t$, also defined in \
 
 We can finally express the soundness of the TMC transformation: if program $\datalangProg_s$ is well-formed and transforms into program $\datalangProg_t$, then $\datalangProg_t$ refines $\datalangProg_s$.
 A program is well-formed when its function definitions are well-formed and well-scoped.
+%
+Note that this statement does not use separation logic. (In our mechanization, it is a pure Coq statement without Iris propositions.)
 
 \begin{theorem}[Transformation soundness] \label{thm:soundness}
     $
@@ -121,9 +122,8 @@ A program is well-formed when its function definitions are well-formed and well-
         \datalangProg_s \refined \datalangProg_t
     $
 \end{theorem}
-Note that this statement does not use separation logic, it is a standard mathematical statement. (In our formalization, it is a pure Coq statement without Iris propositions.)
 
-The proof uses \cref{thm:closure} to connect \cref{thm:dir} and \cref{thm:adequacy}.
+%The proof uses \cref{thm:closure} to connect \cref{thm:dir} and \cref{thm:adequacy}.
 
 %%% Local Variables:
 %%% mode: latex

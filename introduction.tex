@@ -134,7 +134,7 @@ to compute the final list cell, \ocaml{y :: ?}. We say that a call is
 \emph{tail modulo cons} when the remaining work is formed of data
 \emph{constructors} only, such as \ocaml{(::)} here.
 
-Other datatype constructors may also be used; the following example is
+Other datatype constructors may be used; this is
 also tail-recursive \emph{modulo cons}:
 
 \begin{Ocaml}
@@ -227,7 +227,6 @@ The core of the soundness proof is the specification of the two variants of each
 It concisely conveys the essence of destination-passing style: computing the same thing and writing it to an owned destination.
 %
 For instance, to give a taste of the formalism, the specification of the variants of \ocaml|map| looks as follows:
-%
 \begin{align*}
         \iSimvHoare{
             \datalangVal_s \iSimilar \datalangVal_t
@@ -274,7 +273,6 @@ To sum up, our main contributions are:
     \item a mechanized proof of soundness for an idealized TMC transformation on a small calculus, using a relational separation program logic;
     \item a generalization of the \Simuliris handling of function calls with abstract \emph{protocols} to reason about different calling conventions.
 \end{enumerate}
-
 
 \paragraph{Remark}
 A preliminary, work-in-progress version of this work was presented in

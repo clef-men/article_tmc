@@ -1,13 +1,9 @@
 \begin{figure}[tp]
 \begin{tabular}{c}
 \begin{Datalang}
-map |-> rec (f, xs) =
-  match xs with
-  | [] ->
-      []
-  | x :: xs ->
-      let y = fn x in
-      y :: @map (f, xs)
+map |-> rec λ(f, xs) = match xs with
+                       | [] -> []
+                       | x :: xs -> let y = fn x in y :: @map (f, xs)
 \end{Datalang}
 \end{tabular}
 \caption{Natural implementation of \datalang|map| in \DataLang}

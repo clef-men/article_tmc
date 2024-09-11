@@ -13,7 +13,7 @@ fragment is precisely described (in prose) by \citet*{friedman-wise-75}.
 In the Prolog community it is a common pattern to implement destination-passing style through unification variables; in particular ``difference lists'' are a common representation of lists with a final hole.
 Unification variables are first-class values: in particular they can be passed as function arguments, providing expressive, first-class support for destination-passing style in the source language.
 For example, we do not support optimizing tail contexts of the form \ocaml{List.append li _?}, only direct constructor applications; this can be expressed in Prolog as just the difference list \ocaml{(List.append li X, X)} for a fresh destination variable \ocaml{X}.
-However, this expressivity comes at a performance cost, and there is no static checking that the data is fully initialized at the end of computation.
+But this expressivity comes at a performance cost, and there is no static checking that the data is fully initialized at the end of computation.
 
 Independently of our work, Koka has implemented TMC starting in August
 2020\footnote{\url{https://github.com/koka-lang/koka/commit/f6a343d31f486ea5edd44798dca7bca52d7b450c}}~\citep*{tmc-koka-2023}.
@@ -34,7 +34,7 @@ when non-linear control flow is detected.
 In general, if we think of non-tail recursive functions as having an ``evaluation context'' representing the continuation of the recursive call, then the techniques to turn classes of calls into tail-calls correspond to different reified representations of non-tail contexts, equipped with specific (efficient) implementations of context composition and hole-plugging.
 TMC comes from representing data-construction contexts as the partial data itself, with hole-plugging by mutation.
 Associative-operator transformations represent the context \ocaml|1 + (4 + _?)| as the number \ocaml|5| directly.
-(Sometimes it suffices to keep around an abstraction of the context; this is a key idea in John Clements' work on stack-based security in presence of tail calls.)
+(Sometimes it suffices to keep around an abstraction of the context; see John Clements' work stack-based security.)
 
 \citet*{minamide-98} gives a ``functional'' interface to destination-passing-style programs, by presenting a partial data-constructor composition \ocaml{Foo(x,Bar(_?))} as a use-once, linear-typed function \ocaml{linfun h -> Foo(x,Bar(h))}.
 Those special linear functions remain implemented as partial data, but they expose a referentially-transparent interface to the programmer, restricted by a linear type discipline.
@@ -48,19 +48,19 @@ Mezzo~\citep*{mezzo-2016} supports a more general-purpose type system based on s
 \citet*{tmc-koka-2023} provide a pen-and-paper correctness argument for TMC, or in fact a family of approaches based on optimized representations of classes of non-tail contexts, in the style of program calculation.
 The clarity of their exposition is remarkable.
 
-The implementation they prove correct, which corresponds to the approach described in \citet*{minamide-98}, results in a slightly less efficient generation where recursive calls to \ocaml{map_dps} are passed \emph{both} the beginning of the list and the destination to be written at its end.
-The beginning of the list remains constant over all recursive calls, and it is known to the caller, so our DPS version does not propagate it.
+The implementation they prove correct, which corresponds to the approach described in \citet*{minamide-98}, results in a slightly less efficient generation where recursive calls to \ocaml{map_dps} are passed \emph{both} the start of the list and the destination to be written at its end.
+The start of the list remains constant over all recursive calls, so our DPS version does not propagate it.
 
 We were inspired by the generality of their presentation and verified that our proof technique can also be applied to some other TMC variants, by extending our mechanized development with a correctness proof for an
 accumulator-passing-style transformation.
 
 Finally, our correctness results are more precise and slightly stronger: they work in a well-typed setting where programs do not fail, when use untyped terms and show preservation of failure; their proofs assume a deterministic, non-effectful language, we use a more general non-deterministic, effectful language; finally, they have a very simple definition of program equivalence (reducing to the exact same value) that works well for semi-formal reasoning, but is unsuitable to scale the argument to other programming languages, whereas we use a standard notion of behavioral refinement that can scale to less idealized settings.
-
-We get this extra generality mostly as a direct result of our methodology (relational program logic backed by a simulation); but showing preservation of failure requires some care when handling arithmetic operators in the accumulator-passing-style variant (See ).
+%
+We get this extra generality mostly as a direct result of our methodology (relational program logic backed by a simulation); but showing preservation of failure requires some care when handling arithmetic operators in the accumulator-passing-style variant.
 
 \subsection{Relational reasoning in separation logic}
 
-Defining a program logic to capture unary program properties is a typical usage of \Iris; relational properties are rarer. \citet*{tassarotti-2017} use (a linear variant of) \Iris to prove the correctness of a program transformation that implements communication channels using shared references. There is a good discussion of related work in ReLoC Reloaded~\citep*{reloc-2021}.
+Defining a program logic to capture unary program properties is a typical usage of \Iris; relational properties are rarer. \citet*{tassarotti-2017} use (a linear variant of) \Iris to prove the correctness of a program transformation that implements communication channels using shared references. See the related work of ReLoC Reloaded~\citep*{reloc-2021}.
 \Xfrancois{+ thèse de Friis Vindum.}
 \Xfrancois{ReLoC a été utilisé surtout pour vérifier des algos concurrents.}
 
