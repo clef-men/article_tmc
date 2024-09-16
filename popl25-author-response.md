@@ -228,28 +228,28 @@ modalities/connectives to conveniently reason about non-termination,
 ownership, state updates, etc. The last decade has seen results proved
 using Iris that were out of reach of the previous
 seventy-pages-of-step-indexing-pen-and-paper-proofs-in-an-appendix
-methology. But so far most successes of Iris have been in establishing
-*unary* properties of a program -- it does not crash -- rather than
-*binary* relations between programs -- they are equivalent.
+methology.
 
-There is little previous work on relational verification of program
-transformations in Iris, and the approach in this previous work is to
-use a *unary* program logic (the `wp` predicate in Iris) on the target
-program, and only talk about the source program inside the pre- and
-post-conditions. This is relatively simple if the source program is in
-a pure language whose programs can be computed inside the logic, but
-it is difficult to scale this approach to impure source languages --
-see the related work of [Tassarotti, Jung, Harper, 2017], which relies
-on subtle extensions to the Iris logic that have not been integrated
-in the Iris mainline. Designing and justifying a program logic in this
-style is very difficult, it requires substantial Iris expertise. In
-contrast, designing a relational program logic justified by
-a simulation relation is much easier, and the same notion of
-simulation can be reused among many different languages, operational
-semantics, and program logics. We believe that this approach can open
-the door for notable progress on relation program verification for
-impure higher-order languages. Demonstrating this technique, and
-improving the Simuliris relation to enable it, is a contribution.
+Iris offers plenty of excellent tools to establish *unary* properties
+of a program -- it does not crash. But so far, it remains a black art
+to design a *binary* program logic in Iris -- that can use Iris
+propositions in its proof rules; proving the soundness and adequacy of
+those program logics requires a deep Iris expertise.
+
+The approach we follow is to justify those binary program logics using
+a simulation relation internal to Iris, and then separately prove this
+simulation adequate. Defining the simulation and proving it adequate
+does require a lot of Iris expertise, but this can be done once, and
+then many program logics for different languages can be justified
+using it. In an ideal picture, Iris experts would define
+powerful/convenient notions of simulation, programming language
+verifiers would define language-specific program logics on top of it,
+and authors of program transformations would use those programs logics
+to verify their transformations.
+
+We try to demonstrate the feasability of this approach in our work. We
+had to extend Simuliris to conveniently define our program logic, but
+we report that this approach can indeed work.
 
 Today the standard approach in mechanized compiler verification
 (eg. CompCert) is to directly establish a Coq-level simulation between
