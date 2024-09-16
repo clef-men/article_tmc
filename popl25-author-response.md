@@ -23,7 +23,7 @@ following:
    at POPL.
    
 3. Review C kindly points out that we did not do a good enough job
-   explicating the importance and impact of the Iris-specific part of
+   highlighting the importance and impact of the Iris-specific part of
    our contribution. We answer its questions regarding the
    significance and difficulties of our proof technique (for soundness
    of a relational separation program logic).
@@ -33,18 +33,18 @@ remarks and questions, namely:
 
 -  We provide further scholarship evidence on the fact that this is
    the first use of Simuliris to prove a program transformation /
-   compiler pass. (Namely, we quote a recent public message by Robbert
-   Krebbers claiming that no existing published work does this.)
+   compiler pass. (Namely, we quote a recent public discussion with
+   Michael Sammler and Robbert Krebbers claiming that no existing
+   published work does this.)
 
 -  In response to the suggestions for alternative proof methods in
    reviews A and C, we point out that the proof that the source and
-   transformed programs are related in our program logic is in fact
-   rather simple, it is an induction on the source term (inverting on
-   the relational definition of the transformation) that applies a few
-   relevant rules of the program logic in each case.
-   
+   transformed programs are related in our program logic (Lemmas 7.1
+   and 7.2) is in fact relatively simple, a double induction that
+   applies a few relevant rules of the program logic in each case.
+
    We believe that the complexity of alternative proofs should be
-   compared to that part of our work, as the rest is independent from
+   compared to these Lemmas 7.1 and 7.2. The rest is independent from
    the TMC transformation and would already be present in, say,
    a pre-existing verified compiler using our general methodology.
 
@@ -136,9 +136,9 @@ is not at all obvious. Referring directly to their POPL papers
 ( https://dl.acm.org/doi/10.1145/3571233 ):
 
 - The authors point out that they assume that terms are well-typed and
-  never get stuck. This assumption is too strong to model OCaml or any
-  other mainstream programming language (which are full of
-  dynamic errors, except for proof assistants).
+  never go wrong. This assumption is too strong to model OCaml or any
+  other mainstream programming languages (which are full of dynamic
+  errors, except for proof assistants).
 
 - Most of their proofs (sections 3 and 4) are conducted with respect
   to an equivalence relation defined on page 5, which is simply that
@@ -221,7 +221,7 @@ POPL:
 > - I'm not sure whether using SimulIris for something it hadn't been
 >   used for before really qualifies as a contribution.
 
-Iris has had a profound impact on the research in program verificatino
+Iris has had a profound impact on the research in program verification
 because it makes reasoning on higher-order, impure programs much, much
 easier than what we could do before, thanks to the addition of logical
 modalities/connectives to conveniently reason about non-termination,
@@ -239,7 +239,7 @@ program, and only talk about the source program inside the pre- and
 post-conditions. This is relatively simple if the source program is in
 a pure language whose programs can be computed inside the logic, but
 it is difficult to scale this approach to impure source languages --
-see the related work of [Tassarotti, Jung, Harper, 2018], which relies
+see the related work of [Tassarotti, Jung, Harper, 2017], which relies
 on subtle extensions to the Iris logic that have not been integrated
 in the Iris mainline. Designing and justifying a program logic in this
 style is very difficult, it requires substantial Iris expertise. In
@@ -252,7 +252,7 @@ impure higher-order languages. Demonstrating this technique, and
 improving the Simuliris relation to enable it, is a contribution.
 
 Today the standard approach in mechanized compiler verification
-(eg. compcert) is to directly establish a Coq-level simulation between
+(eg. CompCert) is to directly establish a Coq-level simulation between
 the source and target programs, which can be very tedious. We believe
 that adding Iris (or another powerful separation logic) into the mix
 could provide noticeable benefits. We certainly do not claim to have
@@ -304,8 +304,9 @@ We would emphasize two aspects:
 Our wording is defensive because it is difficult to be aware of all
 publications and ongoing work on simulations in separation logic, but
 our claim to novelty was independently and recently confirmed on the
-(public) Iris Mattermost communication platform by Robbert Krebbers,
-one of the Iris maintainers. We quote the relevant discussion:
+(public) Iris Mattermost communication platform by Michael Sammler and
+Robbert Krebbers, one of the Iris maintainers. We quote the relevant
+discussion (September 10th 2024):
 
 > Abhishek Anand:
 > [...]
@@ -348,7 +349,7 @@ a distance, we can make the following comments:
   program logic is sound. But this is a program logic for
   a TMC-independent IR. We could implement a variety of other
   optimizations on this IR and reuse the program logic -- in the paper
-  we discuss inlining, and a few variants of TMC on integers. In
+  we discuss inlining, and the accumulator-passing-style variant. In
   particular, if someone tried to scale our methology
   (relational program separation logic) to a fully verified compiler,
   they would already have a program logic for their important IRs.
@@ -359,8 +360,8 @@ a distance, we can make the following comments:
   transform is related to its input by our program logic. And those
   proofs are, in fact, relatively simple -- about 300 lines of
   straight-line Coq code, which could be factorized further with more
-  automation. It is a single induction that applies the relevant program
-  logic steps in each case.
+  automation. It is a double induction that applies the relevant
+  program logic steps in each case.
 
 
 > Line 661: It remains annoyingly unsaid whether this constructor
@@ -387,8 +388,11 @@ frames.
 
 We decided to not include this in the paper for reasons of space, but
 we could present it in an appendix if the reviewer believes that it is
-important to have it in LaTeX in addition to Coq. (We would welcome
-feedback on this in the final review comments.)
+important to have it in LaTeX in addition to Coq.
+
+(On re-reading, we notice that we did not say explicitly in the
+submission that constructor compression is included in our mechanized
+soundness proof. We will clarify this in the article.)
 
 
 > Line 999: You claim that you prove the specification from Section 4 in
@@ -401,13 +405,15 @@ would of course be included along with the publication if it was
 accepted.
 
 We initially wrote a sketch of the proof in our early writings on this
-work, but we found the result rather un-informative: it is an
+work, but we found the result rather un-informative: it is a double
 induction, and each case is proved by a list of reasoning rules in the
 program logic, which are the relatively obvious ones given the syntax
-of the two terms to relate -- a domain expert could easily reconstruct
-the full details from the presentation in the paper. The more
-technical aspects of the proof are in the soundness argument and
-adequacy for the program logic itself.
+of the two terms to relate. Taking the review feedback into account,
+we could give a few more details on the induction structure which is
+non-trivial; then a domain expert could easily reconstruct the full
+argument from the presentation in the paper. The more technical
+aspects of the proof are in the soundness argument and adequacy for
+the program logic itself.
 
 We believe that the limited space in the paper is better spent on
 giving justifications, intuitions and examples than getting into the
@@ -478,6 +484,7 @@ Leijen&Lorenzen work, which happened in parallel to ours, and only
 provides a mostly-formal correctness argument.
 
 
+
 > - Given the analysis in Section 3.2 and Section 4, why can't the OCaml
 >   compiler apply this transformation automatically in some cases?
 >   I understand there are subtleties to be analyzed in some cases, but
@@ -531,26 +538,21 @@ transformed program.)
 > - The formalization is based on a simplified model.  Could this proof
 >   be done on top of CFML or Melocoton?
 
-CFML can be used to prove the correctness of a given OCaml program by
-computing a shallow embedding in Coq, so we could directly show the
-specifications of destination-passing-style versions of select
-programs. But it is not clear how it could be used to prove the
-correctness of a program transformation, because it computes a shallow
-embedding of each program.
-
-Melocoton does not cover a large fragment of OCaml, it seems just as
-simplified as our own language (at least the published presentation
-only contains pairs and not general tuples, offers no built-in support
-for pattern-matching, etc.).
+CFML and Melocoton provide unary program logics, they cannot be used
+to prove relations between a source and target program. One could
+prove in CFML that the destination-passing-style version of `map` has
+a specification one would reasonably expect, but not relate it
+explicitly to the *implementation* of List.map.
 
 If we wanted to have a verified proof for a realistic language, we
-could:
+should devise a relational program logic for a larger fragment of
+OCaml. We could:
 
-- Work within the CakeML project
+- Work within the CakeML project.
 
 - Scale our simplified IR to a larger fragment of the relevant OCaml
   intermediate representation, Lambda. One possible approach would be
-  to reuse the formlization of Malfunction (a well-specified fragment
+  to reuse the formalization of Malfunction (a well-specified fragment
   of the Lambda IR) developped by the MetaCoq project to reason about
   extraction of Coq programs
   ( https://github.com/yforster/coq-verified-extraction/blob/coq-8.19/theories/Malfunction.v ).
