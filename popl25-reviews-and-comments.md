@@ -24,12 +24,38 @@
 > the design choices and benchmarking to do with this implementation in
 > the OCaml compiler. The second contribution is a correctness proof in
 > Coq stating that the TMC optimisation does not change any observable
-> behaviour of the program (including divergence etc). The proof was
-> done in Simuliris, and might be the first code transforming
-> function/relation to have been proved correct in Simuliris.  Finally,
-> this work in Simuliris, required the authors to extend Simuliris with
-> support for user-specified different calling conventions (in order to
-> manage TMC's destination-passing style).
+> behaviour of the program (including divergence etc).
+
+> The proof was done in Simuliris, and might be the first code
+> transforming function/relation to have been proved correct in
+> Simuliris.
+
+Our wording is defensive because it is difficult to be aware of all
+publications and ongoing work on simulations in separation logic, but
+our claim to novelty was recently confirmed on the (public) Iris
+Mattermost communication platform by Robbert Krebbers, one of the Iris
+maintainers. We quote the discussion:
+
+> Abhishek Anand:
+> [...]
+> 2. is there some existing work using iris for formulating and proving correctness of compilers producing concurrent code?
+>
+> Michael Sammler:
+> Regarding 2, the only work I know that uses Iris in a compiler proof is the code generation pass from DimSum (https://gitlab.mpi-sws.org/iris/dimsum/-/blob/master/dimsum_examples/compiler/codegen.v?ref_type=heads), but the setup there is quite non-standard (e.g. it does not use the standard wp, but is based on the "satisfiable" assertion and DimSum refinements). I am not sure if any of the approaches of proving refinements using Iris (e.g. ReLoC) has been used to verify a compiler.
+>
+> Robbert Krebbers:
+> Re (2), indeed, I do not think any of the ReLoC or Simuliris variants have been used to verify a compiler. Only refinements of very tricky concrete programs.
+
+(One can reasonably ask why using the same technique to study
+a different object is a contribution in itself. We answer in our
+presentation that this new, important application area revealed
+expressivity limitations in Simuliris, and required our contribution
+of an extension with abstract protocols, which are likely to be useful
+to many other proofs and people.)
+
+> Finally, this work in Simuliris, required the authors to extend
+> Simuliris with support for user-specified different calling
+> conventions (in order to manage TMC's destination-passing style).
 > 
 > Section 2 presents TMC on a idealised language that is intended for
 > explaining TMC (and is quite close to the Coq formalisation). The
@@ -81,12 +107,92 @@
 >   Lorenzen developed such a neat treatment of TMC in parallel to this
 >   work.
 
-TODO: discuss the limitations of the work of Leijen and
-Lorenzen. Their proof is intermediate between informal and
-pen-and-paper. Our result is more rigorous and (on the TMC part)
-significantly more general.
+We would distinguish several levels of rigour when presenting an
+algorithm in scientific publications in a given domain:
 
-I (Gabriel) propose to develop this directly in the final response.
+1. Domain experts present their informal reasoning, their intution for
+   the correctness of the algorithm.
+
+2. A pen-and-paper mathematical proof.
+
+3. A proof mechanized in a proof assistant.
+
+Going from one level to the next is in general a significant
+achievement, which can often justify a publication if it involves new
+techniques or insights. (Sometimes we are lucky and it turns out to be
+very easy, and then it's not clearly a contribution.)
+
+We would argue that the Leijen and Lorenzen correctness argument is at
+level "2-", in-between a pen-and-paper proof and an informal
+argument -- it could be described as "mostly-formal". If it was fully
+at level 2, then it should be easy to answer the following questions
+about their proof:
+
+- What is the correctness statement for the TMC transformation?
+
+- What is the source and target language of the TMC transformation
+  they prove correct?
+
+- Are they pure or impure, do they support non-termination,
+  non-determinism, mutable state?
+
+  (All these sub-questions are important to understand if they can be
+  considered to reasonably model a simplified fragment of OCaml.)
+
+We claim that answering these questions about their soundness argument
+is not at all obvious. Referring directly to their POPL papers
+( https://dl.acm.org/doi/10.1145/3571233 ):
+
+- The authors point out that they assume that terms are well-typed and
+  never get stuck. This assumption is too strong to model OCaml or any
+  other mainstream programming language (which are full of
+  dynamic errors, except for proof assistants).
+
+- Most of their proofs (sections 3 and 4) are conducted with respect
+  to an equivalence relation defined on page 5, which is simply that
+  the two terms reduce to the same value or both diverge: "either
+  e1 →* v and e2 →∗ v, or both e1 ⇑ and e2 ⇑" This can only work in
+  a pure calculus (for example, diverging terms that perform different
+  side-effects should not be considered equivalent). This notion of
+  equivalence cannot work in presence of side-effects, non-determinism
+  or mutable state. They remark: "During reasoning, we often use the
+  rule that when e2 is terminating, then (𝜆x.e1)e2 ≃ e1[x:=e2]".
+
+  (In contrast, we (1) use untyped terms and show preservation of
+  failure, (2) model a non-deterministic, stateful language, and we
+  (3) use a standard notion of behavioral refinement that can scale to
+  less idealized settings. All of these choices are important to claim
+  relevance to practical instances of TMC in production programming
+  languages, and they each make program reasoning sensibly more
+  difficult.)
+
+- Section 5.2 discusses how to realize linear contexts with in-place
+  update, and it moves to an abstract machine with a heap and
+  a term. In that setting the paper establishes equations that have
+  been proven sufficient for soundness in previous sections, in the
+  pure (but non-terminating) setting. It is not at all clear to us
+  that the two parts of the argument can be rigorously combined to
+  establish a complete result of correctness of TMC with imperative
+  context updates.
+
+In our opinion, the value of this independent discussion of TMC is in
+providing a clear exposition of the TMC transformation, in a nice,
+general conceptual setting that also encompasses many other variants
+of the transformation. This is neat, and an excellent paper to read to
+understand TMC. Presumably the authors chose to carefully balance the
+amount of formal details and the clarity/intuitiveness of the
+calculation they present, and favored clarity/simplicty overally. The
+result is a useful contribution, but we would not consider it a fully
+rigorous pen-and-paper proof of soundness of the TMC transformation,
+and we believe that there is a large gap from their argument to
+a proof that can be considered to model a relevant fragment of OCaml,
+even just on paper. Providing a fully mechanized proof is yet another
+level.
+
+Note: there are of course other contributions in the Koka publication,
+in particular their discussion of how to combine TMC with multishot
+delimited continuations, which (is not relevant in our OCaml
+setting and) is notable and of independent interest.
 
 > - Part of this work has been published before. This raises the
 >   question whether this submission has too much overlap with
@@ -97,7 +203,27 @@ I (Gabriel) propose to develop this directly in the final response.
 >   this paper (and its presentation) needs to be at the level that
 >   carries enough weight on its own to warrant publication at POPL. At
 >   the moment it does not quite reach that level, see also (2).
-> 
+
+We have a different opinion, we believe that publishing an early
+version of our work in a workshop-level national venue should not
+prevent a part of our contributions to be considered
+(the implementation of TMC in OCaml and its evaluation – including an
+evaluation of adoption that is entirely new in the current paper).
+
+However, we claim that even according to the reviewer's stricter
+standards, our submission carries enough weight to be presented at
+POPL:
+
+- this is the first rigorous proof of correctness of the TMC transformation
+  that could scale to an impure programming language
+
+- our proof is fully mechanized
+
+- the proof technique (a relational separation program logic,
+  justified by an adequate simulation) is novel for a compiler
+  transformation, and required an extension of the state of the work
+  on adequate simulations in Iris.
+
 > Regarding (2):
 > 
 > - In my opinion, the approach taken in Leijen and Lorenzen in their
@@ -149,7 +275,7 @@ a distance, we can make the following comments:
   particular, if someone tried to scale our methology
   (relational program separation logic) to a fully verified compiler,
   they would already have a program logic for their important IRs.
-  
+
   So when we discuss the relative difficulty of proving TMC correct,
   we could compare the argument proposed by the reviewer with our
   proof of lemmas 7.1 and 7.2, which prove that the result of the TMC
@@ -203,12 +329,12 @@ would:
 - add a new DPSCtxReify rule that turns a non-empty stack of contexts into
   a destination
 
-This is exactly the approach we used in the Coq formalization, see
+This is exactly the approach we use in the Coq formalization, see
 mechanization/theories/tmc_2/definition.v, where the inductive
 relation `tmc_expr_dps` captures the rewrite relation
 (with constructor compression), with a parameter of type `tmc_ctx`
 represents the stack of constructor applications, as a list of context
-frames. 
+frames.
 
 We decided to not include this in the paper for reasons of space, but
 we could present it in an appendix if the reviewer believes that it is
@@ -231,7 +357,7 @@ feedback on this in the final review comments.)
 > this section, but the content of this section hardly suffices as
 > a proof.
 
-We consider that the "proof" itself is in the Coq formalization that
+The full details of the proof are in the Coq formalization that
 accompanies the article, was submitted as supplementary material, and
 would of course be included along with the publication if it was
 accepted.
@@ -240,9 +366,10 @@ We initially wrote a sketch of the proof in our early writings on this
 work, but we found the result rather un-informative: it is an
 induction, and each case is proved by a list of reasoning rules in the
 program logic, which are the relatively obvious ones given the syntax
-of the two terms to relate. The more technical aspects of the proof
-are in the soundness argument and adequacy for the program logic
-itself.
+of the two terms to relate -- a domain expert could easily reconstruct
+the full details from the presentation in the paper. The more
+technical aspects of the proof are in the soundness argument and
+adequacy for the program logic itself.
 
 We believe that the limited space in the paper is better spent on
 giving justifications, intuitions and examples than getting into the
@@ -250,6 +377,10 @@ technical aspects of the proof. On the other hand, we did make sure
 that the paper presents the *statements* that we establish as
 completely as possible, in particular the definition of the simulation
 relation is given (and discussed) in full.
+
+If the reviewer would like us to include more details on the proof, at
+the cost of removing or shrinking some sections of the current paper,
+we welcome specific feedback on what to complete and what to remove.
 
 > Line 1026: You cite the Simuliris paper a few too many times. It's
 > enough to cite it the first time Simuliris is mentioned.
@@ -303,16 +434,17 @@ standard, non-tail-recursive version of a function with a TMC version
 (unlike accumulator-passing versions which are notably slower). This
 was a sticking point in the OCaml community, as the List.map function
 from the standard library was kept non-tail-recursive for performance
-reasons -- creating issues with stack overflows.
+reasons -- creating issues with stack overflows -- and switched to
+a tail-recursive version thanks to our work.
 
 To compare the performance of TMC with the non-tail-recursive version,
 List.map is a worst case, because it performs almost no work except
-for the recursive call. (This assumes that the mapped function is also
-fast, we used just an integer increment in our benchmark for this
-reason.) If we compare a function that does more work on each
-iteration, we will see smaller differences between the various
-versions, as the recursive-call logic will take a smaller portion of
-the runtime.
+for the recursive call and constructor application. (This assumes that
+the mapped function is also fast, we used just an integer increment in
+our benchmark for this reason.) If we compare a function that does
+more work on each iteration, we will see smaller differences between
+the various versions, as the recursive-call logic will take a smaller
+portion of the runtime.
 
 Does the reviewer has a specific question in mind that could be
 answered by measuring the impact on other functions?
@@ -342,8 +474,8 @@ a mathematical proof of correctness with respect to this
 specification. There is very few prior work on TMC that passes this
 bar; we don't know of any previous publication on providing a rigorous
 specification for the TMC transformation except for the
-Leijen&Lorenzen work, which happened in parallel to ours, and provides
-only a semi-formal correctness argument.
+Leijen&Lorenzen work, which happened in parallel to ours, and only
+provides a mostly-formal correctness argument.
 
 > Detailed comments:
 > 
@@ -539,23 +671,24 @@ transformations in Iris, and the approach in previous work is to use
 a *unary* program logic (the `wp` predicate in Iris) on the target
 program, and only talk about the source program inside the pre- and
 post-conditions. This is relatively simple if the source program is in
-a pure language that the logic can compute on, but it is difficult to
-scale this approach to impure source languages -- see the related work
-of [Tassarotti, Jung, Harper, 2013]. Designing and using a program
-logic in this style is difficult, and it requires substantial Iris
-expertise. In contrast, designing a relational program logic justified
-by a simulation relation is much easier, and the same notion of
-simulation can be reused among many different languages, operational
-semantics, and program logics. We believe that this approach can open
-the door for notable progress on relation program verification for
-impure higher-order languages. Demonstrating this technique, and
-improving the Simuliris relation to enable it, is a contribution.
+a pure language whose programs can be computed inside the logic, but
+it is difficult to scale this approach to impure source languages --
+see the related work of [Tassarotti, Jung, Harper, 2013]. Designing
+and justify a program logic in this style is very difficult, it
+requires substantial Iris expertise. In contrast, designing
+a relational program logic justified by a simulation relation is much
+easier, and the same notion of simulation can be reused among many
+different languages, operational semantics, and program logics. We
+believe that this approach can open the door for notable progress on
+relation program verification for impure higher-order
+languages. Demonstrating this technique, and improving the Simuliris
+relation to enable it, is a contribution.
 
-Today the standard approach in formal compiler verification
+Today the standard approach in mechanized compiler verification
 (eg. compcert) is to directly establish a Coq-level simulation between
-the source and target programs. We believe that adding Iris
-(or another powerful separation logic) into the mix could provide
-great benefits.
+the source and target programs, which can be very tedious. We believe
+that adding Iris (or another powerful separation logic) into the mix
+could provide noticeable benefits.
 
 > - TMC of a style very similar to that in this paper was implemented in
 >   Scala about 10 years ago; it would be good to see a discussion
@@ -566,11 +699,11 @@ great benefits.
 We were not aware of this work, thanks! On first skim it appears based
 in an implementation of Scala on top of the Oz virtual machine, which
 presumably has the downside of coming with a significant performance
-cost (compared to the usual JVM backend) -- besides the obvious
-engineering-effort differences, this is similar to our discussion of
-Prolog is that it introduces "dataflow values" (an Oz generalization
-of Prolog unification variables) pervasively in the computation, which
-adds a noticeable constant-factor overhead.
+cost (compared to the usual JVM backend). Besides the obvious
+engineering-effort differences, this approach is similar to our
+discussion of Prolog in that it introduces "dataflow values" (an Oz
+generalization of Prolog unification variables) pervasively in the
+computation, which adds a noticeable constant-factor overhead.
 
 > - Reading the proof, I wondered whether CPS conversion would be
 >   a useful intermediate proof step.  Couldn't we see the process of
