@@ -235,36 +235,38 @@ seventy-pages-of-step-indexing-pen-and-paper-proofs-in-an-appendix
 methology.
 
 Iris offers plenty of excellent tools to establish *unary* properties
-of a program -- e.g., the program does not crash. But so far, it remains a black art
-to design a *binary* program logic in Iris -- that can use Iris
-propositions in its proof rules; proving the soundness and adequacy of
-those program logics requires a deep Iris expertise.
+of a program -- e.g., the program does not crash. But so far, it
+remains a black art to design a *binary* program logic in Iris -- that
+can use Iris propositions in its proof rules. Proving the soundness
+and adequacy of those program logics requires a deep Iris expertise.
 
 The approach we follow is to justify those binary program logics using
-a simulation relation that is internal to Iris, and then separately prove this
-simulation adequate. Defining the simulation and proving it adequate
-does require a lot of Iris expertise, but this can be done once, and
-then many program logics for different languages can be justified
-using it. In an ideal picture, Iris experts would define
+a simulation relation that is internal to Iris, and then separately
+prove this simulation adequate. Defining the simulation and proving it
+adequate does require a lot of Iris expertise, but this can be done
+once, and then many program logics for different languages can be
+justified using it. In an ideal picture, Iris experts would define
 powerful/convenient notions of simulation, programming language
-verifiers would define language-specific program logics on top of them,
-and authors of program transformations would use those programs logics
-to verify their transformations.
+designers would define language-specific program logics on top of
+them, and authors of program transformations would use those programs
+logics to verify their transformations.
 
 We try to demonstrate the feasability of this approach in our work. We
-had to extend Simuliris to conveniently define our program logic, but
-we report that this approach can indeed work.
+had to extend Simuliris to define our program logic (it is not
+a trivial repetition of previous Simuliris-based program
+logic designs), but we report that this approach can indeed work for
+realistic program transformations.
 
 Today the standard approach in mechanized compiler verification
 (eg. CompCert) is to directly establish a Coq-level simulation between
 the source and target programs, which can be very tedious. We believe
 that adding Iris (or another powerful separation logic) into the mix
 could provide noticeable benefits. We certainly do not claim to have
-covered all aspects of compiler verification -- to test scalability
-one would need to prove a lowering pass between languages with
-different memory models -- but we believe that further work in this
-promising direction could happen on top of our work, and in particular
-benefit from our notion of abstract protocols.
+covered all aspects of compiler verification -- for example, to test
+scalability one would need to prove a lowering pass between languages
+with different memory models -- but we believe that further work in
+this promising direction could happen on top of our work, and in
+particular benefit from our notion of abstract protocols.
 
 
 > - The formalization didn't give me a good sense of what bit of
