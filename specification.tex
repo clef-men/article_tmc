@@ -77,9 +77,9 @@ Its usage is formalized by the \RefTirName{BijInsert} rule:
 \end{mathline}
 This is a \emph{ghost update} rule that mutates the logical state.
 It can only be applied when the two locations $\datalangLoc_s$ and $\datalangLoc_t$ have similar content $\datalangVal_s \iSimilar \datalangVal_t$.
-It consumes the ``private'' ownership of the source and destination points-to $\datalangLoc_s \iPointsto_s \datalangVal_s$ and $\datalangLoc_t \iPointsto_t \datalangVal_t$, and produces a permanent proposition $\datalangLoc_s \iInBij \datalangLoc_t$ witnessing that the two locations are now in the ``public'' bijection.\Xgabriel{I changed this a bit on François' feedback, TODO have Clément review this.}
+It consumes the ``private'' ownership of the source and target points-to $\datalangLoc_s \iPointsto_s \datalangVal_s$ and $\datalangLoc_t \iPointsto_t \datalangVal_t$, and produces a persistent proposition $\datalangLoc_s \iInBij \datalangLoc_t$ witnessing that the two locations are now in the ``public'' bijection.
 
-We can formally define value similarity $\datalangVal_s \iSimilar \datalangVal_t$ in \cref{fig:isimilar}.
+We formally define value similarity $\datalangVal_s \iSimilar \datalangVal_t$ in \cref{fig:isimilar}.
 It coincides with equality except on blocks, for which we require all fields to be registered in the bijection.
 
 \input{figures/isimilar}
