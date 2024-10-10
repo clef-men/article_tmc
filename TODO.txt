@@ -1,0 +1,34 @@
+## What do we want to keep from the appendices, and where?
+
+
+
+## Requested by the reviewers
+
+Include the Scala paper in the related work, around the discussion of Prolog.
+(And possibly a citation for Prolog, see the reference in the reviews.)
+
+
+## From the author response
+
+A change to perform:
+> (On re-reading, we notice that we did not say explicitly in the submission that constructor compression is included in our mechanized soundness proof. We will clarify this in the article.)
+
+
+Maybe we want to include a part of our answers on "Primary comments > review C":
+
+- why is it interesting/important to use Simuliris for compiler verification
+- what is hard about our work?
+
+
+Explain better in the paper why we only measure List.map: it corresponds to the worst case.
+(Point at further experiments in the OCaml community giving qualitatively similar results for other functions.)
+
+
+Explain better why the transformation is opt-in.
+
+
+Maybe we want to explain that it would be possible to a a three-pass
+transform, first elaborating into Minamide's calculus, then exposing
+Minamide's operators as mutable state, and finally removing the
+unused/constant first parameter. (Maybe not.)
+
