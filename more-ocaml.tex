@@ -20,7 +20,7 @@ We have three arguments for implementing the TMC transformation:
 \subsubsection{Lazy data}
 
 Lazy (call-by-need) languages will also often avoid running into stack overflows: as soon as a lazy data structure is returned, which is the default, functions such as \ocaml{map} will return immediately, with recursive calls frozen in a lazy thunk, waiting to be evaluated on-demand as the user traverses the result structure.
-User still need to worry about tail-recursion for their strict functions; strict functions are often preferred when writing efficient code.
+Users still need to worry about tail-recursion for their strict functions; strict functions are often preferred when writing efficient code.
 
 \subsubsection{Unlimiting the system stack}
 
