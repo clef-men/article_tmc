@@ -19,8 +19,8 @@ We have three arguments for implementing the TMC transformation:
 
 \subsubsection{Lazy data}
 
-Lazy (call-by-need) languages will also often avoid running into stack overflows: as soon as a lazy datastructure is returned, which is the default, functions such as \ocaml{map} will return immediately, with recursive calls frozen in a lazy thunk, waiting to be evaluated on-demand as the user traverses the result structure.
-User still need to worry about tail-recursivity for their strict functions; strict functions are often preferred when writing performant code.
+Lazy (call-by-need) languages will also often avoid running into stack overflows: as soon as a lazy data structure is returned, which is the default, functions such as \ocaml{map} will return immediately, with recursive calls frozen in a lazy thunk, waiting to be evaluated on-demand as the user traverses the result structure.
+User still need to worry about tail-recursion for their strict functions; strict functions are often preferred when writing efficient code.
 
 \subsubsection{Unlimiting the system stack}
 
@@ -43,14 +43,14 @@ On the other hand, using the native stack brings compatibility benefits (coheren
 In particular, it only uses the system stack for C calls, and a ``cactus stack'' for \OCaml calls.
 
 \OCaml~5 manages its own stack, but the implementors still decided to have a stack limit.
-It is sensibly higher by default (1Gio at the time of writing) than the system stack (8Mio), so many ``small'' can now use non-tail-recursive functions without fears of stack overflows, but overflows remain possible and likely in practice on large inputs.
+It is sensibly higher by default (1Gb at the time of writing) than the system stack (8Mb), so many ``small'' can now use non-tail-recursive functions without fears of stack overflows, but overflows remain possible and likely in practice on large inputs.
 The reason to keep a (user-settable) limit for the \OCaml call stack is usability in the face of buggy programs.
 When programmers write recursive functions, they occasionally go through incorrect versions with a faulty base case that fail to terminate.
 In this case, we want the system to fail quickly with an error, instead of remaining silent for a few minutes, crashing once all the machine memory has been consumed.
 
 We were curious about whether users would still see a need for TMC in \OCaml~5, or whether they would stop using the feature in practice.
 The feedback we got from expert users is that stack overflows is still an issue they worry about.
-We observe that TMC adoption in \OCaml codebases keep growing after the transition to \OCaml~5.
+We observe that TMC adoption in \OCaml code bases keep growing after the transition to \OCaml~5.
 
 \subsection{Implementation history}
 \label{subsec:PR-history}
@@ -75,7 +75,7 @@ users with \OCaml~4.14, released in March 2022.
 The TMC transformation is that it adds extra parameters to functions
 (two parameters, the block and the offset). At the time the \OCaml
 compiler had a limitation on some supported architectures, where it
-would not optimze tail calls above a certain number of arguments
+would not optimize tail calls above a certain number of arguments
 (enough that they cannot be all passed by registers), breaking the
 tail-call promises of TMC on those systems. Xavier Leroy implemented
 a change to the \OCaml calling convention for those architectures in
@@ -191,7 +191,7 @@ The binding operators \ocaml|let+|, \ocaml|and+| are standard syntax for applica
 
 The TMC transformation was first made available to users in \OCaml~4.14.0, released in March 2022.
 At the time there were no users of the feature.
-Notably, the \OCaml standard library had intentionally not been modified to start using it: before the release, we did not want the stdlib codebase to depend on a not-available-yet feature, and after the release we decided not to push for adoption (we may be biased about the benefits/importance of TMC), and let other contributors propose its use, after doing their own evaluation of performance impact and code-clarity benefits.
+Notably, the \OCaml standard library had intentionally not been modified to start using it: before the release, we did not want the stdlib code base to depend on a not-available-yet feature, and after the release we decided not to push for adoption (we may be biased about the benefits/importance of TMC), and let other contributors propose its use, after doing their own evaluation of performance impact and code-clarity benefits.
 
 Over time, \ocaml|[@tail_mod_cons]| was adopted in a few places in the \OCaml standard library, either to make some functions tail-recursive that previously were not, or simplify some complex tail-recursive implementations. As of spring 2024, the feature is now used in \ocaml|Hashtbl.find_all| and in \ocaml|List| module (\ocaml|init, map, mapi, map2, find_all, filteri, filter_map, take, take_while, of_seq|). \ocaml|init| and the \ocaml|map*| functions, which are the most heavily used, were unrolled once -- the minimal amount observed to preserve the non-tailrec performance for small lists. Other functions are written in the simplest possible way. (All \texttt{stdlib} uses so far build lists rather than another datatype.)
 

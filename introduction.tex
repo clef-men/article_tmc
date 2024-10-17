@@ -148,7 +148,7 @@ The TMC transformation produces an equivalent function in
   cons} position have been turned into \emph{tail} calls. In
 particular, for \ocaml{map} it gives a tail-recursive function, which
 runs in constant stack space; other list functions also become
-tail-recursive. This works for other datatypes as well, such as binary trees,
+tail-recursive. This works for other data types as well, such as binary trees,
 but in this case some recursive calls may remain non-tail-recursive.
 
 For \ocaml{map}, our transformation produces the following code:\\
@@ -199,13 +199,13 @@ TMC has been implemented in Lisp~\citep*{risch-73,friedman-wise-75}, in Prolog a
 The first main contribution of our work is an implementation of TMC in the \OCaml compiler as an on-demand program transformation,
 merged in November 2021.
 %
-We describe the non-trivial design choices in terms of user interface, and evaluate performance through microbenchmarks.
+We describe the non-trivial design choices in terms of user interface, and evaluate performance through micro-benchmarks.
 %
-Various functions in the standard library and third-party codebases have been rewritten to use it, to become tail-recursive, gain in performance, or (when an efficient but complex tail-recursive version was used) simplify considerably the implementation.
+Various functions in the standard library and third-party code bases have been rewritten to use it, to become tail-recursive, gain in performance, or (when an efficient but complex tail-recursive version was used) simplify considerably the implementation.
 
 The second main contribution of this work is a mechanized proof of correctness for the core of this transformation on a small untyped calculus.
 %
-We etablish that for any input source program there is a termination-preserving \emph{behavioral refinement} between the source program and the corresponding transformed program: any behavior of the transformed program, be it converging, diverging or stuck, is a behavior of the source program.
+We establish that for any input source program there is a termination-preserving \emph{behavioral refinement} between the source program and the corresponding transformed program: any behavior of the transformed program, be it converging, diverging or stuck, is a behavior of the source program.
 %
 To our knowledge this is the first verification of the TMC transformation in an untyped setting.
 

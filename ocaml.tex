@@ -11,14 +11,14 @@ For reasons of space, we moved some of the content in this section to \cref{app:
 \cref{subsec:applicative-impl} exhibits an applicative functor structure that makes our implementation nicely compact and readable.
 %
 \cref{subsec:adoption} surveys the adoption of the TMC transformation in the standard library,
-  and in third-party \OCaml codebases, that happened since the feature was released in 2022.
+  and in third-party \OCaml code bases, that happened since the feature was released in 2022.
 
 \subsection{Examples}
 \label{subsec:ocaml-examples}
 
 Many functions that consume and produce lists are
 tail-recursive-modulo-cons, in the sense that they admit a TMC
-transformatin where all recursive calls become tail calls. Notable
+transformation where all recursive calls become tail calls. Notable
 functions include \ocaml{map}, as already discussed, but also for
 example:
 
@@ -114,7 +114,7 @@ A tail context $\datalangTailCtx$ is an arbitrary composition of tail-frame, and
 If a source function can be decomposed in a TMC context $\datalangTMCCtx$ with source expressions in its holes, some of which are calls to TMC-transformed functions, then our relation admits a DPS transformation where all those function calls are tail-calls, and this transformation is reachable in our \OCaml implementation, possibly by adding some annotations.
 
 Note in particular that we do not optimize calls to the same function we are defining, direct calls to arbitrary other functions can be transformed, if those functions have been annotated to be TMC-transformed.
-This is analoguous to how most functional languages support arbitrary \emph{tail calls} and not just tail self-recursion.
+This is analogous to how most functional languages support arbitrary \emph{tail calls} and not just tail self-recursion.
 We seamlessly support mutually recursive functions, DPS calls into locally-bound functions, etc.
 
 \begin{figure}[tp]
@@ -232,7 +232,7 @@ It would be possible to allow DPS calls through external modules or higher-order
 let rec dup = function [] -> [] | x :: xs -> x :: x :: dup xs
 \end{Ocaml}
 
-Such nested constructors are common in compiler codebases, for
+Such nested constructors are common in compiler code bases, for
 example a desugaring pass that transforms a single term-former into
 a composition of several simpler term-formers, and applies recursively to
 its subterms.

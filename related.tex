@@ -13,7 +13,7 @@ fragment is precisely described (in prose) by \citet*{friedman-wise-75}.
 In the Prolog community it is a common pattern to implement destination-passing style through unification variables; in particular ``difference lists'' are a common representation of lists with a final hole.
 Unification variables are first-class values: in particular they can be passed as function arguments, providing expressive, first-class support for destination-passing style in the source language.
 For example, we do not support optimizing tail contexts of the form \ocaml{List.append li _?}, only direct constructor applications; this can be expressed in Prolog as just the difference list \ocaml{(List.append li X, X)} for a fresh destination variable \ocaml{X}.
-But this expressivity comes at a performance cost, and there is no static checking that the data is fully initialized at the end of computation.
+But this expressiveness comes at a performance cost, and there is no static checking that the data is fully initialized at the end of computation.
 
 Independently of our work, Koka has implemented TMC starting in August
 2020\footnote{\url{https://github.com/koka-lang/koka/commit/f6a343d31f486ea5edd44798dca7bca52d7b450c}}~\citep*{tmc-koka-2023}.
@@ -26,7 +26,7 @@ hold in programs that use multishot continuations (\ocaml|call/cc|,
 reference-counting machinery to determine that a destination is not
 uniquely-owned anymore, and stores extra metadata in
 partially-initialized blocks to be able to copy them on-demand in this
-case. Its Javascript backend instead reverts to a CPS transformation
+case. Its JavaScript back-end instead reverts to a CPS transformation
 when non-linear control flow is detected.
 
 \subsection{Reasoning about destination-passing-style}
@@ -68,9 +68,9 @@ A relational program logic can be justified in \Iris by interpreting it as a una
 
 It is in fact surprisingly difficult to define simulations in \Iris, if we expect them to be adequate (to correspond to the usual notion of simulation outside the \Iris world). This is due to meta-theoretical difficulties around the ``later'' modality which led to the Transfinite \Iris variant~\citep*{transfinite-iris-2021}. We started by defining simulations in Transfinite \Iris, but later moved to the \Simuliris approach~\citep*{simuliris-2022}, where simulations are defined in standard \Iris without using the ``later'' modality, using coinduction instead (via its impredicative encoding).
 
-As a minor technical point of comparison to \Simuliris, our definition of behaviors (denotations) includes non-termination, succesfully evaluating to a value, but also failing with an error, and refinement preserves all three kind of behaviors. We do not model undefined behaviors.
+As a minor technical point of comparison to \Simuliris, our definition of behaviors (denotations) includes non-termination, successfully evaluating to a value, but also failing with an error, and refinement preserves all three kind of behaviors. We do not model undefined behaviors.
 
-We believe that our approach (relational program logics justified by a simulation) is showing promises for compiler verification. Verification of Compcert\Xgabriel{TODO citation} passes typically prove a forward simulation result, which is strengthened into a backward simulation thanks to a determinism assumption. We get the desired backward simulation directly, with compositional proofs.
+We believe that our approach (relational program logics justified by a simulation) is showing promises for compiler verification. Verification of CompCert\Xgabriel{TODO citation} passes typically prove a forward simulation result, which is strengthened into a backward simulation thanks to a determinism assumption. We get the desired backward simulation directly, with compositional proofs.
 
 \subsection{Protocols}
 
