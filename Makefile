@@ -38,3 +38,13 @@ plots/plot.%.pdf: plots/plot.%.svg Makefile
 .PHONY: plots
 plots: plots/plot.4.pdf plots/plot.5.pdf
 
+CHECK := $(shell ls *.tex \
+  | grep -vw -e "\(macros\|iris\|listings\)")
+
+.PHONY: check
+check:
+	@ for f in $(CHECK) ; do \
+	  aspell --mode=tex --lang=en_US --encoding=utf-8 \
+	         --home-dir=. --personal=.aspell.en.pws \
+	         check $$f ; \
+	done
