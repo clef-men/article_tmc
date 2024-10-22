@@ -222,3 +222,36 @@ year = {2023},
 booktitle={OOPSLA},
 url={https://inria.hal.science/hal-04203298}
 }
+
+@inproceedings{tmc-scala-2013,
+author = {Doeraene, S\'{e}bastien and Van Roy, Peter},
+title = {A new concurrency model for Scala based on a declarative dataflow core},
+year = {2013},
+url = {https://lampwww.epfl.ch/~doeraene/publications/scala13-ozma.pdf},
+doi = {10.1145/2489837.2489841},
+abstract = {Declarative dataflow values are single assignment variables such that all operations needing their values wait automatically until the values are available. Adding threads and declarative dataflow values to a functional language gives declarative concurrency, a model in which concurrency is deterministic and explicit synchronization is not needed. In our experience, this greatly simplifies the writing of concurrent programs (as explained in several chapters of CTM [20]). We complete this model with lazy execution and message-passing concurrency. Both extensions are tightly integrated with the declarative dataflow core. Lazy execution is provided by extending declarative dataflow with a by-need synchronization operation. Message passing is provided by adding streams equipped with a send operation, where a stream is a list with an unbound single-assignment variable. This paper presents the Ozma language, a conservative extension of Scala that supports all these concepts. We have made a complete implementation of Ozma by combining the implementations of Scala and Oz. Evaluation shows that this implementation supports the full semantics of Scala with concurrent programs based on the new concurrency model. In particular, within the functional subset of Scala the new concurrency model fully supports deterministic concurrency.},
+booktitle = {Scala Workshop},
+articleno = {4},
+numpages = {10},
+keywords = {nondeterminism, message-passing concurrency, lazy execution, deterministic concurrency, dataflow, concurrent programming, Scala, Ozma, Oz},
+location = {Montpellier, France},
+series = {SCALA '13}
+}
+
+@inproceedings{oz-1994,
+author = {Schulte, Christian and Smolka, Gert},
+title = {Encapsulated search for higher-order concurrent constraint programming},
+year = {1994},
+publisher = {MIT Press},
+booktitle = {ILPS '94},
+numpages = {16},
+keywords = {search strategies, higher-order programming, encapsulated search, concurrent constraint programming, Oz},
+}
+
+@inproceedings{oz-1995,
+  title = {Multi-Paradigm Programming in Oz},
+  author = {Martin Müller and Tobias Müller and Peter Van Roy},
+  year = {1995},
+  booktitle = {Visions for the Future of Logic Programming: Laying the Foundations for a Modern successor of Prolog},
+  note = {{A Workshop in Association with ILPS'95}},
+}
