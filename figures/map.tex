@@ -3,7 +3,7 @@
 \begin{Datalang}
 map |-> rec λ(f, xs) = match xs with
                        | [] -> []
-                       | x :: xs -> let y = fn x in y :: @map (f, xs)
+                       | x :: xs -> let y = f x in y :: @map (f, xs)
 \end{Datalang}
 \end{tabular}
 \caption{Natural implementation of \datalang|map| in \DataLang}
