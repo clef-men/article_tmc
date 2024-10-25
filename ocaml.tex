@@ -166,6 +166,27 @@ We seamlessly support mutually recursive functions, DPS calls into locally-bound
 
 \subsection{Design choices}
 
+\subsubsection{Opt-in rather than opt-out} We made our transformation
+\emph{opt-in}, the user has to explicit use the
+\ocaml|[@tail_mod_cons]|, rather than \emph{opt-out}, where the
+compiler would automatically detect program in the TMC fragment to
+transform them. There are at least three reasons for this choice, in
+increasing order of importance. First, the transformation duplicates
+code, as it generates a direct- and a destination-passing-style
+version of the function; in particular we could suffer from
+a code-size blow-up on nested transformable functions. Second, the
+transformation may change the evaluation order of function arguments,
+in a way that comforms to the OCaml specification but may break
+programs in practice (bad!), so we would have to restrict it to only
+transform calls with syntactically-pure arguments. Third and most
+importantly, our implementation may have bugs, which may silently
+introduce miscompilations in user code. There are millions of lines of
+OCaml code out there, and we have no idea which portion would be
+transformed. Doing this implicitly would risk running into
+compile-time, runtime or correctness issues that we have not foreseen,
+it would have been much harder to convince OCaml maintainers to
+include this feature if it was opt-out.
+
 \subsubsection{Resolving non-determinism}
 
 The main question faced by an implementation is how to resolve the
