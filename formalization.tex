@@ -32,7 +32,7 @@ The evaluation order of subexpressions $\datalangExpr_1$ and $\datalangExpr_2$ i
 This is crucial to allow the behavior-preserving optimization of more programs, as the TMC transformation may affect the evaluation order of subterms of data constructors.
 To model this in the semantics, we introduce a separate, deterministic block construction $\datalangBlockDet{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ which cannot appear in source programs. A block expression $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ first nondeterministically reduces to either $\datalangLet{\datalangVar_1}{\datalangExpr_1}{\datalangLet{\datalangVar_2}{\datalangExpr_2}{\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}}}$ through \RefTirName{StepBlock1} or $\datalangLet{\datalangVar_2}{\datalangExpr_2}{\datalangLet{\datalangVar_1}{\datalangExpr_1}{\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}}}$ through \RefTirName{StepBlock2}. $\datalangBlockDet{\datalangTag}{\datalangVal_1}{\datalangVal_2}$ performs the allocation through \RefTirName{StepBlockDet}.
 
-The values in \DataLang are functions $\datalangFnptr{\datalangFn}$, locations $\datalangLoc$ of allocated blocks, Booleans $b$, tags $t$ (taken in an arbitrary, denumerable set), the unit value $\datalangUnit$, and indices $i \in \{\datalangZero, \datalangOne, \datalangTwo\}$ inside blocks. (Our transformation never mutates tags in position $\datalangZero$, nor do \OCaml programs, but for example \Mezzo supports it.)
+The values in \DataLang are functions $\datalangFnptr{\datalangFn}$, locations $\datalangLoc$ of allocated blocks, Booleans $b$, tags $t$ (taken in an arbitrary, denumerable set), the unit value $\datalangUnit$, and indices $i \in \{\datalangZero, \datalangOne, \datalangTwo\}$ inside blocks. (Our transformation never mutates block tags, nor do \OCaml programs, but \Mezzo supports it.)
 
 On top of these basic language features, \cref{fig:sugar} introduces syntactic sugar for pairs $\datalangPair {\datalangExpr_1} {\datalangExpr_2}$ as blocks with a specific tag $\mathrm{PAIR}$, for decomposing blocks in $\term{\color{datalangKeyword1}{let}}$-bindings ($\datalangLet {\datalangPair \datalangVar \datalangVarTwo} {\datalangExpr_1} {\datalangExpr_2}$) and in arguments of toplevel functions ($\datalangFn \mapsto \datalangRec {\datalangPair \datalangVar \datalangVarTwo} \datalangExpr$), and for (untyped) lists by defining the empty list $\datalangNil$ as $\datalangUnit$, and for (mutable) cons-cells as blocks with a specific tag $\mathrm{CONS}$. Pattern-matching on lists can be expressed by comparing the list with $\datalangNil$, using our block-deconstructing $\term{\color{datalangKeyword1}{let}}$ (which ignores the tag) to deconstruct cons-cells.
 
@@ -55,7 +55,7 @@ As formalized in \cref{fig:tmc}, transforming a \DataLang program $\datalangProg
 
 \input{figures/tmc}
 \paragraph{1. Choosing a subset of toplevel functions to be TMC-transformed}
-In \OCaml, the programmer has to annotate these.
+%In \OCaml, the programmer has to annotate these.
 For each such function $\datalangFn$, we also require a fresh function name $\datalangRenaming [\datalangFn]$ (that is not defined in $\datalangProg_s$) that will be the \emph{destination-passing style} (DPS) version of $\datalangFn$ in the transformed program $\datalangProg_t$.
 
 Formally, the subset is determined by the domain of the renaming function $\datalangRenaming$, which is passed as a parameter to the auxiliary transformations that we describe next.
@@ -63,23 +63,23 @@ Formally, the subset is determined by the domain of the renaming function $\data
 \input{figures/tmc_dir}
 \paragraph{2. For each function $\datalangFn$ defined in $\datalangProg$, computing its direct transform.}
 We introduce in \cref{fig:tmc_dir} the relations $\datalangDef_s \tmcDir{\datalangRenaming} \datalangDef_t$ for definitions and $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ for expressions.
-
+%
 $\datalangDef_s \tmcDir{\datalangRenaming} \datalangDef_t$ expresses that:
 1)~$\datalangDef_t$ has the same calling convention as $\datalangDef_s$.
 2)~The body of $\datalangDef_t$ is the direct transform of the body of $\datalangDef_s$.
-
+%
 $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ expresses that $\datalangExpr_t$ is the direct transform of $\datalangExpr_s$.
-Intuitively, this means $\datalangExpr_t$ computes the same thing as $\datalangExpr_s$.
+Intuitively: $\datalangExpr_t$ computes the same thing as $\datalangExpr_s$.
 
 The direct-style transform corresponds to the case where we do not have a block that can serve as a destination: this version is used in an arbitrary calling context, not necessarily under a constructor. Most rules are straightforward congruences -- we recursively transform subexpressions and preserve the term constructor. We omit the rules for loads $\datalangLoad{\datalangExpr_1}{\datalangExpr_2}$, stores $\datalangStore{\datalangExpr_1}{\datalangExpr_2}{\datalangExpr_3}$, and the deterministic blocks $\datalangBlockDet \datalangTag {\datalangExpr_1} {\datalangExpr_2}$ which are such simple congruences, just like calls $\datalangCall {\datalangExpr_1} {\datalangExpr_2}$.
 
 The key cases are for a block construct $\datalangBlock \datalangTag {\datalangExpr_1} {\datalangExpr_2}$. We can use this block as a destination, and switch to the destination-passing-style calling convention -- these rules are a source of non-determinism, and the only places in the direct-style transformation where destination-passing-style is introduced. \RefTirName{DirBlock} is a simple congruence rule that keeps both arguments in direct style. The rules (\RefTirName{DirBlockDPS1}, \RefTirName{DirBlockDPS2}) choose a block argument to be evaluated in destination-passing style. (It is also possible to transform both arguments in DPS style, and we include extra rules for this in our formalization. \Xgabriel{TODO: measure the performance of this tweak for \ocaml{map} on binary trees.})
 
-In details, the terms produced by these rules proceed as follows:
-1)~They partially initialize a new memory block, with a hole for one of their arguments.
-2)~They evaluate the DPS transformation of the corresponding argument,
+The terms produced by these rules proceed as follows:
+1)~Partially initialize a new memory block, with a hole for one of their arguments.
+2)~Evaluate the DPS transformation of the corresponding argument,
    passing the uninitialized field as destination.
-3)~They return the now fully initialized block.
+3)~Return the now fully initialized block.
 
 An implementation would typically determine which subexpression would benefit from destination-passing style, that is, contains function calls $\datalangCall {\datalangFnptr \datalangFn} \datalangExpr$ in tail position (relatively to the subexpression) that have a destination-passing variant $\datalangRenaming [\datalangFn]$.
 
@@ -97,7 +97,7 @@ We will formalize this intuition in \cref{sec:specification}.
 
 Note that the rule \RefTirName{DPSDef}, which relates the two judgments, uses the expression-level relation $(\mathrel{\tmcDps{\datalangRenaming}})$ with a term variable $\datalangVar_\mathit{idx}$ to represent the index, not just a constant index $\datalangOne$ or $\datalangTwo$ as in block rules. These are the only two sort of expressions used to represent offsets in the transformation.
 
-In the direct-style relation, congruence rules apply the same direct-style transformation to all subexpressions. The congruence-like rule of the DPS relation, for example \RefTirName{DPSLet} and \RefTirName{DPSIf}, are different. They apply the DPS transformation to sub-expressions which are in tail position relative to the expression, and the direct-style transformation to all other subexpressions. The if-then-else construct has two different subexpressions in tail position, at most one of them is evaluated at runtime.
+In the direct-style relation, congruence rules apply the same direct-style transformation to all subexpressions. The congruence-like rule of the DPS relation, for example \RefTirName{DPSLet} and \RefTirName{DPSIf}, are different. They apply the DPS transformation to sub-expressions which are in tail position relative to the expression, and the direct-style transformation to all other subexpressions. The if-then-else construct has two different subexpressions in tail position, only one of them is evaluated at runtime.
 
 The rules \RefTirName{DPSBlock1} and \RefTirName{DPSBlock2}
 correspond to the rules \RefTirName{DirBlockDPS1} and \RefTirName{DirBlockDPS2} in the direct-style transformation, but the transformed code is different. Consider the translation of $
