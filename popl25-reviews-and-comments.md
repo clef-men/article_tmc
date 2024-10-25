@@ -296,24 +296,52 @@ a distance, we can make the following comments:
 > Lines 183-184: at this point in the paper this syntax is a bit of
 > a mystery. I can guess what it means but it's a little annoying that
 > there isn't even a short explanation.
-> 
+
+done
+
 > Line 268: you say the equality is untyped, that makes sense in
 > a n untyped language, but you could also mention whether equality is
 > recursive in some way and what happens when equality is applied to
 > values of different "types", e.g. "1" and "true".
-> 
+
+The answer: this is the Coq equality between `data_val` values, it
+gives a physical equality (equality on locations/pointers, without
+structurally comparing their content), and it always returns `False`
+for values of different type (because the Coq representation
+is tagged).
+
+I (Gabriel) added a footnote on this at this point, but I am not sure
+whether it is actually useful for other readers. We might want to
+remove it if space becomes tight again.
+
 > Line 371: "e_s ~~> d_t" -- perhaps you mean "e_s ~~> e_t"
-> 
+
+done
+
 > Line 375: same as above
-> 
+
+done
+
 > Line 423: punctuation "argument. passing"
-> 
+
+done
+
 > Line 594: "some implementations" -- please provide references
-> 
+
+I am not enthusiastic about citing implementations here
+(for example Koka) to point out that their TMC fragment is less
+expressive than ours. It feels like a criticism on a point that is,
+all other things considered, relatively minor, and I wouldn't want the
+authors of those systems to feel attacked.
+
 > Line 641: "consider this strange function: element in a list:"
-> 
+
+done
+
 > Line 647: "would two location"
-> 
+
+done
+
 > Line 661: It remains annoyingly unsaid whether this constructor
 > compression fits neatly into the existing TMC transformation relation
 > or whether the compression steps outside of that. If there is
@@ -341,18 +369,32 @@ we could present it in an appendix if the reviewer believes that it is
 important to have it in LaTeX in addition to Coq. (We would welcome
 feedback on this in the final review comments.)
 
+Update (Gabriel): I clarified in the discussion of constructor
+    compression that it is covered by our mechanized proof.a
+
 > Line 769: "an assumed extension" -- what do you mean by "assumed" here?
-> 
+
+done
+
 > Line 777: "the ready may" -- reader?
-> 
+
+done
+
 > Line 793: it's frustrating that I don't know what this means. For
 > example, I guess that the precondition applies to both expressions,
 > which seems odd because
-> 
+
+done
+
 > Line 822: "a source expression with a target expression under
 > a postcondition" -- I wish the authors gave a definition of what this
 > means.
-> 
+
+I gave some informal intuition for what this means. I made a footnote
+about the two views of the program logic (syntactic system of
+inference rules, or a bunch of admissibility lemmas?) that we could
+remove if we need more space again.
+
 > Line 999: You claim that you prove the specification from Section 4 in
 > this section, but the content of this section hardly suffices as
 > a proof.
@@ -382,12 +424,28 @@ If the reviewer would like us to include more details on the proof, at
 the cost of removing or shrinking some sections of the current paper,
 we welcome specific feedback on what to complete and what to remove.
 
+Update: in the revised version we have a brief mention of the
+inductive structure of the argument, and the fact that then the
+inference rules suffice.
+
 > Line 1026: You cite the Simuliris paper a few too many times. It's
 > enough to cite it the first time Simuliris is mentioned.
-> 
+
+We cite the Simuliris paper three times:
+- once in the introduction (it's important work we build on)
+- once in the Simulation section (8) (it's the key work we reuse in this section)
+- once in the related work section (it's important work to compare against)
+
+This feels to me (Gabriel) like an appropriate number of citations,
+given that a reader could reasonably skim the paper and look at any of
+those sections in isolation, without looking at the other two, or read
+the paper gradually with long pauses between two sections.
+
 > Line 1144: "contibuations"
-> 
-> 
+>
+
+done
+
 > 
 > Review #318B
 > ===========================================================================

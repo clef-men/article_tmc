@@ -69,7 +69,7 @@ In addition, we will only consider \emph{valid source expressions} --- denoted b
 \end{lemma}
 \Xfrancois{TODO point back to the beginning of the paper for an informal explanation of these statements.}
 
-Both proofs proceed by induction over $\datalangExpr_s$ and mutual induction over $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ and $(\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$.% -- we refer to our mechanization for the details.
+Both proofs proceed by induction over $\datalangExpr_s$ and mutual induction over $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ and $(\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$. In each case we then apply the relevant rules of the program logic. % -- we refer to our mechanization for the details.
     % We only sketch the cases shown in \cref{fig:tmc_dir} and \cref{fig:tmc_dps} and refer to our mechanization for the complete proof.
     % \begin{itemize}[align=left, leftmargin=*]
     %     \item[\RefTirName{DirVal}:] Follows from $\wf{\datalangVal}$.
