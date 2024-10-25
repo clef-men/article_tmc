@@ -62,13 +62,13 @@ Formally, the subset is determined by the domain of the renaming function $\data
 
 \input{figures/tmc_dir}
 \paragraph{2. For each function $\datalangFn$ defined in $\datalangProg$, computing its direct transform.}
-We introduce in \cref{fig:tmc_dir} the relations $\datalangDef_s \tmcDir{\datalangRenaming} \datalangDef_t$ for definitions and $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangDef_t$ for expressions.
+We introduce in \cref{fig:tmc_dir} the relations $\datalangDef_s \tmcDir{\datalangRenaming} \datalangDef_t$ for definitions and $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ for expressions.
 
 $\datalangDef_s \tmcDir{\datalangRenaming} \datalangDef_t$ expresses that:
 1)~$\datalangDef_t$ has the same calling convention as $\datalangDef_s$.
 2)~The body of $\datalangDef_t$ is the direct transform of the body of $\datalangDef_s$.
 
-$\datalangExpr_s \tmcDir{\datalangRenaming} \datalangDef_t$ expresses that $\datalangExpr_t$ is the direct transform of $\datalangExpr_s$.
+$\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ expresses that $\datalangExpr_t$ is the direct transform of $\datalangExpr_s$.
 Intuitively, this means $\datalangExpr_t$ computes the same thing as $\datalangExpr_s$.
 
 The direct-style transform corresponds to the case where we do not have a block that can serve as a destination: this version is used in an arbitrary calling context, not necessarily under a constructor. Most rules are straightforward congruences -- we recursively transform subexpressions and preserve the term constructor. We omit the rules for loads $\datalangLoad{\datalangExpr_1}{\datalangExpr_2}$, stores $\datalangStore{\datalangExpr_1}{\datalangExpr_2}{\datalangExpr_3}$, and the deterministic blocks $\datalangBlockDet \datalangTag {\datalangExpr_1} {\datalangExpr_2}$ which are such simple congruences, just like calls $\datalangCall {\datalangExpr_1} {\datalangExpr_2}$.

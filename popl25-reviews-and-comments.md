@@ -737,16 +737,43 @@ the proof would be simpler than our one-pass approach.
 > 
 > - I don't understand why the second version of the example program
 >   (26-35) is given. Is it relevant to TMC?
-> 
+
+I followed this suggestion and removed the "let y = f x in y :: map xs" version.
+
 > - Missing citation for prolog TMC:
 > 
 >   - An improved Prolog implementation which optimizes tail
 >     recursion. Warren, D. H. 1980. (although unfortunately this one
 >     doesn't seem available online?)
-> 
+
+I (Gabriel) do not want to cite a paper that I have not been able to
+read. From the title it seems that this may be able tail-calls in
+Prolog, which are not really related to the TMC transformation in
+Prolog. In looking for this reference, I found a 1984 paper on TMC in
+Prolog that might worth citing -- but then I'm not clear on the fact
+that this is important, we don't mention all the papers that talk
+about manual TMC transformation, we are trying to cite only the
+historically older ones, why would the fact that it targets Prolog
+make it any different?
+
+The Prolog paper on TMC:
+
+  Optimizing almost-tail-recursive prolog programs
+  Saumya K. Debray
+  FPCA 1985
+  https://link.springer.com/chapter/10.1007/3-540-15975-4_38
+
 > - Line 376, should it say `e_t`?
-> 
+
+done
+
 > - 587 isn't "non-determinism" a run-time notion?
-> 
+
+clarified that this is about several possible transformation choices
+
 > - 627 isn't it too bad that good performance should only be offered to
 >   expert users?
+
+We should discuss (probably at some other place) headfront why we made
+TMC opt-in instead of opt-out.
+

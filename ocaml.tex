@@ -169,8 +169,9 @@ We seamlessly support mutually recursive functions, DPS calls into locally-bound
 \subsubsection{Resolving non-determinism}
 
 The main question faced by an implementation is how to resolve the
-inherent non-determinism. We identified fairly different kinds of
-non-determinism.
+inherent non-determinism in the rewrite relation -- how to decide
+between several possible results of the transformation. We identified
+fairly different kinds of non-determinism.
 
 \paragraph{Choices with an obviously better alternative.}
 Some choices offer an alternative that is obviously better than the others, because it allows to strictly improve more programs. For example, some implementations of TMC limit themselves to calls that are immediately inside a constructor: they would optimize the recursive call to \ocaml|f| in \ocaml|Cons(x, f y)| but not, for example, in \ocaml|Cons(x1, Cons(x2, f y))|, or in \ocaml|Cons (x, if p then f y else z)|.

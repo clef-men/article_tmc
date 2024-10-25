@@ -9,15 +9,6 @@ let rec map f = function
 | x :: xs -> f x :: map f xs
 \end{Ocaml}
 
-``Well, actually'', we continue, ``\OCaml is an effectful language, so we need to be careful about the evaluation order. We want \ocaml{map} to process elements from the beginning to the end of the input list, and the evaluation order of \ocaml{f x :: map f xs} is unspecified. So we write:''
-\begin{Ocaml}
-let rec map f = function
-| [] -> []
-| x :: xs ->
-  let y = f x in
-  y :: map f xs
-\end{Ocaml}
-
 ``Well, actually, this version fails with a \ocaml{Stack_overflow}
 exception on large input lists. If you want your \ocaml{map} to behave
 correctly on all inputs, you should write a \emph{tail-recursive}
