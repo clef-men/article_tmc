@@ -299,7 +299,7 @@ Instead of trying to transform each subterm in a single pass, our implementation
 
 \subsection{Evaluation: benchmarks}
 
-We measured the performance of \ocaml|List.map (fun n -> n + 1)| to validate our claims that the TMC transformation preserves program performance, and lets us replace complex hand-optimized tail-recursive implementations.
+We measured the performance of \ocaml|List.map (fun n -> n + 1)| to validate our claims that the TMC transformation preserves program performance, and lets us replace complex hand-optimized tail-recursive implementations. \ocaml|List.map| is a worst-case: with most of the time spent in recursion and list construction, it is more sensitive to constant-factor overheads than other recursive functions.
 
 \begin{figure}[tp]
 \def\svgscale{0.8}
@@ -311,7 +311,7 @@ We measured the performance of \ocaml|List.map (fun n -> n + 1)| to validate our
 
 \newcommand{\bench}[1]{\textbf{#1}}
 
-The \ocaml{List.map} versions in the graph are the following. We measure the code size (in lines) of each version, as a reasonable approximation of its implementation complexity.
+The different versions we benchmark are the following. We measure the code size (in lines) of each version, as a reasonable approximation of its implementation complexity.
 \begin{description}
 \item[\bench{nontail}] (5 lines of code) The naive, non-tail-recursive implementation.
 \item[\bench{tail}] (9 lines) The naive tail-recursive implementation,
