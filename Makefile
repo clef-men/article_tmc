@@ -48,3 +48,14 @@ check:
 	         --home-dir=. --personal=.aspell.en.pws \
 	         check $$f ; \
 	done
+
+LATEXDIFF=latexdiff --allow-spaces --type=CCHANGEBAR --config "PICTUREENV=(?:(?:picture[\w\d*@]*)|(?:tikzpicture[\w\d*@]*)|(?:DIFnomarkup)|(?:mathpar)|(?:mathline)|(?:verbatim)|(?:tabular)|(?:figure)|(?:thebibliography))" --exclude-safecmd="ocaml"
+
+.PHONY: diff.tex
+diff.tex:
+	if [ ! -d old-version ]; then git clone . old-version; fi
+	cd old-version; git checkout popl25-submission
+	$(LATEXDIFF) main.tex ./old-version/main.tex --flatten > diff.tex
+
+diff.pdf: diff.tex
+	latexmk -pdf -interaction=nonstopmode --bibtex diff.tex
