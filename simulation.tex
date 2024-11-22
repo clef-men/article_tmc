@@ -51,7 +51,7 @@ Finally, we can apply the protocol under evaluation contexts.
 We can choose any postcondition $\iPredTwo$ accepted by the protocol and assume it to prove the continuation.
 (We justify separately that a protocol is admissible, see \cref{subsec:closure}.)
 
-\subsection{Simulation closure}\label{subsec:closure}
+\subsection{Simulation Closure}\label{subsec:closure}
 
 If a protocol $\iProt$ respects a certain admissibility condition, then program relations established using this protocol are also in the \emph{closed} simulation, using the empty protocol $\bot$.
 
@@ -109,7 +109,7 @@ We consider not only converging behaviors (resulting in values or stuck expressi
 Expression refinement $\datalangExpr_s \refined \datalangExpr_t$ is \emph{termination-preserving}: if $\datalangExpr_s$ always terminates, so does $\datalangExpr_t$.
 Program refinement $\datalangProg_s \refined \datalangProg_t$, also defined in \cref{fig:refinement}, requires any source function call in $\datalangProg_t$ to behave as in $\datalangProg_s$.\Xfrancois{ambiguous}
 
-\subsection{Transformation soundness}
+\subsection{Transformation Soundness}
 
 We can finally express the soundness of the TMC transformation: if program $\datalangProg_s$ is well-formed and transforms into program $\datalangProg_t$, then $\datalangProg_t$ refines $\datalangProg_s$.
 A program is well-formed when its function definitions are well-formed and well-scoped.

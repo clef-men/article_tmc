@@ -4,7 +4,7 @@
 In this section, we gradually introduce aspects of our relational separation logic, by introducing our specifications for the direct-style and destination-passing-style transformations of \cref{sec:formalization} in relational separation logic.
 % In the next sections, we will unroll the proof of these specifications and extract a soundness theorem that lives outside of separation logic, depending only on the \DataLang semantics.
 
-\subsection{Direct transformation}
+\subsection{Direct Transformation}
 
 Intuitively, the direct transformation $\datalangExpr_s \tmcDir{\datalangRenaming} \datalangExpr_t$ preserves the behaviors of the source expression $\datalangExpr_s$.
 Basically, $\datalangExpr_s$ and $\datalangExpr_t$ compute the same thing.
@@ -27,7 +27,7 @@ The informal meaning of this specification is that 1) $\datalangExpr_t$ refines 
 We will formalize the notion of \emph{behavior} in \cref{sec:simulation} and that of \emph{similarity} later in this section.
 For the time being, the reader may assume similarity is just equality on values.
 
-\subsection{DPS transformation}
+\subsection{DPS Transformation}
 
 The DPS transformation $(\datalangLoc, \datalangIdx, \datalangExpr_s) \tmcDps{\datalangRenaming} \datalangExpr_t$ is parameterized by a destination $(\datalangLoc, \datalangIdx)$ pointing to an uninitialized field of some block.
 Intuitively, $\datalangExpr_t$ computes the same thing as $\datalangExpr_s$ but writes it into the destination instead of returning it. This can be expressed concisely in \emph{relational separation logic}~\citep*{yang-07}, a further extension of relational Hoare logic:
@@ -49,7 +49,7 @@ Intuitively, $\datalangExpr_t$ computes the same thing as $\datalangExpr_s$ but 
 
 In words: if $\datalangExpr_s$ transforms into $\datalangExpr_t$, and if we uniquely own the destination location $\datalangLoc + \datalangIdx$, we can transfer ownership to $\datalangExpr_t$ and run the two programs, whose execution must be related. When they reduce to values, $\datalangExpr_s$ reduces to a source value $\datalangVal_s$ and $\datalangExpr_t$ to the unit value $\datalangUnit$, and we recover the unique ownership of the destination, which now contains a target value $\datalangVal_t$ similar to $\datalangVal_s$.
 
-\subsection{Heap bijection}
+\subsection{Heap Bijection}
 
 Defining value similarity as just syntactic equality is not sufficient: corresponding source and target block allocations are not done in lockstep, so the resulting locations may differ.
 For example, consider the \datalang{map} function and its DPS transform from \cref{subsec:tmc_example}.

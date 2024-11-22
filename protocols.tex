@@ -1,4 +1,4 @@
-\section{Abstract protocols} \label{sec:protocols} \label{subsec:protocols}
+\section{Abstract Protocols} \label{sec:protocols} \label{subsec:protocols}
 
 \input{figures/protocol}
 
@@ -12,7 +12,7 @@ Protocols are used in the logic via the $\RefTirName{RelProtocol}$ rule.
 A pair of expressions $\datalangExpr_s$ and $\datalangExpr_t$ is supported by the protocol when it relates them to a postcondition $\iPredTwo$, capturing the possible results of an abstract/axiomatic transition from $\datalangExpr_s$ and $\datalangExpr_t$.
 To conclude that $\datalangExpr_s$ and $\datalangExpr_t$ are related, one must prove that any two $\datalangExpr_s'$ and $\datalangExpr_t'$ accepted by this postcondition $\iPredTwo$ remain related.
 
-\subsection{TMC protocols}
+\subsection{TMC Protocols}
 
 In our correctness proof for the TMC transformation, we use a specific protocol $\iProt_\mathrm{TMC}$ defined in \cref{fig:protocol} by combining two sub-protocols $\iProt_\mathrm{dir}$ and $\iProt_\mathrm{DPS}$ for the direct-style and DPS-style functions. Our coinduction hypothesis assumes toplevel function calls to be compatible with the direct and DPS specifications that we want to prove, and allows to reason about recursive calls to those functions inside the function bodies we are trying to relate.
 
@@ -75,7 +75,7 @@ To apply it, users can choose any postcondition implied by the postcondition of 
 %         }
 % \end{mathpar}
 
-\subsection{Other examples of protocols}
+\subsection{Other Examples of Protocols}
 
 Our program logic can be instantiated with other protocols to reason other program transformations.
 To demonstrate this generality, we have also verified an inlining and an accumulator-passing-style (APS) transformation --- both included in our mechanization.

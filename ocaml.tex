@@ -102,7 +102,7 @@ The \OCaml compiler does sometimes encounter machine-generated programs with a u
 Another example would be \href{https://github.com/ocaml/ocaml/pull/9636}{\#9636}, a patch to the \OCaml compiler proposed in June 2020 by Mark Shinwell, to get a partially-tail-recursive implementation of the ``Common Subexpression Elimination'' (CSE) pass through a manual continuation-passing-style transform.
 Xavier Leroy remarked that the existing implementation in fact fits the TMC fragment. Not all recursive calls become tail-calls (this would require a more powerful transformation or a longer, less readable patch), but the behavior of TMC on the unchanged code matches the tail-call-ness proposed in the human-written patch.
 
-\subsection{Specifying which calls are in TMC position} \label{subsec:specification}
+\subsection{Specifying Which Calls are in TMC Position} \label{subsec:specification}
 To reason about the stack usage of their programs, users must understand which calls are in tail-modulo-cons position.
 Informally, they are the calls placed under any composition of either tail-recursive or constructor contexts.
 
@@ -164,9 +164,9 @@ We seamlessly support mutually recursive functions, DPS calls into locally-bound
     \label{fig:contexts}
 \end{figure}
 
-\subsection{Design choices}
+\subsection{Design Choices}
 
-\subsubsection{Opt-in rather than opt-out} We made our transformation
+\subsubsection{Opt-in Rather than Opt-out} We made our transformation
 \emph{opt-in}, the user has to explicit use the
 \ocaml{[@tail_mod_cons]}, rather than \emph{opt-out}, where the
 compiler would automatically detect program in the TMC fragment to
@@ -187,7 +187,7 @@ compile-time, runtime or correctness issues that we have not foreseen,
 it would have been much harder to convince OCaml maintainers to
 include this feature if it was opt-out.
 
-\subsubsection{Resolving non-determinism}
+\subsubsection{Resolving Non-determinism}
 
 The main question faced by an implementation is how to resolve the
 inherent non-determinism in the rewrite relation -- how to decide
@@ -245,11 +245,11 @@ predictable and flexible (let the user express
 their intent). Failing due to the lack of annotations is an acceptable way
 to drive user interaction.
 
-\subsubsection{First-order implementation}\label{subsubsec:first-order}
+\subsubsection{First-order Implementation}\label{subsubsec:first-order}
 A notable limitation of the \OCaml implementation is that it is first-order and non-modular in nature: only direct calls to known functions can be converted into DPS style, and the availability of a DPS variant is not exposed through module abstractions.
 It would be possible to allow DPS calls through external modules or higher-order function parameters, by annotating interfaces and function arguments with a \ocaml{[@tail_mod_cons]} annotation, and elaborating them into a pair of functions, the direct-style and the DPS version.
 
-\subsection{Constructor compression} \label{subsec:constructor-compression} The translation as we described it formally in \cref{subsec:transformation} generates unpleasant code when many constructors are nested before the recursive call. For example, consider this strange function duplicating each element of a list:
+\subsection{Constructor Compression} \label{subsec:constructor-compression} The translation as we described it formally in \cref{subsec:transformation} generates unpleasant code when many constructors are nested before the recursive call. For example, consider this strange function duplicating each element of a list:
 \begin{Ocaml}
 let rec dup = function [] -> [] | x :: xs -> x :: x :: dup xs
 \end{Ocaml}
@@ -297,7 +297,7 @@ It is conceptually easy to extend our previous formalization of TMC as a rewriti
 
 Instead of trying to transform each subterm in a single pass, our implementation computes for each subterm a ``choice'', a summary of all the bottom-up information that is relevant to choose how to transform this subterm -- once we have the top-down information available. This includes (1) the direct-style transform of the subterm, (2) the DPS-style transform of the subterm, (3) metadata tracking whether the transformation is beneficial (if a TMC-function call was found in tail-modulo-cons position), the list of TMC calls it contains (for error diagnostics), and whether some were explicitly requested by the user (for disambiguation). Computing transformed terms is not compositional; computing choices is compositional. We compute a choice for the whole function body (in one pass), from which we can directly extract the direct-style and DPS-style transformations of the function.
 
-\subsection{Evaluation: benchmarks}
+\subsection{Evaluation: Benchmarks}
 
 We measured the performance of \ocaml|List.map (fun n -> n + 1)| to validate our claims that the TMC transformation preserves program performance, and lets us replace complex hand-optimized tail-recursive implementations. \ocaml|List.map| is a worst-case: with most of the time spent in recursion and list construction, it is more sensitive to constant-factor overheads than other recursive functions.
 
