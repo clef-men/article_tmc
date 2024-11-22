@@ -1,6 +1,6 @@
 \documentclass[acmsmall,screen,review]{acmart}
-\settopmatter{printfolios=true,printccs=false,printacmref=false}
-\renewcommand\footnotetextcopyrightpermission[1]{} % removes footnote with conference information in first column
+\settopmatter{printfolios=true,printccs=true,printacmref=true}
+% \renewcommand\footnotetextcopyrightpermission[1]{} % removes footnote with conference information in first column
 
 % ---------------------------------------------------------
 
@@ -89,13 +89,15 @@
 %% use 'none' for review submission.
 
 \setcopyright{rightsretained}
+\acmDOI{10.1145/3704915}
 \acmJournal{PACMPL}
 \acmYear{2025}
 \acmVolume{9}
 \acmNumber{POPL}
 \acmArticle{79}
 \acmMonth{1}
-\acmDOI{10.1145/3704915}
+\received{2024-07-11}
+\received[accepted]{2024-11-07}
 
 % ---------------------------------------------------------
 % ---------------------------------------------------------
@@ -108,7 +110,7 @@
 
 \author{Clément Allain}
 \orcid{0009-0005-2972-5181}
-\affiliation{
+\affiliation{%
   \institution{Inria}
   \city{Paris}
   \country{France}
@@ -117,21 +119,25 @@
 
 \author{Frédéric Bour}
 \orcid{0009-0007-5268-5784}
-\affiliation{
-  \institution{Inria \& Tarides}
-  \country{Japan}
+\affiliation{%
+  \institution{Tarides}
+  \city{Paris}
+  \country{France}
 }
+\email{frederic.bour@lakaban.net}
 
 \author{Basile Clément}
 \orcid{0000-0002-9126-0937}
-\affiliation{
-  \institution{Inria \& OCamlPro}
+\affiliation{%
+  \institution{OCamlPro}
+  \city{Paris}
   \country{France}
 }
+\email{bc@ocamlpro.com}
 
 \author{François Pottier}
 \orcid{0000-0002-4069-1235}
-\affiliation{
+\affiliation{%
   \institution{Inria}
   \city{Paris}
   \country{France}
@@ -140,12 +146,47 @@
 
 \author{Gabriel Scherer}
 \orcid{0000-0003-1758-3938}
-\affiliation{
+\affiliation{%
   \institution{Inria}
-  \city{Saclay}
+  \city{Paris}
+  \country{France}
+}
+\affiliation{%
+  \institution{IRIF, Université Paris Cité}
+  \city{Paris}
   \country{France}
 }
 \email{gabriel.scherer@inria.fr}
+
+\begin{CCSXML}
+<ccs2012>
+   <concept>
+       <concept_id>10011007.10011006.10011041</concept_id>
+       <concept_desc>Software and its engineering~Compilers</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+   <concept>
+       <concept_id>10011007.10011006.10011008.10011024.10011033</concept_id>
+       <concept_desc>Software and its engineering~Recursion</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+   <concept>
+       <concept_id>10003752.10003790.10011742</concept_id>
+       <concept_desc>Theory of computation~Separation logic</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+   <concept>
+       <concept_id>10003752.10010124.10010138.10010142</concept_id>
+       <concept_desc>Theory of computation~Program verification</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+ </ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Software and its engineering~Compilers}
+\ccsdesc[500]{Software and its engineering~Recursion}
+\ccsdesc[500]{Theory of computation~Separation logic}
+\ccsdesc[500]{Theory of computation~Program verification}
 
 \begin{abstract}
     \input{abstract}
