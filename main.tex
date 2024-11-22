@@ -247,21 +247,35 @@
 % \separate{\clearpage}{}
 % \input{conclusion}
 
-\clearpage
+% From the Author Instruction:
+%
+% > POPL-specific: The sections at the end of the paper should be ordered as follows:
+% > first appendices, then acknowledgments, and last references.
+% > The acknowledgments and references will not count towards the page limit.
+%
+% by email, Conference Publishing in fact clarifies that there cannot be appendices,
+% so our appendices will have to be published in a separate "full" version
+% of the paper, and it is more convenient to include them at the end.
 
-%\hbadness=10000
+%% Acknowledgments
+\input{acknowledgments}
+
+%% Bibliography/References
+
+\clearpage
 \bibliography{tmc}
+
+%% Appendices
 
 \clearpage
 \appendix
+
 \begin{version}{\FALSE}
 \input{republication}
-\clearpage
 \end{version}
 
 \input{more-ocaml}
 
-\clearpage
 \input{ocaml4-appendix}
 
 \end{document}

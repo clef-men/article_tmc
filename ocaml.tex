@@ -166,9 +166,9 @@ We seamlessly support mutually recursive functions, DPS calls into locally-bound
 
 \subsection{Design Choices}
 
-\subsubsection{Opt-in Rather than Opt-out} We made our transformation
-\emph{opt-in}, the user has to explicit use the
-\ocaml{[@tail_mod_cons]}, rather than \emph{opt-out}, where the
+\subsubsection{Opt-in Rather than Opt-out}\label{subsec:optin}
+We made our transformation \emph{opt-in}, the user has to explicit use
+the \ocaml{[@tail_mod_cons]}, rather than \emph{opt-out}, where the
 compiler would automatically detect program in the TMC fragment to
 transform them. There are at least three reasons for this choice, in
 increasing order of importance. First, the transformation duplicates
@@ -214,8 +214,8 @@ transformation used by performance experts: those experts will often
 read the intermediate representations produced by the compiler to
 check that their performance assumptions hold.
 
-\paragraph{Incomparable choices: force the user to decide} The
-remaining choices are between incomparable alternatives, that could
+\paragraph{Incomparable choices: force the user to decide} \label{subsec:user-control}
+The remaining choices are between incomparable alternatives, that could
 each be better than the other depending on the specific program or
 programmer intent. Consider again our binary tree example,
 \ocaml|Node(map f left, map f right)|: we could make either the first

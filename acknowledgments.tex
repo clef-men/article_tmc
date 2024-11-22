@@ -1,0 +1,48 @@
+\begin{acks}
+  This work was initiated by Frédéric Bour who implemented TMC in an
+  experimental variant of the OCaml compiler and submitted his work
+  for inclusion in 2015, but the proposal remained stalled due to lack
+  of review and integration effort among maintainers. The broad lines
+  of the final implementation, in term of generated code, were already
+  in Frédéric's initial version, as well as the idea to have an opt-in
+  transformation controlled by an attribute
+  (\cref{subsec:optin}). This experimental also generated the
+  performance data that motivated us to push further. (One notable
+  technical difference is that instead of each destination-passing
+  style taking two parameters \ocaml|dst| and |ofs|, it would generate
+  several versions specializing the \ocaml|ofs| variable to
+  a constant. Frédéric found that this did not noticeably improve
+  performance, and changed back to a parameter to simplify the
+  implementation and reduce code size.)
+  
+  In 2020, Gabriel Scherer restarted Frédéric Bour's effort with
+  a review followed by a partial reimplementation of the
+  transformation that introduced the applicative style discussed in
+  \cref{subsec:applicative-impl}, and much of the current
+  attribute-based user interface to control the transformation
+  (\cref{subsec:user-control}). Basile Clément in turn reviewed
+  Gabriel's version, and introduced constructor compression
+  (\cref{subsec:constructor-compression}). Xavier Leroy implemented
+  a change to the \OCaml calling convention to remove parameter-number
+  restrictions on tail calls on some architecture
+  (\cref{subsec:PR-history}). The work was finally reviewed by Pierre
+  Chambart and merged in the upstream \OCaml compiler in November
+  2021.
+
+  Clément Allain started working on a mechanized soundness proof for
+  the TMC transformation in Iris in Summer 2022, as a master
+  internship supervised by François Pottier. They discovered that the
+  question of defining simulations in Iris is surprisingly
+  interesting, and Clément wrote the bulk of the correctness proof at
+  this point. The mechanization work continued over 2023, and the
+  research paper itself was written by Clément Allain and Gabriel
+  Scherer in Summer-Winter 2023.
+
+  % TODO: grateful for review comments of François Pottier, Anton
+  % Lorenzen, and anonymous reviewers.
+\end{acks}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
