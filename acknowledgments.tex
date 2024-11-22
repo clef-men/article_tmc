@@ -4,14 +4,14 @@
   for inclusion in 2015, but the proposal remained stalled due to lack
   of review and integration effort among maintainers. The broad lines
   of the final implementation, in term of generated code, were already
-  in Frédéric's initial version, as well as the idea to have an opt-in
-  transformation controlled by an attribute
+  in Frédéric Bour's initial version, as well as the idea to have an
+  opt-in transformation controlled by an attribute
   (\cref{subsec:optin}). This experimental also generated the
   performance data that motivated us to push further. (One notable
   technical difference is that instead of each destination-passing
   style taking two parameters \ocaml|dst| and |ofs|, it would generate
   several versions specializing the \ocaml|ofs| variable to
-  a constant. Frédéric found that this did not noticeably improve
+  a constant. Frédéric Bour found that this did not noticeably improve
   performance, and changed back to a parameter to simplify the
   implementation and reduce code size.)
   
@@ -33,13 +33,15 @@
   the TMC transformation in Iris in Summer 2022, as a master
   internship supervised by François Pottier. They discovered that the
   question of defining simulations in Iris is surprisingly
-  interesting, and Clément wrote the bulk of the correctness proof at
-  this point. The mechanization work continued over 2023, and the
-  research paper itself was written by Clément Allain and Gabriel
-  Scherer in Summer-Winter 2023.
+  interesting, and that correctness proofs of transformations of
+  general recursive functions require coinductive reasoning. Clément
+  Allain wrote the bulk of the correctness proof at this point, and
+  finished the mechanization work over 2023.
 
-  % TODO: grateful for review comments of François Pottier, Anton
-  % Lorenzen, and anonymous reviewers.
+  Finally, the present research article itself was written by Clément
+  Allain and Gabriel Scherer in Summer 2023 and Spring 2024, with
+  excellent review comments from François Pottier, the POPL'25
+  anonymous reviewers, and Anton Lorenzen.
 \end{acks}
 
 %%% Local Variables:
