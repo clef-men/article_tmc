@@ -64,6 +64,10 @@ diff.pdf: diff.tex
 view:
 	latexmk -pdf -pv main
 
+.PHONY: loop
+loop:
+	latexmk -pdf -pvc main
+
 # [make link] checks the URLs in the bibliography.
 
 # We assume that the style file (.bst)
