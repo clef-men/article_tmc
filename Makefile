@@ -59,3 +59,29 @@ diff.tex:
 
 diff.pdf: diff.tex
 	latexmk -pdf -interaction=nonstopmode --bibtex diff.tex
+
+.PHONY: view
+view:
+	latexmk -pdf -pv main
+
+# [make link] checks the URLs in the bibliography.
+
+# We assume that the style file (.bst)
+# produces URLs in the form \url{...}.
+
+SED     = $(shell if command -v gsed >/dev/null 2>/dev/null ; then echo gsed ; else echo sed ; fi)
+TIMEOUT = 5
+
+.PHONY: link
+link: all
+	@ for url in \
+	  $$($(SED) -n 's/.*url{\([^}]*\)}.*/\1/pg' main.bbl) ; \
+	do \
+	  if curl --head --silent --fail -m $(TIMEOUT) $$url >/dev/null 2>/dev/null ; then \
+	    echo "OK   $$url" ; \
+	  else \
+	    tput setaf 1 ; \
+	    echo "FAIL $$url" ; \
+	    tput sgr0 ; \
+	  fi \
+	done
