@@ -1,36 +1,37 @@
 \begin{acks}
   This work was initiated by Frédéric Bour who implemented TMC in an
-  experimental variant of the OCaml compiler and submitted his work
-  for inclusion in 2015, but the proposal remained stalled due to lack
+  experimental variant of the OCaml compiler and, in 2015, submitted his work
+  for inclusion. At the time, the proposal remained stalled due to lack
   of review and integration effort among maintainers. The broad lines
   of the final implementation, in term of generated code, were already
   in Frédéric Bour's initial version, as well as the idea to have an
   opt-in transformation controlled by an attribute
-  (\cref{subsec:optin}). This experimental also generated the
+  (\cref{subsec:optin}). This experiment also generated
   performance data that motivated us to push further. (One notable
-  technical difference is that instead of each destination-passing
-  style taking two parameters \ocaml|dst| and |ofs|, it would generate
-  several versions specializing the \ocaml|ofs| variable to
-  a constant. Frédéric Bour found that this did not noticeably improve
+  technical difference is that instead of letting a destination-passing-style
+  function take two parameters \ocaml|dst| and \ocaml|ofs|, Bour
+  would generate several versions of the function,
+  where the parameter \ocaml|ofs| was specialized to
+  a constant. He found that this did not noticeably improve
   performance, and changed back to a parameter to simplify the
   implementation and reduce code size.)
-  
+
   In 2020, Gabriel Scherer restarted Frédéric Bour's effort with
   a review followed by a partial re-implementation of the
   transformation that introduced the applicative style discussed in
-  \cref{subsec:applicative-impl}, and much of the current
+  \cref{subsec:applicative-impl} as well as much of the current
   attribute-based user interface to control the transformation
   (\cref{subsec:user-control}). Basile Clément in turn reviewed
-  Gabriel's version, and introduced constructor compression
+  Scherer's version, and introduced constructor compression
   (\cref{subsec:constructor-compression}). Xavier Leroy implemented
   a change to the \OCaml calling convention to remove parameter-number
-  restrictions on tail calls on some architecture
+  restrictions on tail calls on some architectures
   (\cref{subsec:PR-history}). The work was finally reviewed by Pierre
   Chambart and merged in the upstream \OCaml compiler in November
   2021.
 
   Clément Allain started working on a mechanized soundness proof for
-  the TMC transformation in Iris in Summer 2022, as a master
+  the TMC transformation in Iris in Summer 2022, as a master's
   internship supervised by François Pottier. They discovered that the
   question of defining simulations in Iris is surprisingly
   interesting, and that correctness proofs of transformations of
