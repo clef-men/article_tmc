@@ -30,7 +30,12 @@ Allocation returns a location $\datalangLoc \in \datalangLoc[]$, which may not a
 
 The evaluation order of subexpressions $\datalangExpr_1$ and $\datalangExpr_2$ in $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ is unspecified as in \OCaml.
 This is crucial to allow the behavior-preserving optimization of more programs, as the TMC transformation may affect the evaluation order of subterms of data constructors.
-To model this in the semantics, we introduce a separate, deterministic block construction $\datalangBlockDet{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ which cannot appear in source programs. A block expression $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ first nondeterministically reduces to either $\datalangLet{\datalangVar_1}{\datalangExpr_1}{\datalangLet{\datalangVar_2}{\datalangExpr_2}{\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}}}$ through \RefTirName{StepBlock1} or $\datalangLet{\datalangVar_2}{\datalangExpr_2}{\datalangLet{\datalangVar_1}{\datalangExpr_1}{\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}}}$ through \RefTirName{StepBlock2}. $\datalangBlockDet{\datalangTag}{\datalangVal_1}{\datalangVal_2}$ performs the allocation through \RefTirName{StepBlockDet}.
+To model this in the semantics, we introduce a separate, deterministic block construction $\datalangBlockDet{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$ which cannot appear in source programs.
+A block expression $\datalangBlock{\datalangTag}{\datalangExpr_1}{\datalangExpr_2}$
+first reduces (in a nondeterministic manner)
+to either $\datalangLet{\datalangVar_1}{\datalangExpr_1}{\datalangLet{\datalangVar_2}{\datalangExpr_2}{\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}}}$ through \RefTirName{StepBlock1}
+or to $\datalangLet{\datalangVar_2}{\datalangExpr_2}{\datalangLet{\datalangVar_1}{\datalangExpr_1}{\datalangBlockDet{\datalangTag}{\datalangVar_1}{\datalangVar_2}}}$ through \RefTirName{StepBlock2}.
+$\datalangBlockDet{\datalangTag}{\datalangVal_1}{\datalangVal_2}$ performs the allocation through \RefTirName{StepBlockDet}.
 
 The values in \DataLang are functions $\datalangFnptr{\datalangFn}$, locations $\datalangLoc$ of allocated blocks, Booleans $b$, tags $t$ (taken in an arbitrary, denumerable set), the unit value $\datalangUnit$, and indices $i \in \{\datalangZero, \datalangOne, \datalangTwo\}$ inside blocks. (Our transformation never mutates block tags, nor do \OCaml programs, but \Mezzo supports it.)
 
