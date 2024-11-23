@@ -15,7 +15,7 @@ Unification variables are first-class values: in particular they can be passed a
 For example, we do not support optimizing tail contexts of the form \ocaml{List.append li _?}, only direct constructor applications; this can be expressed in Prolog as just the difference list \ocaml{(List.append li X, X)} for a fresh destination variable \ocaml{X}.
 But this expressiveness comes at a performance cost, and there is no static checking that the data is fully initialized at the end of computation.
 
-\citet*{tmc-scala-2013} implement Ozma, an experimental backend for
+\citet*{tmc-scala-2013} implement Ozma, an experimental back-end for
 the Scala programming language that targets the Oz virtual machine.
 Oz~\citep*{oz-1994,oz-1995} is a language that integrates features
 from logic- and functional-programming style, and in particular offers
@@ -27,8 +27,8 @@ processed in constant stack space, so Ozma introduces
 a tail-modulo-cons transformation in Prolog fashion: all data
 constructor arguments (and some explicitly-annotated
 function arguments) are transformed into dataflow values. The
-motivation is expressivity, not performance, and the Ozma backend is
-not competitive with the Scala JVM backend. Besides the obvious
+motivation is expressiveness, not performance, and the Ozma back-end is
+not competitive with the Scala JVM back-end. Besides the obvious
 engineering-effort differences, the pervasive use of dataflow values
 may incur high constant overhead, making this approach unsuitable to
 bring TMC to performance-conscious Scala users.

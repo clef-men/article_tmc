@@ -176,7 +176,7 @@ code, as it generates a direct- and a destination-passing-style
 version of the function; in particular we could suffer from
 a code-size blow-up on nested transformable functions. Second, the
 transformation may change the evaluation order of function arguments,
-in a way that comforms to the OCaml specification but may break
+in a way that conforms to the OCaml specification but may break
 programs in practice (bad!), so we would have to restrict it to only
 transform calls with syntactically-pure arguments. Third and most
 importantly, our implementation may have bugs, which may silently
