@@ -23,16 +23,30 @@ I added an example to clarify what happens in this case. (Also for the second co
 >   or "total list elements processed in 5 seconds" to label the axis?
 >   (In our POPL paper we keep the total number of elements processed in
 >   the benchmark stable across all list sizes to achieve the same effect)
-> 
+
+The ratio relative to the default/previous/simple implementation is
+a natural measure to me (Gabriel), for example it is a good measure to
+decide whether the TMC transformation gives acceptable perforamnce,
+and therefore if we want to merge it. It is also more comparable
+across machines than absolute times per elements. I'm in favor of
+keeping it -- also it is less work.
+
 > l. 1169: Sobel and Friedman should be cited in this context, but your
 >   citation makes it seem like they wrote a TMC pass. Instead, their
 >   technique is more similar to the accumulator-passing style.
-> 
+
+I tried to reformulate slightly the description of Sobel and Friedman,
+but I'm not sure what Anton read in the previous description and
+whether the new one is clearer.
+
 > l. 1183: "The start of the list remains constant over all recursive calls"
 >   This is only true with linear continuations. In Koka, it can be necessary
 >   to copy the list and then the start would change; this is the primary reason
 >   why we do not perform that optimization.
-> 
+
+Ooh, good point! I added a remark about this.
+
+
 > l. 1189: "when use untyped terms"
 > 
 > —

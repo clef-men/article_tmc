@@ -57,7 +57,7 @@ Associative-operator transformations represent the context \ocaml|1 + (4 + _?)| 
 \citet*{minamide-98} gives a ``functional'' interface to destination-passing-style programs, by presenting a partial data-constructor composition \ocaml{Foo(x,Bar(_?))} as a use-once, linear-typed function \ocaml{linfun h -> Foo(x,Bar(h))}.
 Those special linear functions remain implemented as partial data, but they expose a referentially-transparent interface to the programmer, restricted by a linear type discipline.
 This is a beautiful way to represent destination-passing style, orthogonal to our work: users of Minamide's system would still have to write the transformed version by hand, and we could implement a transformation into destination-passing style expressed in his system.
-\citet*{sobel-friedman-98}, inspired by Minamide's work, derive tree-traversal functions with a concrete representation of their continuations that implement pointer inversion to remain tail-recursive.
+\citet*{sobel-friedman-98}, inspired by Minamide's work, optimize continuation-passing-style versions of tree-traversal functions: they defunctionalize the continuations and systematically derive a pointer-inversion implementation that remains tail-recursive.
 Mezzo~\citep*{mezzo-2016} supports a more general-purpose type system based on separation logic, which can directly express uniquely-owned partially-initialized data, and its transformation into immutable, duplicable results.
 (See the \href{https://protz.github.io/mezzo/code_samples/list.mz.html}{List} module of the Mezzo standard library, and in particular \ocaml{cell}, \ocaml{freeze} and \ocaml{append} in destination-passing-style).
 
@@ -66,15 +66,14 @@ Mezzo~\citep*{mezzo-2016} supports a more general-purpose type system based on s
 \citet*{tmc-koka-2023} provide a pen-and-paper correctness argument for TMC, or in fact a family of approaches based on optimized representations of classes of non-tail contexts, in the style of program calculation.
 The clarity of their exposition is remarkable.
 
-The implementation they prove correct, which corresponds to the approach described in \citet*{minamide-98}, results in a slightly less efficient generation where recursive calls to \ocaml{map_dps} are passed \emph{both} the start of the list and the destination to be written at its end.
-The start of the list remains constant over all recursive calls, so our DPS version does not propagate it.
-
 We were inspired by the generality of their presentation and verified that our proof technique can also be applied to some other TMC variants, by extending our mechanized development with a correctness proof for an
 accumulator-passing-style transformation.
 
 Finally, our correctness results are more precise and slightly stronger: they work in a well-typed setting where programs do not fail, whereas we use untyped terms and show preservation of failure; their proofs assume a deterministic, non-effectful language, whereas we use a more general non-deterministic, effectful language; finally, they have a very simple definition of program equivalence (reducing to the exact same value) that works well for semi-formal reasoning, but is unsuitable to scale the argument to other programming languages, whereas we use a standard notion of behavioral refinement that can scale to less idealized settings.
 %
 We get this extra generality mostly as a direct result of our methodology (relational program logic backed by a simulation); but showing preservation of failure requires some care when handling arithmetic operators in the accumulator-passing-style variant.
+
+Remark: the implementation they prove correct, which corresponds to the approach described in \citet*{minamide-98}, results in a slightly less efficient generation where recursive calls to \ocaml{map_dps} are passed \emph{both} the start of the list and the destination to be written at its end. In our case the start of the list remains constant over all recursive calls, so our DPS version does not propagate it. They cannot perform this simplification due to Koka's support for multishot continuations, which sometimes require copying the partial list within the recursion -- the start of the list is necessary at in this case.
 
 \subsection{Relational Reasoning in Separation Logic}
 
