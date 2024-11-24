@@ -11,10 +11,11 @@ done
 
 done
 
-TODO:
 > l. 664: “we reify the current stack” — this was confusing to me at first;
 >   you mean to say “we do not perform compression across if-statements“, right?
->
+
+I added an example to clarify what happens in this case. (Also for the second comment.)
+
 > Fig 9: This is figure unreadable in grayscale (eg. in print).
 > 
 > Fig 9: “Time relative to naive tail-recursive version”: This always struck

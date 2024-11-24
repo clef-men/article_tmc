@@ -287,9 +287,16 @@ let rec dup_dps dst ofs = function
 
 This is implemented by passing a new transformation parameter: a stack of ``delayed'' constructor applications, that are in context and must be applied to the result of the subterm. When we encounter the final recursive call, we ``reify'' this stack: the last/innermost constructor in the stack becomes the new destination (\ocaml|dst2| in the example above), and the rest of the stack is applied to the new destination when we write to the old destination. There are two subtleties:
 \begin{enumerate}
-\item \ocaml|if p then e1 else e2| has two subterms which are transformed in DPS style, and naively passing the stack of delayed constructors to both subterms would duplicate code; instead we also reify the current stack when encountering such constructs. % TODO: clarify
+\item \ocaml|if p then e1 else e2| has two subterms which are transformed in DPS style, and naively passing the stack of delayed constructors to both subterms would duplicate code; instead we also reify the current stack when encountering such constructs. For example,\\
+\ocaml{  1 :: 2 :: if p then (3 :: f ()) else (4 :: f ())}%
+becomes:\\
+\ocaml{  let dst1 = 1 :: 2 :: ? in}\\
+\ocaml{  if p then (let dst2 = 3 :: ? in dst1.1 <- dst2; f dst2 1 ())}\\
+\ocaml{       else (let dst3 = 4 :: ? in dst1.1 <- dst3; f dst3 1 ())}
 
-\item This transformation may permute constructor applications after effectful subterms. If the constructor application context frame contains possibly-effectful subterms (for example \ocaml{f x :: _? } instead of \ocaml{x :: _?}), the compiler must \ocaml|let|-bind them at their original position to avoid changing the evaluation order.
+\item This transformation may permute constructor applications after effectful subterms. If the constructor application context frame contains possibly-effectful subterms (for example \ocaml{f x :: _? } instead of \ocaml{x :: _?}), the compiler must \ocaml|let|-bind them at their original position to avoid changing the evaluation order. For example,\\
+\ocaml{x () :: (y (); f ())} does not become \ocaml{y (); (let dst = x () :: ? in ...)},
+but instead \ocaml{let tmp = x () in (y (); let dst = tmp :: ? in ...)}.
 \end{enumerate}
 
 It is conceptually easy to extend our previous formalization of TMC as a rewriting relation to capture constructor compression, by indexing this relation on an additional list of constructor contexts. We do not present this here for lack of space, but included this change in our \Coq proofs, which establish correctness of TMC in presence of constructor compression.
