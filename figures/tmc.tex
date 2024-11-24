@@ -8,15 +8,11 @@
             \\
                 \dom{\datalangProg_t} = \dom{\datalangProg_s} \cup \codom{\datalangRenaming}
             \\
-                \forall \datalangFn, \datalangDef_s \ldotp
-                \datalangProg_s [\datalangFn] = \datalangDef_s \implies
-                \exists \datalangDef_t \ldotp
-                \datalangProg_t [\datalangFn] = \datalangDef_t \wedge \datalangDef_s \tmcDir{\datalangRenaming} \datalangDef_t
+                \forall \datalangFn \in \dom{\datalangProg_s} \ldotp \quad
+                \datalangProg_s[\datalangFn] \tmcDir{\datalangRenaming} \datalangProg_t[\datalangFn]
             \\
-                \forall \datalangFn, \datalangFn_\mathit{dps}, \datalangDef_s \ldotp
-                \datalangProg_s [\datalangFn] = \datalangDef_s \wedge \datalangRenaming [\datalangFn] = \datalangFn_{\mathit{dps}} \implies
-                \exists \datalangDef_t \ldotp
-                \datalangProg_t [\datalangFn_\mathit{dps}] = \datalangDef_t \wedge \datalangDef_s \tmcDps{\datalangRenaming} \datalangDef_t
+                \forall (\datalangFn \mapsto \datalangFn_\mathit{dps}) \in \datalangRenaming, \quad
+                \datalangProg_s[\datalangFn] \tmcDps{\datalangRenaming} \datalangProg_t[\datalangFn_\mathit{dps}]
         \end{array} \right.
     \]
     \caption{TMC transformation}

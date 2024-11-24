@@ -4,12 +4,17 @@ done
 
 > l. 300: I first read “d_s . p_s” as a field access; a space might help here.
 >   Similarly, I think this would be clearer with parens around the /\ term.
-> 
+
+done
+
 > l. 493: “transformatin”
-> 
+
+done
+
+TODO:
 > l. 664: “we reify the current stack” — this was confusing to me at first;
 >   you mean to say “we do not perform compression across if-statements“, right?
-> 
+>
 > Fig 9: This is figure unreadable in grayscale (eg. in print).
 > 
 > Fig 9: “Time relative to naive tail-recursive version”: This always struck
