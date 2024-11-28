@@ -1,6 +1,7 @@
 .PHONY : all
 all :
 	@ latexmk -pdf -interaction=nonstopmode main.tex
+	@ latexmk -pdf -interaction=nonstopmode main-with-appendices.tex
 
 .PHONY : clean
 clean :
