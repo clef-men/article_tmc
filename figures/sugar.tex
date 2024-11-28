@@ -24,8 +24,10 @@
     \begin{tabular}{rcl}
             $\datalangRec{\datalangPair{\datalangVar_1}{\datalangVar_2}}{\datalangExpr}$
             & $\coloneqq$ &
-            $\datalangRec{\datalangVarTwo}{
-            \datalangLet{\datalangPair{\datalangVar_1}{\datalangVar_2}}{\datalangVarTwo}{\datalangExpr}}$
+            $\datalangRec{\datalangVarTwo}{$
+            \\ && $\quad
+              \datalangLet{\datalangPair{\datalangVar_1}{\datalangVar_2}}{\datalangVarTwo}{$
+            \\ && $\quad \datalangExpr}}$
         \\
             $\datalangNil$
             & $\coloneqq$ &

@@ -103,7 +103,9 @@
             $\datalangLoad{\datalangExpr_1}{\datalangEctx} \mid \datalangLoad{\datalangEctx}{\datalangVal_2}$
         \\
             & | &
-            $\datalangStore{\datalangExpr_1}{\datalangExpr_2}{\datalangEctx} \mid \datalangStore{\datalangExpr_1}{\datalangEctx}{\datalangVal_3} \mid \datalangStore{\datalangEctx}{\datalangVal_2}{\datalangVal_3}$
+            $\datalangStore{\datalangExpr_1}{\datalangExpr_2}{\datalangEctx}
+             \mid \datalangStore{\datalangExpr_1}{\datalangEctx}{\datalangVal_3}$
+         \\ & | & $\datalangStore{\datalangEctx}{\datalangVal_2}{\datalangVal_3}$
   \end{tabular}
     \caption{\DataLang syntax}
     \label{fig:syntax}

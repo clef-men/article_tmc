@@ -18,7 +18,7 @@
                 \tmcDps{\datalangRenaming}
                 \datalangRec{\datalangPair{\datalangPair{\datalangVar_\mathit{dst}}{\datalangVar_\mathit{idx}}}{\datalangVar}}{\datalangExpr_t}
             }
-        \\
+        \quad
         \inferrule*[lab=DPSLet]
             {
                 \datalangExpr_{s1} \tmcDir{\datalangRenaming} \datalangExpr_{t1}
@@ -35,7 +35,7 @@
                 \tmcDps{\datalangRenaming}
                 \datalangLet{\datalangVar}{\datalangExpr_{t1}}{\datalangExpr_{t2}}
             }
-        \quad
+        \\
         \inferrule*[lab=DPSIf]
             {
                 \datalangExpr_{s0} \tmcDir{\datalangRenaming} \datalangExpr_{t0}

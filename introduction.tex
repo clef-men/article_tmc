@@ -66,9 +66,13 @@ let map f l =
   let rec direct f i l = match l with
     | [] -> []
     | [x] -> [f x]
-    | [x1;x2] -> let y1 = f x1 in [y1; f x2]
+    | [x1;x2] ->
+      let y1 = f x1 in
+      [y1; f x2]
     | [x1;x2;x3] ->
-      let y1 = f x1 in let y2 = f x2 in [y1; y2; f x3]
+      let y1 = f x1 in
+      let y2 = f x2 in
+      [y1; y2; f x3]
     | _ when i=0 -> tail_map f l
     | x1::x2::x3::x4::l' ->
       let y1 = f x1 in
@@ -218,6 +222,7 @@ The core of the soundness proof is the specification of the two variants of each
 It concisely conveys the essence of destination-passing style: computing the same thing and writing it to an owned destination.
 %
 For instance, to give a taste of the formalism, the specification of the variants of \ocaml|map| looks as follows:
+\begin{small}
 \begin{align*}
         \iSimvHoare{
             \datalangVal_s \iSimilar \datalangVal_t
@@ -256,6 +261,7 @@ For instance, to give a taste of the formalism, the specification of the variant
                 {\datalangVal_t}}
         }
 \end{align*}
+\end{small}
 If two input lists are related, then calling the \ocaml{map} function or its direct-style translation will return related outputs. Furthermore, if we call the destination-passing-style version on a partial block that we own, we will get a source value $\datalangVal'_s$ and a \ocaml{unit} value $\datalangUnit$, and a target value $\datalangVal'_t$ related to $\datalangVal'_s$ will be written in the block.
 
 To sum up, our main contributions are:
