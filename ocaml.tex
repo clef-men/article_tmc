@@ -6,9 +6,13 @@ For reasons of space, we moved some of the content in this section to \cref{app:
 \cref{subsec:alternative-impls}
   discusses alternative language implementation techniques that do not require TMC.
 %
+\cref{subsec:design-choices}
+  describes how the OCaml compiler decides which calls to optimize,
+  and requires mandatory disambiguation hints from the user in case of ambiguity.
+%
 \cref{subsec:PR-history} provides a summary of the history of our implementation (started in 2015, restarted in 2020, merged in 2021).
 %
-\cref{subsec:applicative-impl} exhibits an applicative functor structure that makes our implementation nicely compact and readable.
+\cref{subsec:implementation} explains that implementing the transformation requires a bit of care as a naive implementation is quadratic in function size. We use an applicative functor to structure a single-pass implementation that remains nicely compact and readable.
 %
 \cref{subsec:adoption} surveys the adoption of the TMC transformation in the standard library,
   and in third-party \OCaml code bases, that happened since the feature was released in 2022.
@@ -113,9 +117,8 @@ A tail context $\datalangTailCtx$ is an arbitrary composition of tail-frame, and
 
 If a source function can be decomposed in a TMC context $\datalangTMCCtx$ with source expressions in its holes, some of which are calls to TMC-transformed functions, then our relation admits a DPS transformation where all those function calls are tail-calls, and this transformation is reachable in our \OCaml implementation, possibly by adding some annotations.
 
-Note in particular that we do not optimize calls to the same function we are defining, direct calls to arbitrary other functions can be transformed, if those functions have been annotated to be TMC-transformed.
-This is analogous to how most functional languages support arbitrary \emph{tail calls} and not just tail self-recursion.
-We seamlessly support mutually recursive functions, DPS calls into locally-bound functions, etc.
+Note in particular that we do not only optimize calls to the same function we are defining, direct calls to arbitrary other functions can be transformed, if those functions have been annotated to be TMC-transformed.
+This is analogous to how most functional languages support arbitrary \emph{tail calls} and not just tail self-recursion. We seamlessly support mutually recursive functions, DPS calls into locally-bound functions, etc. On the other hand, we currently do not optimize call to higher-order function arguments, or calls crossing module boundaries.
 
 \begin{figure}[tp]
     \begin{tabular}{lclcl}
@@ -163,91 +166,6 @@ We seamlessly support mutually recursive functions, DPS calls into locally-bound
     \caption{\DataLang contexts for optimizable calls}
     \label{fig:contexts}
 \end{figure}
-
-\subsection{Design Choices}
-
-\subsubsection{Opt-in Rather than Opt-out}\label{subsec:optin}
-We made our transformation \emph{opt-in}, the user has to explicit use
-the \ocaml{[@tail_mod_cons]}, rather than \emph{opt-out}, where the
-compiler would automatically detect program in the TMC fragment to
-transform them. There are at least three reasons for this choice, in
-increasing order of importance. First, the transformation duplicates
-code, as it generates a direct- and a destination-passing-style
-version of the function; in particular we could suffer from
-a code-size blow-up on nested transformable functions. Second, the
-transformation may change the evaluation order of function arguments,
-in a way that conforms to the OCaml specification but may break
-programs in practice (bad!), so we would have to restrict it to only
-transform calls with syntactically-pure arguments. Third and most
-importantly, our implementation may have bugs, which may silently
-introduce miscompilations in user code. There are millions of lines of
-OCaml code out there, and we have no idea which portion would be
-transformed. Doing this implicitly would risk running into
-compile-time, runtime or correctness issues that we have not foreseen,
-it would have been much harder to convince OCaml maintainers to
-include this feature if it was opt-out.
-
-\subsubsection{Resolving Non-determinism}
-
-The main question faced by an implementation is how to resolve the
-inherent non-determinism in the rewrite relation -- how to decide
-between several possible results of the transformation. We identified
-fairly different kinds of non-determinism.
-
-\paragraph{Choices with an obviously better alternative.}
-Some choices offer an alternative that is obviously better than the others, because it allows to strictly improve more programs. For example, some implementations of TMC limit themselves to calls that are immediately inside a constructor: they would optimize the recursive call to \ocaml|f| in \ocaml|Cons(x, f y)| but not, for example, in \ocaml|Cons(x1, Cons(x2, f y))|, or in \ocaml|Cons (x, if p then f y else z)|.
-
-In the terms of \cref{subsec:specification}, those implementations only allow to optimize calling contexts of the form $\datalangTailCtx{[\datalangConsFrame]}$ or $\datalangTailCtx{[\datalangConsCtx]}$. Our implementation supports the more general situation $\datalangTMCCtx = (\datalangTailFrame | \datalangConsFrame)^{*}$. Both approaches are included in our non-deterministic relation -- we prove them both correct -- but optimizing more calls is obviously better.
-
-\paragraph{Choices with a subtly better alternative.} In some cases it
-is possible to put a bit more work in the choice heuristics, to
-generate slightly better code, in terms of performance or
-readability. For example, some natural way to simplify the
-implementation would result in more subterms being transformed in
-destination-passing-style, only to finally use the
-\RefTirName{DPSBase} rule without any DPS function call. The generated
-code is slightly less pleasant to read, and in our experience it can
-be noticeably slower. (We detail such a situation in \cref{subsec:constructor-compression}.)
-
-Code readability is important in our context of an on-demand program
-transformation used by performance experts: those experts will often
-read the intermediate representations produced by the compiler to
-check that their performance assumptions hold.
-
-\paragraph{Incomparable choices: force the user to decide} \label{subsec:user-control}
-The remaining choices are between incomparable alternatives, that could
-each be better than the other depending on the specific program or
-programmer intent. Consider again our binary tree example,
-\ocaml|Node(map f left, map f right)|: we could make either the first
-or the second argument a tail-call.
-
-Our policy in such cases is to let the user decide, by providing
-control over the transformation choices using \ocaml{[@tailcall]}
-program annotations, and to force the user to decide by raising an
-error in case of ambiguity:
-\begin{Ocaml}
-  | Cifthenelse(cond, ifso, ifnot) ->
-      Cifthenelse(cond, map_tail f ifso, map_tail f ifnot)
-      /[^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^]/
-/[Error]/: "[@tail_mod_cons]": this constructor application may be TMC-transformed
-       in several different ways. Please disambiguate by adding an explicit
-       "[@tailcall]" attribute to the call that should be made tail-recursive,
-       or a "[@tailcall false]" attribute on calls that should not be
-       transformed.
-\end{Ocaml}
-
-This approach is incompatible with a view of the TMC
-transformation as an implicit optimization, applied whenever
-possible -- in that case one would rather have the compiler make
-arbitrary choices rather than fail. We rather view TMC as a tool for
-expert users to better reason about program performance. It should be
-predictable and flexible (let the user express
-their intent). Failing due to the lack of annotations is an acceptable way
-to drive user interaction.
-
-\subsubsection{First-order Implementation}\label{subsubsec:first-order}
-A notable limitation of the \OCaml implementation is that it is first-order and non-modular in nature: only direct calls to known functions can be converted into DPS style, and the availability of a DPS variant is not exposed through module abstractions.
-It would be possible to allow DPS calls through external modules or higher-order function parameters, by annotating interfaces and function arguments with a \ocaml{[@tail_mod_cons]} annotation, and elaborating them into a pair of functions, the direct-style and the DPS version.
 
 \subsection{Constructor Compression} \label{subsec:constructor-compression} The translation as we described it formally in \cref{subsec:transformation} generates unpleasant code when many constructors are nested before the recursive call. For example, consider this strange function duplicating each element of a list:
 \begin{Ocaml}
@@ -300,10 +218,6 @@ but instead \ocaml{let tmp = x () in (y (); let dst = tmp :: ? in ...)}.
 \end{enumerate}
 
 It is conceptually easy to extend our previous formalization of TMC as a rewriting relation to capture constructor compression, by indexing this relation on an additional list of constructor contexts. We do not present this here for lack of space, but included this change in our \Coq proofs, which establish correctness of TMC in presence of constructor compression.
-
-\subsection{Implementation} \label{subsec:implementation} Implementing the TMC transform is not an obvious top-down or bottom-up traversal, because it relies on information flowing in two opposite directions: the transformation is \emph{possible} for subterms that are in tail-or-constructor position relative to the root of the function (top-down information), and it is \emph{desirable} for subterms whose leaves contain calls to TMC-transformed functions (bottom-up information). A naive approach is to perform a recursive traversal that tracks the top-down context and, on each subterm, recursively traverses the whole subterm to check desirability; this has quadratic time complexity, which is best avoided in production compilers.
-
-Instead of trying to transform each subterm in a single pass, our implementation computes for each subterm a ``choice'', a summary of all the bottom-up information that is relevant to choose how to transform this subterm -- once we have the top-down information available. This includes (1) the direct-style transform of the subterm, (2) the DPS-style transform of the subterm, (3) metadata tracking whether the transformation is beneficial (if a TMC-function call was found in tail-modulo-cons position), the list of TMC calls it contains (for error diagnostics), and whether some were explicitly requested by the user (for disambiguation). Computing transformed terms is not compositional; computing choices is compositional. We compute a choice for the whole function body (in one pass), from which we can directly extract the direct-style and DPS-style transformations of the function.
 
 \subsection{Evaluation: Benchmarks}
 
