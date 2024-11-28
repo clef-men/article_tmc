@@ -53,7 +53,9 @@ Ooh, good point! I added a remark about this.
 > 
 > l. 138: TMC was also implemented in OPAL (see bottom of page 11 of
 > https://link.springer.com/chapter/10.1007/3-540-57840-4_34)
-> 
+
+done
+
 > l: 165: There is also a large literature on verifying examples of TMC.
 > Many projects verify imperative code that could have been the outcome
 > of a TMC transformation using magic wands to represent
@@ -63,7 +65,10 @@ Ooh, good point! I added a remark about this.
 > Today, this technique seems standard and is mentioned eg. in the
 > viper tutorial https://viper.ethz.ch/tutorial/#magic-wands
 > where they verify the kind of `append` function that TMC produces.
-> 
+
+I obliquely mentioned them in the Related Work, but without listing
+specific papers.
+
 > l. 799: An interesting aspect of this is that TRMC can change the
 > space usage of the program to the worse. 
 > Of course, this does not happen in practice, since we also remove
@@ -74,7 +79,10 @@ Ooh, good point! I added a remark about this.
 > stack frames at that point. As we briefly remark (page 10), this describes
 > a space bound for TRMC if you consider the number of stack frames
 > in the _unoptimised_ program (since TRMC also removes stack frames).
-> 
+
+This is worth discussing further, but I timed out when trying to think
+more about this in the context of the camera-ready preparation.
+
 > l. 962: “The APS transformation is a variant of the TMC transformation”.
 > A view that I have found quite helpful is that APS and TMC are both
 > instances of a selective CPS-transformation: what we really do in our
@@ -82,7 +90,9 @@ Ooh, good point! I added a remark about this.
 > a better representation for the closures. Indeed, one way you can
 > think of the example on line 587, is that you are performing a mini
 > ANF-pass that moves tail-contexts out of constructors.
-> 
+
+Timeout.
+
 > l. 1162: Recently, we have started to use “constructor contexts” in Koka,
 > which are very similar to the linear functions of Minamide
 > (https://dl.acm.org/doi/pdf/10.1145/3656398). However, we do not require
@@ -94,7 +104,9 @@ Ooh, good point! I added a remark about this.
 > by hand, even if our TRMC transformation does not support them
 > (eg. `partition`). In OCaml, constructor contexts could be implemented using
 > the new modal uniqueness types (https://dl.acm.org/doi/pdf/10.1145/3674642).
-> 
+
+Done.
+
 > Another interesting direction are constructor contexts with multiple
 > holes. Thomas Bagrel wrote such a system for Haskell
 > (https://inria.hal.science/hal-04406360/document) and sent an article
@@ -102,7 +114,11 @@ Ooh, good point! I added a remark about this.
 > thinking about these ideas for a while as well; with an incomplete draft
 > at https://personal.cis.strath.ac.uk/conor.mcbride/pub/Holes/Holes.pdf
 > which I believe inspired https://arxiv.org/pdf/1807.04085.
-> 
+
+Done. (Not the McBride stuff, which I vaguely understand to be about
+datatype-generic zippers rather than something more
+efficienty-oriented.)
+
 > An interesting observation we made recently is that TMC can explain
 > the top-down algorithms in imperative algorithm textbooks.
 > While many textbooks present top-down insertion or deletion procedures
@@ -113,3 +129,5 @@ Ooh, good point! I added a remark about this.
 > (and then slightly optimized to reduce the number of assignments).
 > As such, they can be shown equivalent to the functional version using the
 > typical magic-wand based techniques in Iris (https://github.com/koka-lang/AddressC).
+
+Done.
