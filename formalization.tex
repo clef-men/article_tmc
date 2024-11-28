@@ -21,7 +21,8 @@ Going back to our motivating example, we can define the \datalang|map| function 
 \DataLang has Booleans $b \in \{\datalangTrue, \datalangFalse\}$, an if-then-else construct, and a runtime equality test\footnote{We check physical equality on locations / pointers, and primitive equality between primitive types, similarly to the \texttt{eqv?} predicate of Scheme. Primitive values of distinct types, for example integers and Booleans, are always considered different.} between (untyped) values $\datalangEq{\datalangExpr_1}{\datalangExpr_2}$.
 
 \DataLang is first-order in the same sense that C is (with function pointers): it does not feature general lambda expressions, its programs correspond to closure-converted or lambda-lifted source programs.\footnote{
-The usual definition of TMC that we implement and formalize is essentially first-order. See \cref{subsubsec:first-order}.}
+The usual definition of TMC that we implement and formalize is essentially first-order.%
+ See \Appendices{\cref{subsubsec:first-order}}{Appendix~A.2.3}.}
 Functions names $\datalangFn$ can be turned into values written $\datalangFnptr{\datalangFn}$, to be used directly in function calls or as parameters to higher-order functions.
 
 To express constructors, \DataLang features mutable memory blocks with an abstract \emph{tag} ($\datalangTag \in \datalangTag[]$), and two \emph{fields} which are arbitrary values ($\datalangExpr_1, \datalangExpr_2$).
@@ -127,7 +128,7 @@ Finally, there is a catch-all rule \RefTirName{DPSBase} that applies in any case
 
 \subsection{Realizing the relation as a function}
 
-Our Coq formalization includes a function that takes an input program and outputs a related program, following the one-pass implementation approach that we introduced in the \OCaml compiler (\cref{subsec:implementation}).
+Our Coq formalization includes a function that takes an input program and outputs a related program, following the one-pass implementation approach that we introduced in the \OCaml compiler\Appendices{ (\cref{subsec:implementation})}{(see Appendix~A.4)}.
 
 %%% Local Variables:
 %%% mode: latex
