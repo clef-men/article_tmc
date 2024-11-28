@@ -6,20 +6,20 @@
     		\exists \datalangVal_s, \datalangVal_t \ldotp
     		\datalangBisubst (\datalangVar) = (\datalangVal_s, \datalangVal_t) \iSep
     		\datalangVal_s \iSimilar \datalangVal_t
-    	\\
-            \datalangBisubst_s (\datalangVar)
-            & \coloneqq
-            {\datalangBisubst (\datalangVar)}_1
-        \\
-            \datalangBisubst_t (\datalangVar)
-            & \coloneqq
-            {\datalangBisubst (\datalangVar)}_2
+    	% \\
+        %     \datalangBisubst_s (\datalangVar)
+        %     & \coloneqq
+        %     {\datalangBisubst (\datalangVar)}_1
+        % \\
+        %     \datalangBisubst_t (\datalangVar)
+        %     & \coloneqq
+        %     {\datalangBisubst (\datalangVar)}_2
         \\
     		\iRsimv{\iPred}{\datalangExpr_s}{\datalangExpr_t}
     		& \coloneqq
     		\forall \datalangBisubst \ldotp
     		\wf{\datalangBisubst} \iWand
-    		\iSimv{\iPred}{\datalangBisubst_s (\datalangExpr_s)}{\datalangBisubst_t (\datalangExpr_t)}
+    		\iSimv{\iPred}{{\datalangBisubst (\datalangExpr_s)}_1}{{\datalangBisubst (\datalangExpr_t)}_2}
     	\\
     	   \iRsimvHoare{P}{\iPred}{\datalangExpr_s}{\datalangExpr_t}
     	   & \coloneqq
