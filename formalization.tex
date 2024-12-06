@@ -1,4 +1,4 @@
-\section{TMC on an idealized language}
+\section{TMC on an Idealized Language}
 \label{sec:formalization}
 
 In this section, we formalize the ``tail modulo cons'' (TMC) transformation in an idealized language, \DataLang, that is expressive enough to account for the main aspects of TMC but does not support all features of \OCaml.
@@ -126,7 +126,7 @@ Finally, there is a catch-all rule \RefTirName{DPSBase} that applies in any case
 % As an example, we can show that the two \DataLang functions defined in \cref{fig:map_tmc} are respectively the direct and DPS transforms of the original \datalang|map| function defined in \cref{fig:map}.
 % Thanks to the rules \RefTirName{DirBlockDPS2} and \RefTirName{DPSCall}, the non-tail recursive call is replaced by the allocation of a partially initialized block followed by a call to \datalang|map_dps|.
 
-\subsection{Realizing the relation as a function}
+\subsection{Realizing the Relation as a Function}
 
 Our Coq formalization includes a function that takes an input program and outputs a related program, following the one-pass implementation approach that we introduced in the \OCaml compiler\Appendices{ (\cref{subsec:implementation})}{(see Appendix~A.4)}.
 

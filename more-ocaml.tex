@@ -6,7 +6,7 @@
 
 We mention other approaches than TMC to solve the problem of overflowing the call stack, and explain why they were less suitable for \OCaml. We also discuss a significant implementation change between \OCaml 4 and \OCaml 5.
 
-\subsubsection{Doing a CPS transformation}
+\subsubsection{Doing a CPS Transformation}
 
 Instead of a program transformation in \emph{destination-passing} style, we could perform a more general program transformation that can make more functions tail-recursive, for example a generic \emph{continuation-passing} style (CPS) transformation.
 
@@ -17,18 +17,18 @@ We have three arguments for implementing the TMC transformation:
 \item The CPS transformation can be expressed at the source level, and can be made reasonably nice-looking using some monadic-binding syntactic sugar. TMC can only be done by the compiler, or using safety-breaking features.
 \end{itemize}
 
-\subsubsection{Lazy data}
+\subsubsection{Lazy Data}
 
 Lazy (call-by-need) languages will also often avoid running into stack overflows: as soon as a lazy data structure is returned, which is the default, functions such as \ocaml{map} will return immediately, with recursive calls frozen in a lazy thunk, waiting to be evaluated on-demand as the user traverses the result structure.
 Users still need to worry about tail-recursion for their strict functions; strict functions are often preferred when writing efficient code.
 
-\subsubsection{Unlimiting the system stack}
+\subsubsection{Unlimiting the System Stack}
 
 Some operating systems can provide an unlimited system stack; such as \texttt{ulimit -s unlimited} on Linux systems -- the system stack is then resized on-demand.
 Frustratingly, unlimited stacks are not available on all systems, and not the default on any system in wide use.
 Convincing all users to setup their system in a non-standard way would be \emph{much} harder than performing a program transformation or accepting the CPS overhead for some programs.
 
-\subsubsection{Using another stack}
+\subsubsection{Using Another Stack}
 
 Using the native system stack is a choice of the \OCaml~4 implementation.
 Some other implementations of functional languages, such as SML/NJ, use a different stack (the \OCaml bytecode interpreter does this), or directly allocate stack frames on their GC-managed heap.
@@ -138,7 +138,7 @@ to drive user interaction.
 A notable limitation of the \OCaml implementation is that it is first-order and non-modular in nature: only direct calls to known functions can be converted into DPS style, and the availability of a DPS variant is not exposed through module abstractions.
 It would be possible to allow DPS calls through external modules or higher-order function parameters, by annotating interfaces and function arguments with a \ocaml{[@tail_mod_cons]} annotation, and elaborating them into a pair of functions, the direct-style and the DPS version.
 
-\subsection{Implementation history}
+\subsection{Implementation History}
 \label{subsec:PR-history}
 
 We first proposed adding TMC as an optional program transformation to
@@ -231,7 +231,7 @@ With this interface, the easy cases of the transformation can be expressed compa
 \end{Ocaml}
 The binding operators \ocaml|let+|, \ocaml|and+| are standard syntax for applicative-like structures in \OCaml: \ocaml|let+| desugars to \ocaml|Choice.map| and \ocaml|and+| desugars to \ocaml|Choice.pair|. \ocaml|traverse| performs a direct-style translation, and \ocaml|traverse_letrec| may also transform \ocaml|let|-bound functions marked with \ocaml|[@tail_mod_constr]| and add them to the local transformation environment.
 
-\subsection{Evaluation: adoption}
+\subsection{Evaluation: Adoption}
 \label{subsec:adoption}
 
 % [@tail_mod_cons] usage on Github
