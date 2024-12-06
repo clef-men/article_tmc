@@ -57,10 +57,11 @@ This non-determinism captures several choices that have to be done by the user t
 In this section, we do not describe how these choices are resolved -- there is a large design space.
 We present the choices we made for \OCaml compiler in \cref{sec:implementation}.
 
-As formalized in \cref{fig:tmc}, transforming a \DataLang program $\datalangProg$ consists in:
-
 \input{figures/tmc}
-\paragraph{1. Choosing a subset of toplevel functions to be TMC-transformed}
+
+Transforming a \DataLang program $\datalangProg$ can be described in three independent parts.
+
+\paragraph{1. Choosing a subset of toplevel functions to be TMC-transformed.}
 %In \OCaml, the programmer has to annotate these.
 For each such function $\datalangFn$, we also require a fresh function name $\datalangRenaming [\datalangFn]$ (that is not defined in $\datalangProg_s$) that will be the \emph{destination-passing style} (DPS) version of $\datalangFn$ in the transformed program $\datalangProg_t$.
 
